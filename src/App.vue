@@ -1,20 +1,26 @@
 <template>
-    <el-config-provider :locale="zhCn">
-        <hospital-header v-if="!$route.meta.hiddenHeader"/>
-        <router-view/>
-        <hospital-footer v-if="!$route.meta.hiddenFooter"/>
-    </el-config-provider>
+  <img alt="Vue logo" src="./assets/logo.png">
+  <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
 
-<script setup>
-import HospitalHeader from "@/components/ProjectManageHeader.vue";
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
-import HospitalFooter from "@/components/ProjectManageFooter.vue";
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+
+export default {
+  name: 'App',
+  components: {
+    HelloWorld
+  }
+}
 </script>
 
 <style>
-a {
-    text-decoration: none;
-    color: black;
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
 }
 </style>

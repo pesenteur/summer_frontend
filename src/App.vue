@@ -1,17 +1,19 @@
 <template>
-  <TeamFooter/>
+  <router-view/>
+
 </template>
 
-<script>
+<script setup>
 
 import TeamFooter from './components/TeamFooter.vue'
 
-export default {
-  name: 'App',
-  components: {
-    TeamFooter
-  }
-}
+//
+// export default {
+//   name: 'App',
+//   components: {
+//     TeamFooter
+//   }
+// }
 </script>
 
 <style>

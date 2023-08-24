@@ -1,0 +1,76 @@
+<template>
+  <el-card class="box-card">
+    <template #header>
+      <div class="card-header">
+        <span>我的项目</span>
+        <el-button class="button" text>查看详情</el-button>
+      </div>
+    </template>
+    <el-table :data="tableData" height="250" style="width: 100%">
+      <el-table-column prop="name" label="项目名称" width="200" />
+      <el-table-column prop="startTime" label="开始时间" width="180" />
+      <el-table-column prop="endTime" label="结束时间" />
+    </el-table>
+  </el-card>
+</template>
+
+<style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text {
+  font-size: 14px;
+}
+
+.item {
+  margin-bottom: 18px;
+}
+
+.box-card {
+  width: 530px;
+}
+</style>
+
+<script setup>
+import {reactive} from "vue";
+const tableData = reactive([
+  {
+    name: 'Vue开发的医院管理系统',
+    startTime: '2023-6-19',
+    endTime: '2024-3-23',
+  },
+  {
+    name: 'Vue开发的医院管理系统',
+    startTime: '2023-6-19',
+    endTime: '2024-3-23',
+  },
+  {
+    name: 'Vue开发的医院管理系统',
+    startTime: '2023-6-19',
+    endTime: '2024-3-23',
+  },
+  {
+    name: 'Vue开发的医院管理系统',
+    startTime: '2023-6-19',
+    endTime: '2024-3-23',
+  },
+  {
+    name: 'Vue开发的医院管理系统',
+    startTime: '2023-6-19',
+    endTime: '2024-3-23',
+  },
+  {
+    name: 'Vue开发的医院管理系统',
+    startTime: '2023-6-19',
+    endTime: '2024-3-23',
+  },
+  {
+    name: 'Vue开发的医院管理系统',
+    startTime: '2023-6-19',
+    endTime: '2024-3-23',
+  }
+])
+</script>

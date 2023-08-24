@@ -1,20 +1,27 @@
 <template>
     <div>
+        <div class="background"></div>
         <Navbar />
         <SearchBar />
-        <div class="background"></div>
+
         <div class="container">
             <div class="item">
                 <h2 class="logo"><i class='bx bxl-xing'></i>cool</h2>
                 <div class="text-item">
-                    <h2>Welcome! <br><span>To Our Channel</span></h2>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit, repellendus?</p>
+                    <h2>W!<br><span>To Our Channel</span></h2>
+                    <p>学术交流论坛</p>
                     <SocialIcon />
                 </div>
             </div>
             <div class="login-section">
-                <LoginForm />
-                <RegisterForm />
+                <transition>
+                    <div class="form-box" v-if="showLogin">
+                        <LoginForm v-model:show-value="showLogin" />
+                    </div>
+                    <div class="form-box register" v-else>
+                        <RegisterForm v-model:show-value="showLogin" />
+                    </div>
+                </transition>
             </div>
         </div>
     </div>
@@ -24,9 +31,11 @@
 import Navbar from './NavbarComponent.vue';
 import SearchBar from './SearchBar.vue';
 import LoginForm from './LoginForm.vue';
-import RegisterForm from './RegisterForm.vue';
+import RegisterForm from './RegisterForm.vue'
 import SocialIcon from './SocialIcon.vue';
+import { ref } from 'vue';
 
+const showLogin = ref(true);
 </script>
 
 <style >
@@ -41,6 +50,8 @@ import SocialIcon from './SocialIcon.vue';
 }
 
 body {
+    margin: 0;
+    padding: 0;
     height: 100vh;
     width: 100%;
     background: #fff;
@@ -216,29 +227,30 @@ body {
 
 }
 
-.login-section .form-box.register {
-    transform: translateX(430px);
-    transition: transform .6s ease;
-    transition-delay: 0s;
-}
-
-.login-section.active .form-box.register {
-    transform: translateX(0px);
-    transition-delay: .7s;
-}
-
-.login-section .form-box.login {
-    transform: translateX(0px);
+.v-enter-active {
     transition: transform .6s ease;
     transition-delay: 0.7s;
 }
 
-.login-section.active .form-box.login {
+.v-enter-from {
     transform: translateX(430px);
-    transition-delay: 0s;
 }
 
+.v-enter-to {
+    transform: translateX(0);
+}
 
+.v-leave-active {
+    transition: transform .6s ease;
+}
+
+.v-leave-from {
+    transform: translateX(0);
+}
+
+.v-leave-to {
+    transform: translateX(430px);
+}
 
 .login-section .form-box h2 {
     text-align: center;
@@ -341,4 +353,5 @@ body {
 
 .create-account p a:hover {
     text-decoration: underline;
-}</style>
+}
+</style>

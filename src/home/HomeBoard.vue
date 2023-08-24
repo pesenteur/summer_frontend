@@ -3,6 +3,8 @@
 import HomeChat from "@/home/HomeChat.vue";
 import HomeProject from "@/home/HomeProject.vue";
 import HomeSide from "@/home/HomeSide.vue";
+import HomeMessage from "@/home/HomeMessage.vue";
+import HomeCarousel from "@/home/HomeCarousel.vue";
 </script>
 
 <template>
@@ -15,8 +17,10 @@ import HomeSide from "@/home/HomeSide.vue";
       <el-main>
         <div class="waterfall-container">
           <!-- <HomeSide></HomeSide> -->
-          <HomeChat></HomeChat>
-          <HomeProject></HomeProject>
+          <HomeChat class="item"></HomeChat>
+          <HomeProject class="item"></HomeProject>
+          <HomeCarousel class="item"></HomeCarousel>
+          <HomeMessage class="item"></HomeMessage>
         </div>
       </el-main>
     </el-container>
@@ -31,15 +35,13 @@ import HomeSide from "@/home/HomeSide.vue";
 }
 
 .item {
+  width: 700px;
   break-inside: avoid; /* 防止元素被分割到两列 */
   margin-bottom: 20px; /* 项目之间的垂直间隔 */
-  background-color: black;
   color: white;
 }
 
-.item:nth-child(5n) {
-  height: 300px;
-}
+
 
 </style>
 

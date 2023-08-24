@@ -2,11 +2,11 @@
   <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <span>我的项目</span>
+        <span class="title" >我的项目</span>
         <el-button class="button" text>查看详情</el-button>
       </div>
     </template>
-    <el-table :data="tableData" height="250" style="width: 100%">
+    <el-table :data="tableData" height="390" style="width: 100%">
       <el-table-column prop="name" label="项目名称" width="200" />
       <el-table-column prop="startTime" label="开始时间" width="180" />
       <el-table-column prop="endTime" label="结束时间" />
@@ -28,9 +28,11 @@
 .item {
   margin-bottom: 18px;
 }
-
+.title{
+  color:black;
+}
 .box-card {
-  width: 530px;
+  width: 730px;
 }
 </style>
 
@@ -74,3 +76,4 @@ const tableData = reactive([
   }
 ])
 </script>
+

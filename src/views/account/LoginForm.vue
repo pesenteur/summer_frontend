@@ -25,60 +25,15 @@
 
 <script setup>
 import { ref } from "vue";
-import { ElMessage } from "element-plus";
-import { useAccountStore } from "@/stores/account";
 const email = ref('')
 const password = ref('')
 const agree = ref(false)
-const accountStore = useAccountStore();
 
 const userAgreement = `
     我已阅读并同意《用户协议》
 `;
-async function loginWithPassword() {
-    if (!email.value) {
-        ElMessage({
-            message: '请输入邮箱',
-            type: 'error'
-        });
-        return;
-    }
-    if (!password.value) {
-        ElMessage({
-            message: '请输入密码',
-            type: 'error'
-        });
-        return;
-    }
-    if (!agree.value) {
-        ElMessage({
-            message: '请勾选同意用户协议',
-            type: 'error'
-        });
-        return;
-    }
-    try {
-        await accountStore.loginWithPassword(email.value, password.value);
-        ElMessage({
-            message: '登录成功，即将跳转',
-            type: 'success'
-        });
-        setTimeout(() => {
-            if (route.query.redirect) {
-                router.push(route.query.redirect);
-            } else {
-                router.push('/');
-            }
-        }, 2000);
-    } catch (error) {
-        ElMessage({
-            message: error,
-            type: 'error'
-        });
-    }
-}
+
 
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

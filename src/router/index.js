@@ -4,7 +4,7 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [{
         path: '/',
-        component: () => import('@/components/TeamFooter.vue')
+        component: () => import('@/components/TeamHeader.vue')
     }]
 
 });

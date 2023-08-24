@@ -1,5 +1,7 @@
 <template>
-  <router-view />
+  <TeamHeader class="guidance"/>
+  <router-view/>
+  <TeamFooter/>
 </template>
 
 <script setup>
@@ -7,11 +9,12 @@
 import TeamFooter from './components/TeamFooter.vue'
 import TeamHeader from './components/TeamHeader.vue'
 
-//
+
 // export default {
 //   name: 'App',
 //   components: {
-//     TeamFooter
+//     TeamFooter, 
+//     TeamHeader
 //   }
 // }
 </script>
@@ -36,5 +39,8 @@ select:-webkit-autofill {
   background-color: transparent;
   background-image: none;
   transition: background-color 50000s ease-in-out 0s;
+}
+.guidance{
+  position:relative;
 }
 </style>

@@ -3,6 +3,7 @@
 import HomeChat from "@/home/HomeChat.vue";
 import HomeProject from "@/home/HomeProject.vue";
 import HomeSide from "@/home/HomeSide.vue";
+
 </script>
 
 <template>
@@ -39,6 +40,11 @@ import HomeSide from "@/home/HomeSide.vue";
 
 .item:nth-child(5n) {
   height: 300px;
+}
+
+*{
+  z-index: 1;
+  margin-top:-40px;
 }
 
 </style>

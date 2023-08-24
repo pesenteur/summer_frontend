@@ -2,15 +2,19 @@
 
 import HomeChat from "@/home/HomeChat.vue";
 import HomeProject from "@/home/HomeProject.vue";
+import HomeSide from "@/home/HomeSide.vue";
 </script>
 
 <template>
   <div class="common-layout">
     <el-container>
       <el-aside width="200px">
+        <HomeSide ></HomeSide>
       </el-aside>
+        
       <el-main>
         <div class="waterfall-container">
+          <!-- <HomeSide></HomeSide> -->
           <HomeChat></HomeChat>
           <HomeProject></HomeProject>
         </div>
@@ -36,5 +40,6 @@ import HomeProject from "@/home/HomeProject.vue";
 .item:nth-child(5n) {
   height: 300px;
 }
+
 </style>
 

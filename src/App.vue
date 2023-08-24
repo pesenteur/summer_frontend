@@ -5,6 +5,7 @@
 <script setup>
 
 import TeamFooter from './components/TeamFooter.vue'
+import TeamHeader from './components/TeamHeader.vue'
 
 //
 // export default {

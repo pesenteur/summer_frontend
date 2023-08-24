@@ -29,7 +29,6 @@ const password = ref('');
 const agree = ref('');
 
 const register = () => {
-    console.log(username.value)
     // 在这里可以访问 username.value, email.value, password.value 和 agree.value
     // 处理注册逻辑
 };

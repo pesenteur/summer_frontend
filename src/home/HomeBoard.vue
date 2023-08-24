@@ -5,6 +5,7 @@ import HomeProject from "@/home/HomeProject.vue";
 import HomeSide from "@/home/HomeSide.vue";
 import HomeMessage from "@/home/HomeMessage.vue";
 import HomeCarousel from "@/home/HomeCarousel.vue";
+
 </script>
 
 <template>
@@ -42,6 +43,11 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
 }
 
 
+
+*{
+  z-index: 1;
+  margin-top:50px;
+}
 
 </style>
 

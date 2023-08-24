@@ -14,11 +14,11 @@
 
 <style scoped>
 .all{
-  background-color: black;
+  background-color: white;
   height: 50px;
 }
 .foot{
-  color: white;
+  color: black;
   margin: auto;
 }
 </style>

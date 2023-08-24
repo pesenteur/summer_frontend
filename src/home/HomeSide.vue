@@ -39,7 +39,7 @@
         </el-menu-item>
       </el-menu>
     </el-col> -->
-    <el-col :span="12">
+    <el-col :span="25">
       <!-- <h5 class="mb-2">Custom colors</h5> -->
       <el-menu
         active-text-color="#ffd04b"
@@ -98,3 +98,8 @@ const handleClose = (key, keyPath) => {
   console.log(key, keyPath)
 }
 </script>
+<style scoped>
+*{
+    z-index: 1;
+}
+</style>

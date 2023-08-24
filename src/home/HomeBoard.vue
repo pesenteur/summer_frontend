@@ -44,7 +44,7 @@ import HomeSide from "@/home/HomeSide.vue";
 
 *{
   z-index: 1;
-  margin-top:-40px;
+  margin-top:50px;
 }
 
 </style>

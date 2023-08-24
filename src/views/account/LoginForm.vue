@@ -25,6 +25,14 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import {ElMessage} from "element-plus";
+import {useAccountStore} from "@/stores/account";
+import {useRoute, useRouter} from "vue-router";
+
+const accountStore = useAccountStore();
+const router = useRouter();
+const route = useRoute();
+
 const email = ref('')
 const password = ref('')
 const agree = ref(false)

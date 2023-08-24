@@ -13,7 +13,6 @@ export default {
     name: 'SocialIcon'
 };
 </script>
-
 <style scoped>
 /* SocialIcon组件的样式 */
 </style>

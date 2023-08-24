@@ -1,8 +1,8 @@
 <template>
-  <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
-    <el-radio-button :label="false">expand</el-radio-button>
-    <el-radio-button :label="true">collapse</el-radio-button>
-  </el-radio-group>
+  <!-- <el-radio-group v-model="isCollapse" > -->
+    <img class="image" @click.stop="changeState" src="@/assets/icons/logo.png">
+    <!-- <el-radio-button :label="true">collapse</el-radio-button> -->
+  <!-- </el-radio-group> -->
   <el-menu
     default-active="2"
     class="el-menu-vertical-demo"
@@ -43,7 +43,7 @@
   </el-menu>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import {
   Document,
@@ -52,30 +52,39 @@ import {
   Setting,
 } from '@element-plus/icons-vue'
 
-export default {
-  setup() {
-    const isCollapse = ref(true)
 
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath)
-    }
+const isCollapse = ref(true)
 
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath)
-    }
 
-    return {
-      isCollapse,
-      handleOpen,
-      handleClose
-    }
-  }
+function changeState(){
+    isCollapse.value = !isCollapse.value
 }
+
+const handleOpen = (key, keyPath) => {
+    console.log(key, keyPath)
+}
+
+const handleClose = (key, keyPath) => {
+    console.log(key, keyPath)
+}
+
+
 </script>
 
 <style>
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
+}
+
+.image{
+    position: absolute;
+    left: 27px;
+    transform: translateY(-100%);
+    width:30px;
+    height:30px;
+}
+.expand-icon::before {
+  content: url('@/assets/icons/logo.png'); /* 路径根据实际情况进行调整 */
 }
 </style>

@@ -48,7 +48,48 @@ const userAgreement = `
 const showRegisterForm = () => {
     showLogin.value = false;
 };
-
+async function loginWithPassword() {
+    if (!email.value) {
+        ElMessage({
+            message: '请输入手机号',
+            type: 'error'
+        });
+        return;
+    }
+    if (!password.value) {
+        ElMessage({
+            message: '请输入密码',
+            type: 'error'
+        });
+        return;
+    }
+    if (!agree.value) {
+        ElMessage({
+            message: '请勾选同意用户协议',
+            type: 'error'
+        });
+        return;
+    }
+    try {
+        await accountStore.loginWithPassword(phone.value, password.value);
+        ElMessage({
+            message: '登录成功，即将跳转',
+            type: 'success'
+        });
+        setTimeout(() => {
+            if (route.query.redirect) {
+                router.push(route.query.redirect);
+            } else {
+                router.push('/');
+            }
+        }, 2000);
+    } catch (error) {
+        ElMessage({
+            message: error,
+            type: 'error'
+        });
+    }
+}
 </script>
 
 <style scoped></style>

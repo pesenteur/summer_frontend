@@ -25,6 +25,8 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import {ElMessage} from 'element-plus';
+
 const email = ref('')
 const password = ref('')
 const agree = ref(false)

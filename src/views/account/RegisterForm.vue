@@ -4,19 +4,19 @@
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-envelope'></i></span>
                 <input type="text" v-model="email" required>
-                <label>Email</label>
+                <label>邮箱</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
                 <input type="password" v-model="password" required>
-                <label>Password</label>
+                <label>密码</label>
             </div>
             <div class="remember-password">
                 <label for=""><input type="checkbox" v-model="agree">我已阅读并同意《用户协议》</label>
             </div>
-            <button class="btn" id="suBtn">Sign Up</button>
+            <button class="btn" id="suBtn">注册</button>
             <div class="create-account">
-                <p>Already Have An Account? <a href="#" class="login-link" @click="showLoginForm">Sign In</a></p>
+                <p>已经有账号? <a href="#" class="login-link" @click="showLoginForm">注册</a></p>
             </div>
         </form>
     </div>

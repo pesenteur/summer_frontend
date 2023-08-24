@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside class="aside" width="200px">
+      <el-aside width="200px" class="aside">
         <TeamHeader1/>
       </el-aside>
       <el-main class="main">
@@ -17,7 +17,7 @@
     import TeamHeader2 from './TeamHeader2.vue'
 </script>
 
-<style>
+<style> 
 .aside {
 position: fixed;
 top: 0;
@@ -26,10 +26,10 @@ width: 100%;
 z-index: 999;
 }
 .main{
-  position: fixed;
+position: fixed;
 top: 0;
 left: 0;
 width: 100%;
 z-index: 999;
-}
+} 
 </style>

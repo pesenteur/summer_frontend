@@ -2,11 +2,11 @@
   <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <span class="title">我的群聊</span>
+        <span class="title">消息中心</span>
         <el-button class="button" text>查看详情</el-button>
       </div>
     </template>
-    <el-table :data="tableData" height="150" style="width: 100%">
+    <el-table :data="tableData" height="250" style="width: 100%">
       <el-table-column prop="time" label="时间" width="180" />
       <el-table-column prop="content" label="内容" width="180" />
       <el-table-column prop="isread" label="是否已读" />

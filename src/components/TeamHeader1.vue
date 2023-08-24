@@ -9,10 +9,7 @@
     @close="handleClose">
     <el-sub-menu index="1">
       <template #title>
-        <el-icon>
-          <location />
-        </el-icon> <!-- <location /> is an icon component, ensure it's correctly imported -->
-        <span>Navigator One</span>
+         <!-- <location /> is an icon component, ensure it's correctly imported -->
       </template>
       <el-menu-item-group>
         <template #title><span>Group One</span></template>

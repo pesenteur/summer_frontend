@@ -1,4 +1,5 @@
 {
+
   "name": "summer_front",
   "version": "0.1.0",
   "private": true,
@@ -10,7 +11,8 @@
   "dependencies": {
     "core-js": "^3.8.3",
     "element-plus": "^2.3.9",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -33,7 +35,13 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {}
+    "rules": {
+      "generator-star-spacing": "off",
+    "no-tabs":"off",
+    "no-unused-vars":"off",
+    "no-console":"off",
+    "no-irregular-whitespace":"off",
+    "no-debugger": "off"}
   },
   "browserslist": [
     "> 1%",
@@ -42,3 +50,5 @@
     "not ie 11"
   ]
 }
+
+

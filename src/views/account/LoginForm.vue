@@ -13,27 +13,83 @@
             </div>
             <div class="remember-password">
                 <label for=""><input type="checkbox" v-model="agree">{{ userAgreement }}</label>
-                <a href="#">Forget Password</a>
+                <a href="#">Forget Password?</a>
             </div>
             <button class="btn" id="siBtn" @click="loginWithPassword">登录</button>
             <div class="create-account">
-                <p>Create A New Account? <a href="#" class="login-link">Sign Up</a></p>
+                <p>Create A New Account? <a href="#" class="login-link" @click="showRegisterForm">Sign Up</a></p>
             </div>
         </form>
     </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 const email = ref('')
 const password = ref('')
 const agree = ref(false)
+
+const props = defineProps(['showValue']);
+const emit = defineEmits(['update:showValue'])
+
+const showLogin = computed({
+    get() {
+        return props.showValue;
+    },
+    set(value) {
+        emit('update:showValue', value);
+    }
+});
 
 const userAgreement = `
     我已阅读并同意《用户协议》
 `;
 
-
+const showRegisterForm = () => {
+    showLogin.value = false;
+};
+async function loginWithPassword() {
+    if (!email.value) {
+        ElMessage({
+            message: '请输入手机号',
+            type: 'error'
+        });
+        return;
+    }
+    if (!password.value) {
+        ElMessage({
+            message: '请输入密码',
+            type: 'error'
+        });
+        return;
+    }
+    if (!agree.value) {
+        ElMessage({
+            message: '请勾选同意用户协议',
+            type: 'error'
+        });
+        return;
+    }
+    try {
+        await accountStore.loginWithPassword(phone.value, password.value);
+        ElMessage({
+            message: '登录成功，即将跳转',
+            type: 'success'
+        });
+        setTimeout(() => {
+            if (route.query.redirect) {
+                router.push(route.query.redirect);
+            } else {
+                router.push('/');
+            }
+        }, 2000);
+    } catch (error) {
+        ElMessage({
+            message: error,
+            type: 'error'
+        });
+    }
+}
 </script>
 
 <style scoped></style>

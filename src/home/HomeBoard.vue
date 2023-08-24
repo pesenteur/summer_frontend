@@ -12,9 +12,9 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
   <div class="common-layout">
     <el-container>
       <el-aside width="200px">
-        <HomeSide ></HomeSide>
+        <HomeSide></HomeSide>
       </el-aside>
-        
+
       <el-main>
         <div class="waterfall-container">
           <!-- <HomeSide></HomeSide> -->
@@ -26,28 +26,32 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
       </el-main>
     </el-container>
   </div>
-
 </template>
 
 <style scoped>
 .waterfall-container {
-  column-count: 2; /* 设置列数 */
-  column-gap: 20px; /* 列之间的间隔 */
+  column-count: 2;
+  /* 设置列数 */
+  column-gap: 20px;
+  /* 列之间的间隔 */
 }
 
 .item {
   width: 700px;
-  break-inside: avoid; /* 防止元素被分割到两列 */
-  margin-bottom: 20px; /* 项目之间的垂直间隔 */
+  break-inside: avoid;
+  /* 防止元素被分割到两列 */
+  margin-bottom: 20px;
+  /* 项目之间的垂直间隔 */
   color: white;
+  margin-top: 0;
+  margin-bottom: 50px;
 }
 
 
 
-*{
+* {
   z-index: 1;
-  margin-top:50px;
+  margin-top: 50px;
 }
-
 </style>
 

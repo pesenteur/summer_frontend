@@ -6,11 +6,10 @@
       :ellipsis="false"
       @select="handleSelect"
   >
-    <el-menu-item index="0">
-      <TeamHeader1/>
-    </el-menu-item>
+    <TeamHeader1/>
+
     <div class="flex-grow" />
-    <el-menu-item index="1">Processing Center</el-menu-item>
+    <TeamMessage></TeamMessage>
     <el-sub-menu index="2">
       <template #title>个人中心</template>
       <TeamAvtar></TeamAvtar>
@@ -25,6 +24,7 @@
 import { ref } from 'vue'
 import TeamAvtar from "./TeamAvtar.vue";
 import TeamHeader1 from './TeamHeader1.vue'
+import TeamMessage from "./TeamMessage.vue";
 
 const activeIndex = ref('1')
 const handleSelect = (key: string, keyPath: string[]) => {

@@ -1,5 +1,6 @@
 <template>
-  <TeamHeader class="guidance"/>
+
+  <TeamNavi></TeamNavi>
   <router-view/>
   <TeamFooter/>
 </template>
@@ -8,6 +9,7 @@
 
 import TeamFooter from './components/TeamFooter.vue'
 import TeamHeader from './components/TeamHeader.vue'
+import TeamNavi from "@/components/TeamNavi.vue";
 
 
 // export default {

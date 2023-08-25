@@ -2,8 +2,8 @@
   <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <span class="title">我的群聊</span>
-        <el-button class="button" text>查看详情</el-button>
+        <span class="title">我的团队</span>
+        <el-button class="button" text @click="jump">查看详情</el-button>
       </div>
     </template>
     <el-table :data="tableData" height="150" style="width: 100%">
@@ -39,6 +39,7 @@
 
 <script setup>
 import {reactive} from "vue";
+import router from "@/router";
 const tableData = reactive([
   {
     time: '2023-06-19',
@@ -56,4 +57,8 @@ const tableData = reactive([
     isread: '未读',
   },
 ])
+
+function jump() {
+  router.push('/member')
+}
 </script>

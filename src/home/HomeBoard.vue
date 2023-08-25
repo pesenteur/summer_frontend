@@ -5,6 +5,7 @@ import HomeProject from "@/home/HomeProject.vue";
 import HomeSide from "@/home/HomeSide.vue";
 import HomeMessage from "@/home/HomeMessage.vue";
 import HomeCarousel from "@/home/HomeCarousel.vue";
+import HomeMember from "@/home/HomeMember.vue";
 
 </script>
 
@@ -20,6 +21,7 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
           <!-- <HomeSide></HomeSide> -->
           <HomeChat class="item"></HomeChat>
           <HomeProject class="item"></HomeProject>
+          <HomeMember class="item"></HomeMember>
           <HomeCarousel class="item"></HomeCarousel>
           <HomeMessage class="item"></HomeMessage>
         </div>

@@ -6,10 +6,10 @@
         <el-button class="button" text>查看详情</el-button>
       </div>
     </template>
-    <el-table :data="tableData" height="390" style="width: 100%">
-      <el-table-column prop="name" label="项目名称" width="200" />
-      <el-table-column prop="startTime" label="开始时间" width="180" />
-      <el-table-column prop="endTime" label="结束时间" />
+    <el-table :data="tableData" height="180" style="width: 100%">
+      <el-table-column prop="name" label="项目名称" width="220" />
+      <el-table-column prop="startTime" label="开始时间" width="220" />
+      <el-table-column prop="endTime" label="结束时间" width="220"/>
     </el-table>
   </el-card>
 </template>

@@ -15,6 +15,6 @@ import { reactive } from "vue";
 <style scoped>
 .main {
   width: 730px;
-  height: 400px;
+  height: 500px;
 }
 </style>

@@ -3,13 +3,13 @@
     <template #header>
       <div class="card-header">
         <span class="title">消息中心</span>
-        <el-button class="button" text>查看详情</el-button>
+        <el-button class="button" text >查看详情</el-button>
       </div>
     </template>
     <el-table :data="tableData" height="250" style="width: 100%">
-      <el-table-column prop="time" label="时间" width="180" />
-      <el-table-column prop="content" label="内容" width="180" />
-      <el-table-column prop="isread" label="是否已读" />
+      <el-table-column prop="time" label="时间" width="220" />
+      <el-table-column prop="content" label="内容" width="220" />
+      <el-table-column prop="isread" label="是否已读" width="220" />
     </el-table>
   </el-card>
 </template>
@@ -39,6 +39,7 @@
 
 <script setup>
 import {reactive} from "vue";
+import router from "@/router";
 const tableData = reactive([
   {
     time: '2023-06-19',
@@ -56,4 +57,6 @@ const tableData = reactive([
     isread: '未读',
   },
 ])
+
+
 </script>

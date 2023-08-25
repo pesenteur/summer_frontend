@@ -21,19 +21,10 @@
   align-items: center;
 }
 
-.text {
-  font-size: 14px;
-}
-
-.item {
-  margin-bottom: 18px;
-}
 .title{
   color:black;
 }
-.box-card {
-  width: 730px;
-}
+
 </style>
 
 <script setup>

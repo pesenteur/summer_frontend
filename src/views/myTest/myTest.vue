@@ -38,7 +38,7 @@ const handleClick = () => {
 }
 
 .custom-icon-button {
-  background-image: url('@/assets/avtar.png'); /* 根据您的项目路径调整 */
+  background-image: url('@/assets/userAvtar.png'); /* 根据您的项目路径调整 */
   background-size: 40px; /* 根据需要调整 */
   background-repeat:no-repeat;
   width: 40px; /* 根据需要调整 */

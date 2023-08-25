@@ -20,11 +20,9 @@
   justify-content: space-between;
   align-items: center;
 }
-
 .title{
   color:black;
 }
-
 </style>
 
 <script setup>

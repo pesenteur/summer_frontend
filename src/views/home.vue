@@ -24,14 +24,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-main{
+  padding: 0;
+  margin: 0;
+  bottom: 0;
+}
 .home {
-  width: 100vw;
+  width: 1000px;
   height: 100vh;
   background-color: white;
   border-radius: 0px;
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-59%, -45%);
 }
 </style>

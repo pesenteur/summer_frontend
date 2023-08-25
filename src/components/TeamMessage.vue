@@ -1,38 +1,38 @@
 <template>
-  <el-button type="info" :icon="Message" circle @click="table = true" class="butt"/>
+
+  <el-button text @click="table = true" class="custom-icon-button"/>
   <el-drawer
       v-model="table"
       title="我的消息"
       direction="rtl"
       size="30%"
   >
-
     <el-table ref="tableRef" row-key="date" :data="tableData" style="width: 100%">
       <el-table-column
           prop="date"
           label="Date"
           sortable
-          width="180"
+          width="120"
       />
-      <el-table-column prop="name" label="Name" width="180" />
-      <el-table-column prop="address" label="Address" :formatter="formatter" />
+      <el-table-column prop="name" label="Name" width="100" />
+      <el-table-column prop="content" label="content" :formatter="formatter" />
 
       <el-table-column
-          prop="tag"
-          label="Isread"
+          prop="isread"
+          label="isread"
           width="100"
           :filters="[
-        { text: 'Read', value: 'Read' },
-        { text: 'Unread', value: 'Unread' },
+        { text: 'read', value: 'read' },
+        { text: 'unread', value: 'unread' },
       ]"
-          :filter-method="filterIsread"
+          :filter-method="filterisread"
           filter-placement="bottom-end"
       >
         <template #default="scope">
           <el-tag
-              :type="scope.row.tag === 'Read' ? '' : 'success'"
-              disable-transitions
-          >{{ scope.row.tag }}</el-tag
+              :type="scope.row.isread === 'read' ? '' : 'success'"
+
+          >{{ scope.row.isread }}</el-tag
           >
         </template>
       </el-table-column>
@@ -123,5 +123,18 @@ const tableData: User[] = [
 <style scoped>
 .butt{
   margin-top: 12px;
+}
+.message_icon{
+  height: 2px;
+}
+
+.custom-icon-button {
+  background-image: url('@/assets/envelope.png'); /* 根据您的项目路径调整 */
+  background-size: 20px; /* 根据需要调整 */
+  background-repeat:no-repeat;
+  margin-top: 18px;
+  width: 20px; /* 根据需要调整 */
+  height: 20px; /* 根据需要调整 */
+
 }
 </style>

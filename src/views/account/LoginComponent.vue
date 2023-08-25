@@ -1,15 +1,12 @@
 <template>
     <div>
         <div class="background"></div>
-        <Navbar />
-        <SearchBar />
-
         <div class="container">
             <div class="item">
-                <h2 class="logo"><i class='bx bxl-xing'></i>cool</h2>
+                <h2 class="logo"><i class='bx bxl-xing'></i>aliyu</h2>
                 <div class="text-item">
-                    <h2>W!<br><span>To Our Channel</span></h2>
-                    <p>学术交流论坛</p>
+                    <h2>Welcome!<br><span>To Our Channel</span></h2>
+                    <p>多人协作，方便快捷</p>
                     <SocialIcon />
                 </div>
             </div>

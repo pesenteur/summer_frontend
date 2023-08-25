@@ -1,26 +1,45 @@
 <template>
   <el-container class="layout-container-demo" style="height: 700px">
-    <el-aside width="200px">
-      <el-scrollbar>
+    <el-aside width="200px" >
+      <el-row class="tac">
+        <el-col :span="24">
+          <el-menu
+              default-active="2"
+              class="element-back"
 
-          <el-menu index="1">
-            <template #title>
-              <el-icon><message /></el-icon>工作项
-            </template>
+          >
+            <el-menu-item index="1">
+              <el-icon><icon-menu /></el-icon>
+              <span  class="element-deracote">工作项 </span>
+            </el-menu-item>
+            <el-menu-item index="2">
+              <el-icon><icon-menu /></el-icon>
+              <span class="element-deracote">项目</span>
+            </el-menu-item>
+            <el-divider/>
+            <el-menu-item index="3">
+              <el-icon><icon-menu /></el-icon>
+              <span class="element-deracote">项目视图</span>
+            </el-menu-item>
+
+            <el-menu-item index="4">
+
+              <span class="element-deracote2">全部项目</span>
+            </el-menu-item>
+
+            <el-menu-item index="5">
+
+              <span class="element-deracote2">我管理的</span>
+            </el-menu-item>
+
+            <el-menu-item index="6">
+
+              <span class="element-deracote2">我参与的</span>
+            </el-menu-item>
+
           </el-menu>
-          <el-sub-menu index="2">
-            <template #title>
-              <el-icon><icon-menu /></el-icon>项目
-            </template>
-          </el-sub-menu>
-          <el-divider/>
-          <el-sub-menu index="3">
-            <template #title>
-              <el-icon><setting /></el-icon>Navigator Three
-            </template>
-          </el-sub-menu>
-
-      </el-scrollbar>
+        </el-col>
+      </el-row>
     </el-aside>
 
     <el-container>
@@ -51,14 +70,20 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 </script>
 
 <style scoped>
+.element-back{
+  background-color: rgba(177,184,191,0.25);
+  //background-image: url('../../assets/2.jpg');
+  //background-size: cover;
+}
 .layout-container-demo .el-header {
   position: relative;
   background-color: white;
   color: var(--el-text-color-primary);
 }
 .layout-container-demo .el-aside {
-  color: var(--el-text-color-primary);
-  background: var(--el-color-primary-light-8);
+  background-color: rgba(177,184,191,0.25);
+  //background-image: url('../../assets/2.jpg');
+  //background-size: cover;
 }
 .layout-container-demo .el-menu {
   border-right: none;
@@ -73,4 +98,8 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
   height: 100%;
   right: 20px;
 }
+.element-deracote2{
+  right: 0;
+}
+
 </style>

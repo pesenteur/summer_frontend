@@ -11,8 +11,8 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside width="200px">
-        <HomeSide></HomeSide>
+      <el-aside width="100px">
+
       </el-aside>
 
       <el-main>
@@ -51,7 +51,7 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
 
 * {
   z-index: 1;
-  margin-top: 50px;
+  margin-top: 10px;
 }
 </style>
 

@@ -36,6 +36,8 @@ import SocialIcon from './SocialIcon.vue';
 import { ref } from 'vue';
 
 const showLogin = ref(true);
+
+
 </script>
 
 <style >

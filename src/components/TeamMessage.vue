@@ -1,14 +1,12 @@
 <template>
 
-  <el-button text @click="table = true" class="custom-icon-button"/>
+  <button  @click="table = true" class="custom-icon-button" />
   <el-drawer
       v-model="table"
       title="我的消息"
       direction="rtl"
       size="30%"
   >
-
-
       <el-col>
         <div class="card-container">
           <el-card v-for="msg in messages" :key="msg.userId" shadow="hover" class="decorate-card" @click="switchState">
@@ -30,26 +28,10 @@
 import { reactive, ref } from 'vue'
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import {Edit, Message} from "@element-plus/icons-vue";
-
-const formLabelWidth = '80px'
-let timer
-
 const table = ref(false)
-const dialog = ref(false)
-const loading = ref(false)
-
 const isRead = ref('hover')
 
-const form = reactive({
-  name: '',
-  region: '',
-  date1: '',
-  date2: '',
-  delivery: false,
-  type: [],
-  resource: '',
-  desc: '',
-})
+
 
 
 const drawerRef = ref<InstanceType<typeof ElDrawer>>()
@@ -131,13 +113,16 @@ function switchState(){
 }
 
 .custom-icon-button {
-  background-image: url('@/assets/messageIcon.png'); /* 根据您的项目路径调整 */
-  background-size: 20px; /* 根据需要调整 */
+  background-image: url('@/assets/gif/home.gif'); /* 根据您的项目路径调整 */
+  background-size: 25px; /* 根据需要调整 */
   background-repeat:no-repeat;
   margin-top: 18px;
-  width: 20px; /* 根据需要调整 */
-  height: 20px; /* 根据需要调整 */
-
+  width: 25px; /* 根据需要调整 */
+  height: 25px; /* 根据需要调整 */
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  outline: none;
 }
 
 .decorate-card {

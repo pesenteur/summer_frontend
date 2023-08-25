@@ -15,7 +15,7 @@ const router = createRouter({
         component: () => import('@/views/home.vue')
     },{
         path: '/test',
-        component:()=>import('@/components/TeamMessage1.vue')
+        component:()=>import('@/views/myTest/myTest.vue')
     },{
         path: '/member',
         component:()=>import('@/views/member/MemberBoard.vue')

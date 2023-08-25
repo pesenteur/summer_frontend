@@ -2,16 +2,20 @@
   <div class="chatHome">
     <div class="chatLeft">
       <div class="title">
-        <h1>小组聊天室</h1>
+        <form class="search-bar">
+          <input type="text" placeholder="Search..." v-model="search_word" />
+          <button @click="filteredPersonList"><i class='bx bx-search'></i></button>
+        </form>
+        <form action="">
+          <el-button type="primary" :icon="Edit" circle />
+        </form>
       </div>
-      <form class="search-bar">
-        <input type="text" placeholder="Search..." v-model="search_word" />
-        <button @click="filteredPersonList"><i class='bx bx-search'></i></button>
-      </form>
+
       <div class="online-person">
         <span class="onlin-text">聊天列表</span>
         <div class="person-cards-wrapper">
-          <div class="personList" v-for="personInfo in filteredPersonList" :key="personInfo.id" @click="clickPerson(personInfo)">
+          <div class="personList" v-for="personInfo in filteredPersonList" :key="personInfo.id"
+            @click="clickPerson(personInfo)">
             <PersonCard :personInfo="personInfo" :pcCurrent="pcCurrent"></PersonCard>
           </div>
         </div>
@@ -67,7 +71,7 @@ export default {
       });
     }
   },
-  
+
   methods: {
     clickPerson(info) {
       console.log(this.search_word)
@@ -97,9 +101,17 @@ export default {
 <style lang="scss" scoped>
 @import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
 
+h1 {
+  color: black;
+}
+.title {
+  display: flex;
+  align-items: center; /* Align items vertically */
+}
 .search-bar {
-  width: 250px;
-  height: 45px;
+  width: 200px;
+  height: 35px;
+  margin-top: 10px;
   background-color: transparent;
   border: 2px solid black;
   border-radius: 6px;
@@ -136,11 +148,15 @@ export default {
 }
 
 .chatHome {
+  margin: 0px;
+  padding: 0px;
+
   // margin-top: 20px;
   display: flex;
 
   .chatLeft {
     width: 280px;
+    border: 1px solid black;
 
     .title {
       color: #fff;
@@ -148,7 +164,7 @@ export default {
     }
 
     .online-person {
-      margin-top: 50px;
+      margin-top: 0px;
 
       .onlin-text {
         padding-left: 10px;
@@ -156,9 +172,9 @@ export default {
       }
 
       .person-cards-wrapper {
-        padding-left: 10px;
+        padding: 0;
+        margin: 0;
         height: 65vh;
-        margin-top: 0px;
         overflow: hidden;
         overflow-y: scroll;
         box-sizing: border-box;
@@ -194,5 +210,4 @@ export default {
       }
     }
   }
-}
-</style>
+}</style>

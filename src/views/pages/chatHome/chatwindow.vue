@@ -315,15 +315,15 @@ export default {
 .chat-window {
   width: 100%;
   height: 100%;
-  margin-left: 20px;
   position: relative;
 
   .top {
-    margin-bottom: 50px;
+    border-bottom: 1px,solid,black;
     &::after {
       content: "";
       display: block;
       clear: both;
+      border-bottom: 1px,solid,black;
     }
     .head-pic {
       float: left;
@@ -360,7 +360,7 @@ export default {
   .botoom {
     width: 100%;
     height: 70vh;
-    background-color: rgb(50, 54, 68);
+    background-color: white;
     border-radius: 20px;
     padding: 20px;
     box-sizing: border-box;
@@ -391,11 +391,8 @@ export default {
             max-width: 90%;
             padding: 20px;
             border-radius: 20px 20px 20px 5px;
-            background-color: rgb(56, 60, 75);
-            color: #fff;
-            &:hover {
-              background-color: rgb(39, 42, 55);
-            }
+            background-color: white;
+            color: black;
           }
           .chat-img {
             img {

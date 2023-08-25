@@ -1,29 +1,30 @@
 <template>
     <div class="form-box register">
         <form @submit.prevent="register">
+            <h2>注册</h2>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-envelope'></i></span>
-                <input type="text" v-model="email">
+                <input type="text" v-model="email" required>
                 <label>邮箱</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-user'></i></span>
-                <input type="text" v-model="username">
+                <input type="text" v-model="username" required>
                 <label>用户名</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-id-card'></i></span>
-                <input type="text" v-model="userId">
+                <input type="text" v-model="userId" required>
                 <label>身份证</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
-                <input type="password" v-model="password">
+                <input type="password" v-model="password" required>
                 <label>密码</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
-                <input type="password" v-model="confirmedPassword">
+                <input type="password" v-model="confirmedPassword" required>
                 <label>确认密码</label>
                 <p v-if="!isPasswordMatching" class="password-mismatch">两次密码不匹配</p>
             </div>
@@ -96,7 +97,7 @@ async function register() {
         return;
     }
     try {
-        await accountStore.register(email.value, userid.value, username.value, password.value,);
+        // await accountStore.register(email.value, userid.value, username.value, password.value,);
         //发送注册请求到后端
         ElMessage({
             message: '注册成功，即将跳转',
@@ -133,4 +134,9 @@ const showLoginForm = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.input-box input:focus~label,
+.input-box input:valid~label {
+    top: -5px;
+}
+</style>

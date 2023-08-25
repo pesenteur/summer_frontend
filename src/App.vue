@@ -22,6 +22,7 @@ import TeamNavi from "@/components/TeamNavi.vue";
 </script>
 
 <style>
+
 * {
   margin: 0;
   padding: 0;

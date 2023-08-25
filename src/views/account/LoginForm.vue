@@ -1,21 +1,22 @@
 <template>
     <div class="form-box login">
-        <form @submit.prevent="login">
+        <form @submit.prevent="loginWithPassword">
+            <h2>登录</h2>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-envelope'></i></span>
-                <input type="text" v-model="email" id="su_email">
-                <label>邮箱</label>
+                <input type="text" v-model="email" id="su_email" required>
+                <label>email</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
-                <input type="password" v-model="password" id="su_password">
+                <input type="password" v-model="password" id="su_password" required>
                 <label>密码</label>
             </div>
             <div class="remember-password">
                 <label for=""><input type="checkbox" v-model="agree">{{ userAgreement }}</label>
                 <a href="#">忘记密码?</a>
             </div>
-            <button class="btn" id="siBtn" @click="loginWithPassword">登录</button>
+            <button class="btn" id="siBtn">登录</button>
             <div class="create-account">
                 <p>创建新账号? <a href="#" class="login-link" @click="showRegisterForm">注册</a></p>
             </div>
@@ -97,4 +98,9 @@ async function loginWithPassword() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.input-box input:focus~label,
+.input-box input:valid~label {
+    top: -5px;
+}
+</style>

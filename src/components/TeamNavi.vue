@@ -6,7 +6,9 @@
       :ellipsis="false"
       @select="handleSelect"
   >
-    <el-menu-item index="0">LOGO</el-menu-item>
+    <el-menu-item index="0">
+      <TeamHeader1/>
+    </el-menu-item>
     <div class="flex-grow" />
     <el-menu-item index="1">Processing Center</el-menu-item>
     <el-sub-menu index="2">
@@ -22,6 +24,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import TeamAvtar from "./TeamAvtar.vue";
+import TeamHeader1 from './TeamHeader1.vue'
 
 const activeIndex = ref('1')
 const handleSelect = (key: string, keyPath: string[]) => {

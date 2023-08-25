@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header">
         <span class="title" >我的项目</span>
-        <el-button class="button" text>查看详情</el-button>
+        <el-button class="button" text @click="jump">查看详情</el-button>
       </div>
     </template>
     <el-table :data="tableData" height="180" style="width: 100%">
@@ -29,6 +29,7 @@
 
 <script setup>
 import {reactive} from "vue";
+import router from "@/router";
 const tableData = reactive([
   {
     name: 'Vue开发的医院管理系统',
@@ -66,5 +67,9 @@ const tableData = reactive([
     endTime: '2024-3-23',
   }
 ])
+
+function jump(){
+  router.push('/project')
+}
 </script>
 

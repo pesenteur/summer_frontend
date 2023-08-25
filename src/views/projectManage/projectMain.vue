@@ -5,7 +5,7 @@
         <el-card :body-style="{ padding: '0px' }" class="small-card">
           <img src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
-            <span>项目名称</span>
+            <span @click="jumpToMyProject">项目名称</span>
           </div>
         </el-card>
       </el-col>
@@ -15,7 +15,7 @@
         <el-card :body-style="{ padding: '0px' }" class="small-card" @click="handleExtraCardClick">
           <img src="https://pic1.zhimg.com/v2-48232582b70ecd9c53a3026ffb21e078_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
-            <span>新建项目</span>
+            <changeName/>
           </div>
         </el-card>
       </el-col>
@@ -27,6 +27,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import changeName from "./changeName.vue";
 
 const currentDate = reactive(new Date())
 
@@ -49,6 +50,10 @@ for (let i = 0; i < numRows; i++) {
 
 function handleExtraCardClick(){
   console.log('成功被调用！')
+}
+
+function jumpToMyProject(){
+  router.push('/workSpace')
 }
 </script>
 

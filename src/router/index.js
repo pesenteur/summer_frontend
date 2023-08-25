@@ -12,6 +12,9 @@ const router = createRouter({
     },{
         path: '/test',
         component:()=>import('@/components/Test.vue')
+    },{
+        path: '/member',
+        component:()=>import('@/views/member/MemberBoard.vue')
     }]
 
 });

@@ -152,7 +152,7 @@ body {
     top: 50%;
     transform: translate(-50%, -50%);
     width: 75%;
-    height: 550px;
+    height: 600px;
     margin-top: 20px;
     background: url(../../assets/background.jpg) no-repeat;
     background-position: center;
@@ -353,5 +353,10 @@ body {
 
 .create-account p a:hover {
     text-decoration: underline;
+}
+.password-mismatch {
+    color: red;
+    font-size: 12px;
+    margin-top: 0px;
 }
 </style>

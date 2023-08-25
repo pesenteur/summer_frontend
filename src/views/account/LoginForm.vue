@@ -3,12 +3,12 @@
         <form @submit.prevent="login">
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-envelope'></i></span>
-                <input type="text" v-model="email" id="su_email" required>
+                <input type="text" v-model="email" id="su_email">
                 <label>邮箱</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
-                <input type="password" v-model="password" id="su_password" required>
+                <input type="password" v-model="password" id="su_password">
                 <label>密码</label>
             </div>
             <div class="remember-password">
@@ -25,13 +25,17 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useAccountStore } from "@/stores/account";
+import { useRoute, useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 const email = ref('')
 const password = ref('')
 const agree = ref(false)
-
+const accountStore = useAccountStore();
+const router = useRouter();
+const route = useRoute();
 const props = defineProps(['showValue']);
 const emit = defineEmits(['update:showValue'])
-import { ElMessage } from "element-plus";
 const showLogin = computed({
     get() {
         return props.showValue;
@@ -48,6 +52,7 @@ const userAgreement = `
 const showRegisterForm = () => {
     showLogin.value = false;
 };
+
 async function loginWithPassword() {
     if (!email.value) {
         ElMessage({

@@ -7,36 +7,21 @@
       direction="rtl"
       size="30%"
   >
-    <el-table ref="tableRef" row-key="date" :data="tableData" style="width: 100%">
-      <el-table-column
-          prop="date"
-          label="Date"
-          sortable
-          width="120"
-      />
-      <el-table-column prop="name" label="Name" width="100" />
-      <el-table-column prop="content" label="content" :formatter="formatter" />
 
-      <el-table-column
-          prop="isread"
-          label="isread"
-          width="100"
-          :filters="[
-        { text: 'read', value: 'read' },
-        { text: 'unread', value: 'unread' },
-      ]"
-          :filter-method="filterisread"
-          filter-placement="bottom-end"
-      >
-        <template #default="scope">
-          <el-tag
-              :type="scope.row.isread === 'read' ? '' : 'success'"
 
-          >{{ scope.row.isread }}</el-tag
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+      <el-col>
+        <div class="card-container">
+          <el-card v-for="msg in messages" :key="msg.userId" shadow="hover" class="decorate-card" @click="switchState">
+            <span style="font-size:13px">{{msg.userId}}</span>
+            <el-divider/>
+            {{msg.name}}
+            <br/>
+            {{msg.content}}
+          </el-card>
+        </div>
+      </el-col>
+
+
   </el-drawer>
 
 </template>
@@ -52,6 +37,8 @@ let timer
 const table = ref(false)
 const dialog = ref(false)
 const loading = ref(false)
+
+const isRead = ref('hover')
 
 const form = reactive({
   name: '',
@@ -73,11 +60,13 @@ const onClick = () => {
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 
 interface User {
+  userId: string
   date: string
   name: string
   content: string
   isread: string
 }
+
 
 const tableRef = ref<TableInstance>()
 
@@ -92,32 +81,45 @@ const filterisread = (value: string, row: User) => {
   return row.isread === value
 }
 
-const tableData: User[] = [
+const messages: User[] = [
   {
+    userId: '001',
     date: '2016-05-03',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'read',
   },
   {
+    userId: '002',
     date: '2016-05-02',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'unread',
   },
   {
+    userId: '003',
     date: '2016-05-04',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'read',
   },
   {
+    userId: '004',
     date: '2016-05-01',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'unread',
   },
 ]
+
+function switchState(){
+  if(isRead.value === 'hover'){
+    isRead.value = 'never'
+  }else{
+    console.log('该消息已读')
+  }
+}
+
 </script>
 
 <style scoped>
@@ -137,4 +139,13 @@ const tableData: User[] = [
   height: 20px; /* 根据需要调整 */
 
 }
+
+.decorate-card {
+  width:100%;
+  margin: auto;
+  font-size:12px;
+}
+
+
+
 </style>

@@ -30,7 +30,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import TeamAvtar from "./TeamAvtar.vue";
 import TeamHeader1 from './TeamHeader1.vue'
 import TeamMessage from "./TeamMessage.vue";
 import {ArrowDown} from "@element-plus/icons-vue";

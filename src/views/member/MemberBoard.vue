@@ -8,6 +8,27 @@
       <el-aside width="300px" >
         <el-row class="tac">
           <el-col :span="24">
+            <div class="btton">
+              <el-button text @click="dialogFormVisible = true">
+                创建新的团队
+              </el-button>
+              <el-dialog v-model="dialogFormVisible" title="欢迎来到寄了网站，请创建团队" center width="35%">
+                <el-form :model="form">
+                  <el-form-item label="团队名称" :label-width="formLabelWidth">
+                    <el-input v-model="form.name" autocomplete="off"/>
+                  </el-form-item>
+                </el-form>
+                <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogFormVisible = false">Cancel</el-button>
+                  <el-button type="primary" @click="dialogFormVisible = false">
+                    Confirm
+                  </el-button>
+                </span>
+                </template>
+              </el-dialog>
+            </div>
+            <el-divider />
             <el-menu
                 default-active="2"
                 class="el-menu-vertical-demo"
@@ -37,7 +58,9 @@
       <el-container>
 
         <el-header height="40px">
+
         <span class="title">23-BUAA-SE-2023-SUMMER· 8</span>
+
         </el-header>
 
         <el-main>
@@ -81,7 +104,7 @@
 import {
   Menu as IconMenu,
 } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import {reactive, ref} from 'vue'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 
 interface User {
@@ -177,7 +200,19 @@ const tableData: User[] = [
   },
 ]
 
+const dialogFormVisible = ref(false)
+const formLabelWidth = '140px'
 
+const form = reactive({
+  name: '',
+  region: '',
+  date1: '',
+  date2: '',
+  delivery: false,
+  type: [],
+  resource: '',
+  desc: '',
+})
 
 
 </script>
@@ -202,6 +237,13 @@ const tableData: User[] = [
 }
 .title{
   margin-top: 20px;
+  margin-right: 80px;
+}
+.dialog-footer button:first-child {
+  margin-right: 10px;
 }
 
+.btton{
+  margin-left: 10px;
+}
 </style>

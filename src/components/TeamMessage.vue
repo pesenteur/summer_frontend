@@ -131,7 +131,7 @@ function switchState(){
 }
 
 .custom-icon-button {
-  background-image: url('@/assets/envelope.png'); /* 根据您的项目路径调整 */
+  background-image: url('@/assets/messageIcon.png'); /* 根据您的项目路径调整 */
   background-size: 20px; /* 根据需要调整 */
   background-repeat:no-repeat;
   margin-top: 18px;

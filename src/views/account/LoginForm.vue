@@ -1,10 +1,11 @@
 <template>
     <div class="form-box login">
-        <form @submit.prevent="login">
+        <form @submit.prevent="loginWithPassword">
+            <h2>登录</h2>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-envelope'></i></span>
                 <input type="text" v-model="email" id="su_email" required>
-                <label>邮箱</label>
+                <label>email</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
@@ -15,7 +16,7 @@
                 <label for=""><input type="checkbox" v-model="agree">{{ userAgreement }}</label>
                 <a href="#">忘记密码?</a>
             </div>
-            <button class="btn" id="siBtn" @click="loginWithPassword">登录</button>
+            <button class="btn" id="siBtn">登录</button>
             <div class="create-account">
                 <p>创建新账号? <a href="#" class="login-link" @click="showRegisterForm">注册</a></p>
             </div>
@@ -25,21 +26,17 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import {useAccountStore} from "@/stores/account";
-import {useRoute, useRouter} from "vue-router";
-
-const accountStore = useAccountStore();
-const router = useRouter();
-const route = useRoute();
-
-
+import { useAccountStore } from "@/stores/account";
+import { useRoute, useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 const email = ref('')
 const password = ref('')
 const agree = ref(false)
-
+const accountStore = useAccountStore();
+const router = useRouter();
+const route = useRoute();
 const props = defineProps(['showValue']);
 const emit = defineEmits(['update:showValue'])
-import { ElMessage } from "element-plus";
 const showLogin = computed({
     get() {
         return props.showValue;
@@ -56,6 +53,7 @@ const userAgreement = `
 const showRegisterForm = () => {
     showLogin.value = false;
 };
+
 async function loginWithPassword() {
     if (!email.value) {
         ElMessage({
@@ -100,4 +98,9 @@ async function loginWithPassword() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.input-box input:focus~label,
+.input-box input:valid~label {
+    top: -5px;
+}
+</style>

@@ -1,30 +1,30 @@
 import requests from "@/utils/request";
 
 export default {
-    loginWithCode(email, code) {
+    loginWithCode(phone_number, code) {
         return requests({
             url: '/loginWithCode',
             method: 'POST',
             data: {
-                email, code
+                phone_number, code
             }
         });
     },
-    loginWithPassword(email, password) {
+    loginWithPassword(phone_number, password) {
         return requests({
             url: '/loginWithPassword',
             method: 'POST',
             data: {
-                email, password
+                phone_number, password
             }
         });
     },
-    register(phone_number, verification_code, password) {
+    register(email, userid, username,password) {
         return requests({
             url: '/register',
             method: 'POST',
             data: {
-                phone_number, verification_code, password
+                email, userid, username,password
             }
         });
     },

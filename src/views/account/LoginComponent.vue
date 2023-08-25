@@ -1,15 +1,12 @@
 <template>
     <div>
         <div class="background"></div>
-        <Navbar />
-        <SearchBar />
-
         <div class="container">
             <div class="item">
-                <h2 class="logo"><i class='bx bxl-xing'></i>cool</h2>
+                <h2 class="logo"><i class='bx bxl-xing'></i>aliyu</h2>
                 <div class="text-item">
-                    <h2>W!<br><span>To Our Channel</span></h2>
-                    <p>学术交流论坛</p>
+                    <h2>Welcome!<br><span>To Our Channel</span></h2>
+                    <p>多人协作，方便快捷</p>
                     <SocialIcon />
                 </div>
             </div>
@@ -56,7 +53,7 @@ body {
     padding: 0;
     height: 100vh;
     width: 100%;
-    background: #fff;
+    background: black;
 
 }
 
@@ -114,7 +111,7 @@ body {
     width: 250px;
     height: 45px;
     background-color: transparent;
-    border: 2px solid #fff;
+    border: 2px solid black;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -125,7 +122,7 @@ body {
     background-color: transparent;
     border: none;
     outline: none;
-    color: #fff;
+    color: black;
     font-size: 16px;
     padding-left: 10px;
 }
@@ -136,12 +133,12 @@ body {
     background: transparent;
     outline: none;
     border: none;
-    color: #fff;
+    color: black;
     cursor: pointer;
 }
 
 .search-bar input::placeholder {
-    color: #fff;
+    color: black;
 }
 
 .search-bar button i {
@@ -154,7 +151,7 @@ body {
     top: 50%;
     transform: translate(-50%, -50%);
     width: 75%;
-    height: 550px;
+    height: 600px;
     margin-top: 20px;
     background: url(../../assets/background.jpg) no-repeat;
     background-position: center;
@@ -171,7 +168,7 @@ body {
     left: 0;
     width: 58%;
     height: 100%;
-    color: #fff;
+    color: black;
     background: transparent;
     padding: 80px;
     display: flex;
@@ -197,7 +194,7 @@ body {
 }
 
 .social-icon a i {
-    color: #fff;
+    color: black;
     font-size: 24px;
     margin-left: 10px;
     cursor: pointer;
@@ -215,7 +212,7 @@ body {
     /* width: calc(100% - 58%); */
     width: 40%;
     height: 100%;
-    color: #fff;
+    color: black;
     backdrop-filter: blur(10px);
 }
 
@@ -262,7 +259,7 @@ body {
 .form-box .input-box {
     width: 340px;
     height: 50px;
-    border-bottom: 2px solid#fff;
+    border-bottom: 2px solid black;
     margin: 30px 0;
     position: relative;
 }
@@ -312,13 +309,13 @@ body {
 }
 
 .remember-password label input {
-    accent-color: #fff;
+    accent-color: black;
     margin-right: 3px;
 
 }
 
 .remember-password a {
-    color: #fff;
+    color: black;
     text-decoration: none;
 }
 
@@ -327,16 +324,16 @@ body {
 }
 
 .btn {
-    background: #fff;
+    background: black;
     width: 100%;
     height: 45px;
     outline: none;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    background: #203936;
+    background: black;
     font-size: 16px;
-    color: #fff;
+    color: white;
     box-shadow: rgba(0, 0, 0, 0.4);
 
 }
@@ -348,12 +345,17 @@ body {
 }
 
 .create-account p a {
-    color: #fff;
+    color: black;
     font-weight: 600px;
     text-decoration: none;
 }
 
 .create-account p a:hover {
     text-decoration: underline;
+}
+.password-mismatch {
+    color: red;
+    font-size: 12px;
+    margin-top: 0px;
 }
 </style>

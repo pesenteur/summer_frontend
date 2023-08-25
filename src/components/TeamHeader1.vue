@@ -1,6 +1,6 @@
 <template>
 
-  <img  src="@/assets/甜甜圈.svg" @click="drawer = true" class="img-decorate">
+  <img src="../assets/NaviBar.svg" @click="drawer = true" class="img-decorate">
 <!--  <el-button type="plain" style="margin-left: 16px;margin-top: 12px" @click="drawer = true" >-->
 <!--    <i class="el-icon-custom expand-icon"></i>-->
 <!--  </el-button>-->

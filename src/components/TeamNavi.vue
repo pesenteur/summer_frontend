@@ -18,6 +18,7 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item>个人简介</el-dropdown-item>
+            <el-dropdown-item @click="jump">切换团队</el-dropdown-item>
             <el-dropdown-item>退出登录</el-dropdown-item>
 
           </el-dropdown-menu>
@@ -33,10 +34,14 @@ import { ref } from 'vue'
 import TeamHeader1 from './TeamHeader1.vue'
 import TeamMessage from "./TeamMessage.vue";
 import {ArrowDown} from "@element-plus/icons-vue";
+import router from "../router";
 
 const activeIndex = ref('1')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
+}
+function jump() {
+  router.push('/switch')
 }
 </script>
 
@@ -56,7 +61,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 .custom-icon-button {
-  background-image: url('@/assets/avtar.png'); /* 根据您的项目路径调整 */
+  background-image: url('@/assets/userAvtar.png'); /* 根据您的项目路径调整 */
   background-size: 40px; /* 根据需要调整 */
   background-repeat:no-repeat;
   width: 40px; /* 根据需要调整 */

@@ -2,9 +2,9 @@
 
 import HomeChat from "@/home/HomeChat.vue";
 import HomeProject from "@/home/HomeProject.vue";
-import HomeSide from "@/home/HomeSide.vue";
 import HomeMessage from "@/home/HomeMessage.vue";
 import HomeCarousel from "@/home/HomeCarousel.vue";
+import HomeMember from "@/home/HomeMember.vue";
 
 </script>
 
@@ -12,14 +12,12 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
   <div class="common-layout">
     <el-container>
       <el-aside width="100px">
-
       </el-aside>
-
       <el-main>
         <div class="waterfall-container">
-          <!-- <HomeSide></HomeSide> -->
           <HomeChat class="item"></HomeChat>
           <HomeProject class="item"></HomeProject>
+          <HomeMember class="item"></HomeMember>
           <HomeCarousel class="item"></HomeCarousel>
           <HomeMessage class="item"></HomeMessage>
         </div>
@@ -37,7 +35,7 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
 }
 
 .item {
-  width: 700px;
+  width: 90% ;
   break-inside: avoid;
   /* 防止元素被分割到两列 */
   margin-bottom: 20px;
@@ -46,8 +44,6 @@ import HomeCarousel from "@/home/HomeCarousel.vue";
   margin-top: 0;
   margin-bottom: 50px;
 }
-
-
 
 * {
   z-index: 1;

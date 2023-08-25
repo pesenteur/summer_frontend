@@ -13,6 +13,15 @@ const router = createRouter({
     {
         path: '/chatHome',
         component: () => import('@/views/home.vue')
+    },{
+        path: '/test',
+        component:()=>import('@/components/TeamMessage1.vue')
+    },{
+        path: '/member',
+        component:()=>import('@/views/member/MemberBoard.vue')
+    },{
+        path: '/project',
+        component:()=>import('@/views/projectManage/projectManage.vue')
     }]
 
 });

@@ -24,7 +24,6 @@
 .title{
   color:black;
 }
-
 </style>
 
 <script setup>

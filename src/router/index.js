@@ -22,7 +22,11 @@ const router = createRouter({
     },{
         path: '/project',
         component:()=>import('@/views/projectManage/projectManage.vue')
-    }]
+    },{
+        path: '/switch',
+        component:()=>import('@/views/switch/SwitchBoard.vue')
+    }
+    ]
 
 });
 

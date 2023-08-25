@@ -1,13 +1,15 @@
 <template>
-  <el-button type="plain" style="margin-left: 16px" @click="drawer = true" >
+
+  <el-button type="plain" style="margin-left: 16px;margin-top: 12px" @click="drawer = true" >
     OPEN
   </el-button>
+
 
   <el-drawer v-model="drawer" title="SUMMER" :with-header="false" direction="ltr" size="15%">
     <span>SUMMER</span>
     <el-divider/>
-    <div class="button-container"> 
-      <el-button text v-for="button in buttons" :key="button.id" :type="button.type">{{button.text}}</el-button>
+    <div class="mb-4" style="display: flex;flex-direction: column;"> 
+      <el-button text v-for="button in buttons" :key="button.id" :type="button.type" style="width:100%;margin:0">{{button.text}}</el-button>
     </div>
   </el-drawer>
 </template>
@@ -24,11 +26,6 @@ const buttons = reactive([
 ]) 
 </script>
 <style scoped>
-.button-container{
-  display: flex;
-  justify-content: center; /* 在主轴上居中 */
-  align-items: center; /* 在交叉轴上居中 */
-  flex-direction: column; /* 纵向排列按钮 */
-}
+
 
 </style>

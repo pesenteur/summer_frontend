@@ -1,9 +1,6 @@
 <script setup>
 import { reactive } from "vue";
-
 </script>
-
-
 <template>
   <el-carousel indicator-position="outside" class="main">
     <el-carousel-item v-for="item in 4" :key="item" class="main">
@@ -11,10 +8,9 @@ import { reactive } from "vue";
     </el-carousel-item>
   </el-carousel>
 </template>
-
 <style scoped>
 .main {
   width: 730px;
-  height: 400px;
+  height: 500px;
 }
 </style>

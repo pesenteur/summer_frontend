@@ -1,5 +1,6 @@
 <template>
-  <el-button type="info" :icon="Message" circle @click="table = true" class="butt"/>
+
+  <el-button text @click="table = true" class="custom-icon-button"/>
   <el-drawer
       v-model="table"
       title="我的消息"
@@ -7,36 +8,20 @@
       size="30%"
   >
 
-    <el-table ref="tableRef" row-key="date" :data="tableData" style="width: 100%">
-      <el-table-column
-          prop="date"
-          label="Date"
-          sortable
-          width="180"
-      />
-      <el-table-column prop="name" label="Name" width="180" />
-      <el-table-column prop="address" label="Address" :formatter="formatter" />
 
-      <el-table-column
-          prop="tag"
-          label="Isread"
-          width="100"
-          :filters="[
-        { text: 'Read', value: 'Read' },
-        { text: 'Unread', value: 'Unread' },
-      ]"
-          :filter-method="filterIsread"
-          filter-placement="bottom-end"
-      >
-        <template #default="scope">
-          <el-tag
-              :type="scope.row.tag === 'Read' ? '' : 'success'"
-              disable-transitions
-          >{{ scope.row.tag }}</el-tag
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+      <el-col>
+        <div class="card-container">
+          <el-card v-for="msg in messages" :key="msg.userId" shadow="hover" class="decorate-card" @click="switchState">
+            <span style="font-size:13px">{{msg.userId}}</span>
+            <el-divider/>
+            {{msg.name}}
+            <br/>
+            {{msg.content}}
+          </el-card>
+        </div>
+      </el-col>
+
+
   </el-drawer>
 
 </template>
@@ -52,6 +37,8 @@ let timer
 const table = ref(false)
 const dialog = ref(false)
 const loading = ref(false)
+
+const isRead = ref('hover')
 
 const form = reactive({
   name: '',
@@ -73,11 +60,13 @@ const onClick = () => {
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 
 interface User {
+  userId: string
   date: string
   name: string
   content: string
   isread: string
 }
+
 
 const tableRef = ref<TableInstance>()
 
@@ -92,36 +81,71 @@ const filterisread = (value: string, row: User) => {
   return row.isread === value
 }
 
-const tableData: User[] = [
+const messages: User[] = [
   {
+    userId: '001',
     date: '2016-05-03',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'read',
   },
   {
+    userId: '002',
     date: '2016-05-02',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'unread',
   },
   {
+    userId: '003',
     date: '2016-05-04',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'read',
   },
   {
+    userId: '004',
     date: '2016-05-01',
     name: '吴鑫宇',
     content: '很抱歉打扰您......',
     isread: 'unread',
   },
 ]
+
+function switchState(){
+  if(isRead.value === 'hover'){
+    isRead.value = 'never'
+  }else{
+    console.log('该消息已读')
+  }
+}
+
 </script>
 
 <style scoped>
 .butt{
   margin-top: 12px;
 }
+.message_icon{
+  height: 2px;
+}
+
+.custom-icon-button {
+  background-image: url('@/assets/envelope.png'); /* 根据您的项目路径调整 */
+  background-size: 20px; /* 根据需要调整 */
+  background-repeat:no-repeat;
+  margin-top: 18px;
+  width: 20px; /* 根据需要调整 */
+  height: 20px; /* 根据需要调整 */
+
+}
+
+.decorate-card {
+  width:100%;
+  margin: auto;
+  font-size:12px;
+}
+
+
+
 </style>

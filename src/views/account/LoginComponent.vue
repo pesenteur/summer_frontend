@@ -37,7 +37,7 @@ const showLogin = ref(true);
 
 </script>
 
-<style >
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;1,500&display=swap');
 @import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
 

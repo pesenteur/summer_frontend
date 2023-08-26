@@ -18,13 +18,13 @@ export default {
     },
     queryTeamMember(team_id) {
         return requests({
-            url: '/team/${team_id}',
+            url: `/team/${team_id}`,
             method: 'GET',
         });
     },
     updateTeamName(team_id,name) {
         return requests({
-            url: '/team/${team_id}',
+            url: `/team/${team_id}`,
             method: 'PATCH',
             data:{
                 name
@@ -33,7 +33,7 @@ export default {
     },
     deleteTeam(team_id) {
         return requests({
-            url: '/team/${team_id}',
+            url: `/team/${team_id}`,
             method: 'DELETE',
         });
     },

@@ -9,21 +9,21 @@
           >
             <el-menu-item  index="1">
               <div class="menu-item-container">
-                <img src="@/assets/img/emoji/smiling-face-with-horns.png" alt="!!!" class="image">
+                <img src="@/assets/imgs/emoji/smiling-face-with-horns.png" alt="!!!" class="image">
                 <span class="element-title">SUMMER</span>
               </div>
             </el-menu-item>
             <el-divider/>
             <el-menu-item index="2">
               <div class="menu-item-container">
-                <img src="@/assets/img/emoji/sparkles.png" alt="!!!" class="image">
+                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="image">
                 <span class="element-title" @click="addCanvas">新建画布</span>
               </div>
             </el-menu-item>
             <el-divider/>
 
             <el-menu-item index="3">
-              <img src="@/assets/img/emoji/rainbow.png" alt="!!!" class="image">
+              <img src="@/assets/imgs/emoji/rainbow.png" alt="!!!" class="image">
               <span class="element-title">页面视图</span>
             </el-menu-item>
 

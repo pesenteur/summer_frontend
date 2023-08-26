@@ -4,6 +4,7 @@
           <HeadPortrait :imgUrl="personInfo.headImg"></HeadPortrait>
           <div class="info-detail">
             <div class="name">{{ personInfo.name }}</div>
+            <div class="time">{{ personInfo.time }}</div>
             <div class="detail">{{ personInfo.detail }}</div>
           </div>
 
@@ -45,12 +46,9 @@ export default {
 
 <style lang="scss" scoped>
 .person-card {
-  width: 250px;
   height: 80px;
-  border-radius: 10px;
-  background-color: rgb(50, 54, 68);
   position: relative;
-  margin: 25px 0;
+  border-bottom:1px solid black ;
   cursor: pointer;
   .info {
     position: absolute;

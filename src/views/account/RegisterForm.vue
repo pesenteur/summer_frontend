@@ -15,7 +15,7 @@
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-id-card'></i></span>
                 <input type="text" v-model="userId" required>
-                <label>身份证</label>
+                <label>真实姓名</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
@@ -49,6 +49,8 @@ const accountStore = useAccountStore();
 const email = ref('');
 const password = ref('');
 const confirmedPassword = ref('');
+const userId = ref('');
+const username = ref('')
 const router = useRouter();
 const route = useRoute();
 const agree = ref(false); // 初始化为 false
@@ -97,7 +99,9 @@ async function register() {
         return;
     }
     try {
-        // await accountStore.register(email.value, userid.value, username.value, password.value,);
+        console.log(username.value)
+        await accountStore.register(userId.value, password.value, confirmedPassword.value, email.value, username.value);
+
         //发送注册请求到后端
         ElMessage({
             message: '注册成功，即将跳转',

@@ -30,9 +30,9 @@ const actions = {
         }
         return Promise.reject(result.message);
     },
-    async register(email, userid, username, password) {
-        const result = await accountAPI.register(email, userid, username, password);
-        if (result.result === '1') {
+    async register(username, password, confirm_password, email, nickname) {
+        const result = await accountAPI.register(username, password, confirm_password, email, nickname);
+        if (result.status === 201) {
             return "注册成功";
         }
         return Promise.reject(result.message);

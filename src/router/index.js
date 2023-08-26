@@ -9,10 +9,6 @@ const router = createRouter({
     }, {
         path: '/login',
         component: () => import('@/views/account/LoginComponent.vue')
-    },
-    {
-        path: '/chatHome',
-        component: () => import('@/views/home.vue')
     },{
         path: '/test',
         component:()=>import('@/views/myTest/myTest.vue')
@@ -23,10 +19,9 @@ const router = createRouter({
         path: '/project',
         component:()=>import('@/views/projectManage/projectManage.vue')
     },{
-        path: '/switch',
-        component:()=>import('@/views/switch/SwitchBoard.vue')
-    }
-    ]
+        path: '/workSpace',
+        component:()=>import('@/views/myProject/myProject.vue')
+    }]
 
 });
 

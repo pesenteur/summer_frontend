@@ -5,7 +5,7 @@
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-envelope'></i></span>
                 <input type="text" v-model="email" id="su_email" required>
-                <label>email</label>
+                <label>邮箱/用户名</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
@@ -57,7 +57,7 @@ const showRegisterForm = () => {
 async function loginWithPassword() {
     if (!email.value) {
         ElMessage({
-            message: '请输入邮箱',
+            message: '请输入邮箱/用户名',
             type: 'error'
         });
         return;

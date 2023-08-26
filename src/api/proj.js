@@ -1,6 +1,60 @@
 import requests from "@/utils/request";
 
 export default {
+    getMyProject(name,describe,team){
+        return requests({
+            url:'/projects',
+            method: 'POST',
+            data: {
+                name,describe,team
+            }
+        })
+    },
+    changeProject(name,describe){
+      return requests({
+          url:`/projects/${name, describe}`,
+          method: 'PATCH',
+
+      })
+    },
+    getAllProjects(team){
+        return requests({
+            url:'projects',
+            method: 'GET',
+            data: {
+                team
+            }
+        })
+
+    },
+    deleteProject(id){
+        return requests({
+            url:`/projects/${id}`,
+            method:'DELETE',
+            data:{
+                id
+            }
+        })
+    },
+    getSingleProject(){
+        return requests({
+            url:'/projects',
+            method:'GET'
+        })
+
+    },
+    errorPrintTest(){
+        return requests({
+            url:'/project',
+            method:'GET'
+        })
+    },
+    getReProject(){
+        return requests({
+            url:'/project/deleted',
+            mehtod:'GET'
+        })
+    },
     loginWithCode(phone_number, code) {
         return requests({
             url: '/loginWithCode',
@@ -10,21 +64,21 @@ export default {
             }
         });
     },
-    loginWithPassword(email, password) {
+    loginWithPassword(phone_number, password) {
         return requests({
-            url: '/login',
+            url: '/loginWithPassword',
             method: 'POST',
             data: {
-                email, password
+                phone_number, password
             }
         });
     },
-    register(name, password, confirm_password, email, username) {
+    register(email, userid, username,password) {
         return requests({
             url: '/register',
             method: 'POST',
             data: {
-                name, password, confirm_password, email, username
+                email, userid, username,password
             }
         });
     },

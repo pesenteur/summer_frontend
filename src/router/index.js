@@ -12,7 +12,7 @@ const router = createRouter({
     }, {
         path: '/test',
         component:()=>import('@/views/dragger/draggerTotal.vue')
-    }{
+    }, {
         path: '/member',
         component: () => import('@/views/member/MemberBoard.vue')
     }, {

@@ -11,8 +11,8 @@ const router = createRouter({
         component: () => import('@/views/account/LoginComponent.vue')
     }, {
         path: '/test',
-        component: () => import('@/views/myTest/myTest.vue')
-    }, {
+        component:()=>import('@/views/dragger/draggerTotal.vue')
+    }{
         path: '/member',
         component: () => import('@/views/member/MemberBoard.vue')
     }, {
@@ -24,6 +24,12 @@ const router = createRouter({
     }, {
         path: '/team/:team_id/chatHome',
         component: () => import('@/views/chatHome/chatHome.vue')
+    },{
+        path: '/drag',
+        component:()=>import('@/views/dragger/draggerTotal.vue')
+    },{
+        path:'/chatHome',
+        component:()=>import('@/views/home.vue')
     },{
         path:'/switch',
         component:()=>import('@/views/switch/SwitchBoard.vue')

@@ -21,7 +21,8 @@ requests.interceptors.request.use(config => {
 
 // 3. 响应拦截器
 requests.interceptors.response.use(response => {
-    return response.data
+    console.log(response)
+    return response
 }, error => {
     if (error.response && error.response.status === 401) {
         const accountStore = useAccountStore();

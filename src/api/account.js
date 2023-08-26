@@ -10,21 +10,21 @@ export default {
             }
         });
     },
-    loginWithPassword(phone_number, password) {
+    loginWithPassword(email, password) {
         return requests({
-            url: '/loginWithPassword',
+            url: '/login',
             method: 'POST',
             data: {
-                phone_number, password
+                email, password
             }
         });
     },
-    register(email, userid, username,password) {
+    register(name, password, confirm_password, email, nickname) {
         return requests({
             url: '/register',
             method: 'POST',
             data: {
-                email, userid, username,password
+                name, password, confirm_password, email, nickname
             }
         });
     },

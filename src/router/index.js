@@ -21,6 +21,9 @@ const router = createRouter({
     },{
         path: '/workSpace',
         component:()=>import('@/views/myProject/myProject.vue')
+    },{
+        path:'/chatHome',
+        component:()=>import('@/views/home.vue')
     }]
 
 });

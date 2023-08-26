@@ -12,7 +12,7 @@ export default {
     },
     loginWithPassword(email, password) {
         return requests({
-            url: '/loginWithPassword',
+            url: '/login',
             method: 'POST',
             data: {
                 email, password

@@ -22,7 +22,7 @@ const router = createRouter({
         path: '/workSpace',
         component: () => import('@/views/myProject/myProject.vue')
     }, {
-        path: '/chatHome',
+        path: '/team/:team_id/chatHome',
         component: () => import('@/views/chatHome/chatHome.vue')
     },{
         path:'/switch',

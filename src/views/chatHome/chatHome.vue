@@ -1,8 +1,15 @@
 <template>
-  <vue-advanced-chat :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)" :messages="JSON.stringify(messages)"
-    :room-actions="JSON.stringify(roomActions)" :rooms-loaded="true" :messages-loaded="true"
-    @fetch-messages="fetchMessages($event.detail[0])" @send-message="sendMessage($event.detail[0])" :height="height"
-    @add-room="addRoom" :menu-action-handler="menuActionHandler" :room-info-enabled="true"
+  <vue-advanced-chat :current-user-id="currentUserId"
+                     :rooms="JSON.stringify(rooms)"
+                     :messages="JSON.stringify(messages)"
+                     :room-actions="JSON.stringify(roomActions)"
+                     :rooms-loaded="true"
+                     :messages-loaded="true"
+                     @fetch-messages="fetchMessages($event.detail[0])"
+                     @send-message="sendMessage($event.detail[0])"
+                     :height="height"
+                     @add-room="addRoom"
+                     :menu-action-handler="menuActionHandler" :room-info-enabled="true"
     :message-actions="JSON.stringify(messageActions)" @message-action-handler="handleCustomMessageAction($event.detail[0])">
     <template #message-content="{ message }">
       <div :class="'message ' + 'sender-' + message.senderId">
@@ -14,7 +21,34 @@
 
 <script>
 import { register } from 'vue-advanced-chat'
+import {onMounted, onUnmounted, reactive, ref} from "vue";
 register()
+
+const socket = ref()
+const messages = reactive([])
+onMounted(() => {
+  socket.value = new WebSocket('ws://example.com/socket')
+  socket.addEventListener('message', this.upMessage)
+});
+
+onUnmounted(() => {
+  socket.close
+})
+
+function upMessage(event) {
+  this.messages.push(event.data);
+}
+
+
+function sendMessage() {
+  if (this.socket.readyState === WebSocket.OPEN) {
+    this.socket.send(this.newMessage);
+    this.messages.push('You: ' + this.newMessage);
+    this.newMessage = '';
+  }
+}
+
+
 
 // Or if you used CDN import
 // window['vue-advanced-chat'].register()

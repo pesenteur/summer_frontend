@@ -9,21 +9,21 @@ const router = createRouter({
     }, {
         path: '/login',
         component: () => import('@/views/account/LoginComponent.vue')
-    },{
+    }, {
         path: '/test',
-        component:()=>import('@/views/myTest/myTest.vue')
-    },{
+        component: () => import('@/views/myTest/myTest.vue')
+    }, {
         path: '/member',
-        component:()=>import('@/views/member/MemberBoard.vue')
-    },{
+        component: () => import('@/views/member/MemberBoard.vue')
+    }, {
         path: '/project',
-        component:()=>import('@/views/projectManage/projectManage.vue')
-    },{
+        component: () => import('@/views/projectManage/projectManage.vue')
+    }, {
         path: '/workSpace',
-        component:()=>import('@/views/myProject/myProject.vue')
-    },{
-        path:'/chatHome',
-        component:()=>import('@/views/home.vue')
+        component: () => import('@/views/myProject/myProject.vue')
+    }, {
+        path: '/chatHome',
+        component: () => import('@/views/chatHome/chatHome.vue')
     }]
 
 });

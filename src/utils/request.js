@@ -6,7 +6,7 @@ import router from "@/router";
 
 // 1. 创建axios实例
 const requests = axios.create({
-    baseURL: '/api',
+    baseURL: '/api/v1',
     timeout: 5000
 });
 

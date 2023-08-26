@@ -24,6 +24,9 @@ const router = createRouter({
     }, {
         path: '/chatHome',
         component: () => import('@/views/chatHome/chatHome.vue')
+    },{
+        path:'/switch',
+        component:()=>import('@/views/switch/SwitchBoard.vue')
     }]
 
 });

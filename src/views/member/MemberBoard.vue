@@ -14,14 +14,14 @@
               </el-button>
               <el-dialog v-model="dialogFormVisible" title="欢迎来到寄了网站，请创建团队" center width="35%">
                 <el-form :model="form">
-                  <el-form-item label="团队名称" :label-width="formLabelWidth">
+                  <el-form-item label="团队名称" :label-width="formLabelWidth" >
                     <el-input v-model="form.name" autocomplete="off"/>
                   </el-form-item>
                 </el-form>
                 <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="dialogFormVisible = false">Cancel</el-button>
-                  <el-button type="primary" @click="dialogFormVisible = false">
+                  <el-button type="primary" @click="submitTeam">
                     Confirm
                   </el-button>
                 </span>
@@ -29,25 +29,23 @@
               </el-dialog>
             </div>
             <el-divider />
-            <el-menu
-                default-active="2"
-                class="el-menu-vertical-demo"
-            >
-              <el-menu-item index="1">
+            <el-menu class="el-menu-vertical-demo">
+              <el-menu-item v-for="team in teamData" :key="team.id" @click="selectTeam(team.id,team.name)">
+                <el-popconfirm
+                    confirm-button-text="Yes"
+                    cancel-button-text="No"
+                    :icon="InfoFilled"
+                    icon-color="#626AEF"
+                    title="你确定要删除该团队吗?"
+                    @confirm="deleteTeam(team.id)"
+                    @cancel="cancelEvent"
+                >
+                  <template #reference>
+                    <el-button>Delete</el-button>
+                  </template>
+                </el-popconfirm>
                 <el-icon><icon-menu /></el-icon>
-                <span  class="moji">23-BUAA-SE-2023-SUMMER </span>
-              </el-menu-item>
-              <el-menu-item index="2">
-                <el-icon><icon-menu /></el-icon>
-                <span class="moji">23-BUAA-SE-2023-SUMMER</span>
-              </el-menu-item>
-              <el-menu-item index="3">
-                <el-icon><icon-menu /></el-icon>
-                <span class="moji">23-BUAA-SE-2023-SUMMER</span>
-              </el-menu-item>
-              <el-menu-item index="4">
-                <el-icon><icon-menu /></el-icon>
-                <span class="moji">23-BUAA-SE-2023-SUMMER</span>
+                <span class="moji" >{{team.name}}</span>
               </el-menu-item>
             </el-menu>
           </el-col>
@@ -56,36 +54,54 @@
       <div class="back"><el-aside width="20px"/></div>
       <div class="title">
       <el-container>
-
         <el-header height="40px">
-
-        <span class="title">23-BUAA-SE-2023-SUMMER· 8</span>
+          <div class="mainTitle">
+            <el-button text @click="dialogTableVisible = true" :disabled="isAdd" type="primary" >
+              添加成员
+            </el-button>
+            <el-text size="large">{{titleName}}</el-text>
+            <el-dialog v-model="dialogTableVisible" title="用户列表">
+              <el-table :data="filterUserTableData" style="width: 100%">
+                <el-table-column prop="name" label="Name" width="150" />
+                <el-table-column prop="nickname" label="Nickname" width="150"/>
+                <el-table-column prop="email" label="Email" width="180"/>
+                <el-table-column align="right" width="150">
+                  <template #header>
+                    <el-input v-model="search" size="small" placeholder="Type to search" />
+                  </template>
+                  <template #default="scope">
+                    <el-button
+                        size="small"
+                        type="danger"
+                        @click="handleAdd()"
+                    >ADD</el-button
+                    >
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-dialog>
+          </div>
 
         </el-header>
 
         <el-main>
-          <el-table ref="tableRef" row-key="19106001223" :data="tableData" style="width: 100%">
-
-            <el-table-column prop="name" label="Name" width="180" />
-            <el-table-column prop="19106001223" label="Phone" width="180"/>
-            <el-table-column prop="team" label="Team" width="200" :formatter="formatter" />
-
-            <el-table-column
-                prop="role"
-                label="Role"
-                width="120"
-                :filters="[
-        { text: '前端工程师', value: '前端工程师' },
-        { text: '后端工程师', value: '后端工程师' },
-      ]"
-                :filter-method="filterRole"
-                filter-placement="bottom-end"
-            >
+          <el-table :data="filterTableData" style="width: 100%">
+            <el-table-column prop="name" label="Name" width="150" />
+            <el-table-column prop="nickname" label="Nickname" width="150"/>
+            <el-table-column prop="email" label="Email" width="180"/>
+            <el-table-column align="right" width="150">
+              <template #header>
+                <el-input v-model="search" size="small" placeholder="Type to search" />
+              </template>
               <template #default="scope">
-                <el-role
-                    :type="scope.row.role === '前端工程师' ? '' : 'success'"
-                    disable-transitions
-                >{{ scope.row.role }}</el-role
+                <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+                >Edit</el-button
+                >
+                <el-button
+                    size="small"
+                    type="danger"
+                    @click="handleDelete()"
+                >Delete</el-button
                 >
               </template>
             </el-table-column>
@@ -104,104 +120,62 @@
 import {
   Menu as IconMenu,
 } from '@element-plus/icons-vue'
-import {reactive, ref} from 'vue'
+import {onMounted, reactive, ref,computed} from 'vue'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 
-interface User {
-  19106001223: string
-  name: string
-  team: string
-  role: string
-}
-
-const tableRef = ref<TableInstance>()
-
-
-const formatter = (row: User, column: TableColumnCtx<User>) => {
-  return row.team
-}
-const filterRole = (value: string, row: User) => {
+import teamFunction from '../../api/team.js'
+import { InfoFilled } from '@element-plus/icons-vue'
+const filterRole = (value: string, row) => {
   return row.role === value
 }
+const teamData = ref([]) //侧栏的数据
+const tableData = ref([]) //主表的数据
+const userTableData = ref([]) //搜索表中所有的数据
+const dialogFormVisible = ref(false) //弹出的对话框的属性值
+const dialogTableVisible = ref(false)
+const isAdd = ref(true)
+const titleName = ref('') //主表的标题
+const search = ref('') //搜索框用
 
 
-const tableData: User[] = [
-  {
-    19106001223: '19106001223',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '前端工程师',
-  },
-  {
-    19106001223: '2016-05-02',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-04',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '前端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-]
-
-const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
+
+const cancelEvent = () => {
+  console.log('cancel!')
+}
+async function handleAdd(){
+
+}
+async function queryALL(){
+  let result = await teamFunction.queryAllTeams();
+  teamData.value = result.data
+}
+async function selectTeam(team_id,teamName){
+  console.log(team_id)
+  let result = await teamFunction.queryTeamMember(team_id)
+  console.log('***********result***********')
+  console.log(result.data.members)
+  console.log('***********result***********')
+  tableData.value = result.data.members
+  titleName.value = teamName
+  isAdd.value = false
+}
+async function submitTeam() {
+  dialogFormVisible.value=false
+  await teamFunction.addTeam(form.name);
+  await queryALL()
+}
+async function deleteTeam(team_id){
+  await teamFunction.deleteTeam(team_id)
+  await queryALL()
+}
+async function handleDelete(){
+
+}
+
+onMounted(() => {
+  queryALL()
+});
 
 const form = reactive({
   name: '',
@@ -213,6 +187,49 @@ const form = reactive({
   resource: '',
   desc: '',
 })
+
+const filterTableData = computed(() =>
+    tableData.value.filter(
+        (data) =>
+            !search.value ||
+            data.name.toLowerCase().includes(search.value.toLowerCase())
+    )
+)
+
+const filterUserTableData = computed(() =>
+    userTableData.value.filter(
+        (data) =>
+            !search.value ||
+            data.name.toLowerCase().includes(search.value.toLowerCase())
+    )
+)
+const handleEdit = (index, row) => {
+  console.log(index, row)
+}
+
+
+const gridData = [
+  {
+    date: '2016-05-02',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District',
+  },
+  {
+    date: '2016-05-04',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District',
+  },
+  {
+    date: '2016-05-01',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District',
+  },
+  {
+    date: '2016-05-03',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District',
+  },
+]
 
 
 </script>
@@ -235,15 +252,19 @@ const form = reactive({
   height: 120%;
   margin: auto;
 }
-.title{
-  margin-top: 20px;
-  margin-right: 80px;
-}
+
 .dialog-footer button:first-child {
   margin-right: 10px;
 }
 
 .btton{
   margin-left: 10px;
+}
+.el-menu-vertical-demo{
+  padding-bottom: 20px;
+}
+.mainTitle{
+  margin-top: 20px;
+  margin-left: -10px;
 }
 </style>

@@ -21,18 +21,18 @@ const actions = {
         }
         return Promise.reject(result.message);
     },
-    async loginWithPassword(phone_number, password) {
-        const result = await accountAPI.loginWithPassword(phone_number, password);
-        if (result.result === '1') {
-            this.token = result.data.token;
-            setToken(result.data.token);
+    async loginWithPassword(email, password) {
+        const response = await accountAPI.loginWithPassword(email, password);
+        if (response.status === 200) {
+            this.token = response.data.token;
+            setToken(response.data.token);
             return "登录成功";
         }
         return Promise.reject(result.message);
     },
     async register(username, password, confirm_password, email, nickname) {
-        const result = await accountAPI.register(username, password, confirm_password, email, nickname);
-        if (result.status === 201) {
+        const response = await accountAPI.register(username, password, confirm_password, email, nickname);
+        if (response.status === 201) {
             return "注册成功";
         }
         return Promise.reject(result.message);

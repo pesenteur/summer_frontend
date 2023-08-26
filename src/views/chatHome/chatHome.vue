@@ -2,7 +2,7 @@
   <vue-advanced-chat :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)" :messages="JSON.stringify(messages)"
     :room-actions="JSON.stringify(roomActions)" :rooms-loaded="true" :messages-loaded="true"
     @fetch-messages="fetchMessages($event.detail[0])" @send-message="sendMessage($event.detail[0])" :height="height"
-    @add-room="addRoom" :menu-action-handler="menuActionHandler($event.detail[0])" :room-info-enabled="true"
+    @add-room="addRoom" :menu-action-handler="menuActionHandler" :room-info-enabled="true"
     :message-actions="JSON.stringify(messageActions)" @message-action-handler="handleCustomMessageAction($event.detail[0])">
     <template #message-content="{ message }">
       <div :class="'message ' + 'sender-' + message.senderId">

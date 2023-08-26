@@ -3,27 +3,31 @@
     <el-aside width="200px" >
       <el-row class="tac">
         <el-col :span="24">
+
+
           <el-menu
               default-active="2"
               class="element-back"
           >
             <el-menu-item  index="1">
               <div class="menu-item-container">
-                <img src="@/assets/img/emoji/smiling-face-with-horns.png" alt="!!!" class="image">
-                <span class="element-title">SUMMER</span>
+                <img src="@/assets/imgs/emoji/smiling-face-with-horns.png" alt="!!!" class="image">
+                <span class="element-title">{{projectName}}</span>
+                <el-button :icon="Search">
+                </el-button>
               </div>
             </el-menu-item>
             <el-divider/>
             <el-menu-item index="2">
               <div class="menu-item-container">
-                <img src="@/assets/img/emoji/sparkles.png" alt="!!!" class="image">
+                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="image">
                 <span class="element-title" @click="addCanvas">新建画布</span>
               </div>
             </el-menu-item>
             <el-divider/>
 
             <el-menu-item index="3">
-              <img src="@/assets/img/emoji/rainbow.png" alt="!!!" class="image">
+              <img src="@/assets/imgs/emoji/rainbow.png" alt="!!!" class="image">
               <span class="element-title">页面视图</span>
             </el-menu-item>
 
@@ -62,10 +66,10 @@
 
 <script setup>
 import {computed, reactive, ref} from 'vue'
-import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
+import {Menu as IconMenu, Message, Search, Setting} from '@element-plus/icons-vue'
 import router from "@/router";
 
-
+const projectName = ref('')
 
 const iframeSrc = computed(() => {
   return `../../public/dist/index.html?id=${pageId.value}`;
@@ -74,7 +78,7 @@ const iframeSrc = computed(() => {
 const pageId = ref('1')
 
 const pages = reactive([
-  {id:'1',type:'plain',text:'one'},
+  {id:'1',type:'plain',text:'画布'},
 ])
 
 const item = {

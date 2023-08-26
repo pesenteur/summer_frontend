@@ -20,7 +20,7 @@ register()
 // window['vue-advanced-chat'].register()
 export default {
   methods: {
-    menuActionHandler({ action }) {
+    menuActionHandler({action,}) {
       console.log(action)
       switch (action.name) {
         case 'inviteUser':

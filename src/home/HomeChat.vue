@@ -13,19 +13,6 @@
     </el-table>
   </el-card>
 </template>
-
-<style scoped>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.title{
-  color:black;
-}
-</style>
-
 <script setup>
 import {reactive} from "vue";
 const tableData = reactive([
@@ -46,3 +33,15 @@ const tableData = reactive([
   },
 ])
 </script>
+
+<style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  color: black;
+}
+</style>

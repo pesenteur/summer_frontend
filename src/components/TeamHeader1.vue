@@ -18,6 +18,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import router from "@/router";
+import { useRoute } from 'vue-router';
 const drawer = ref(false)
 
 const buttons = reactive([
@@ -39,7 +40,11 @@ function jump(buttonId) {
     router.push('/member')
   }else if(buttonId === '004'){
     drawer.value = !drawer.value
-    router.push('/')
+    console.log('##############')
+    console.log(router)
+    router.push({
+      path:'/chatHome',
+    })
   }else{
     router.push('/')
   }

@@ -9,24 +9,30 @@ const router = createRouter({
     }, {
         path: '/login',
         component: () => import('@/views/account/LoginComponent.vue')
-    },{
+    }, {
         path: '/test',
         component:()=>import('@/views/dragger/draggerTotal.vue')
-    },{
+    }{
         path: '/member',
-        component:()=>import('@/views/member/MemberBoard.vue')
-    },{
+        component: () => import('@/views/member/MemberBoard.vue')
+    }, {
         path: '/project',
-        component:()=>import('@/views/projectManage/projectManage.vue')
-    },{
+        component: () => import('@/views/projectManage/projectManage.vue')
+    }, {
         path: '/workSpace',
-        component:()=>import('@/views/myProject/myProject.vue')
+        component: () => import('@/views/myProject/myProject.vue')
+    }, {
+        path: '/team/:team_id/chatHome',
+        component: () => import('@/views/chatHome/chatHome.vue')
     },{
         path: '/drag',
         component:()=>import('@/views/dragger/draggerTotal.vue')
     },{
         path:'/chatHome',
         component:()=>import('@/views/home.vue')
+    },{
+        path:'/switch',
+        component:()=>import('@/views/switch/SwitchBoard.vue')
     }]
 
 });

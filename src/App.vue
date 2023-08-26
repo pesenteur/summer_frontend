@@ -10,6 +10,15 @@
 import TeamFooter from './components/TeamFooter.vue'
 import TeamHeader from './components/TeamHeader.vue'
 import TeamNavi from "@/components/TeamNavi.vue";
+import VueNativeSock from 'vue-native-websocket';
+
+
+// Vue.use(VueNativeSock, 'http://127.0.0.1:8000/', {
+//   store: Vue.store,
+//   format: 'json',
+//   reconnection: true,
+// });
+
 
 
 // export default {
@@ -21,29 +30,6 @@ import TeamNavi from "@/components/TeamNavi.vue";
 // }
 </script>
 
-<style>
+<style >
 
-* {
-  margin: 0;
-  padding: 0;
-}
-
-body,
-html {
-  margin: 0;
-  padding: 0;
-}
-
-input:-webkit-autofill,
-textarea:-webkit-autofill,
-select:-webkit-autofill {
-  -webkit-text-fill-color: #ededed !important;
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-  background-color: transparent;
-  background-image: none;
-  transition: background-color 50000s ease-in-out 0s;
-}
-.guidance{
-  position:relative;
-}
 </style>

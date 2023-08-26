@@ -14,19 +14,6 @@
   </el-card>
 </template>
 
-<style scoped>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.title{
-  color:black;
-}
-
-</style>
-
 <script setup>
 import {reactive} from "vue";
 import router from "@/router";
@@ -72,4 +59,16 @@ function jump(){
   router.push('/project')
 }
 </script>
+
+<style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  color: black;
+}
+</style>
 

@@ -61,13 +61,13 @@
             </el-button>
             <el-text size="large">{{titleName}}</el-text>
             <el-dialog v-model="dialogTableVisible" title="用户列表">
-              <el-table :data="filterUserTableData" style="width: 100%">
-                <el-table-column prop="name" label="Name" width="150" />
-                <el-table-column prop="nickname" label="Nickname" width="150"/>
-                <el-table-column prop="email" label="Email" width="180"/>
-                <el-table-column align="right" width="150">
+              <el-table :data="userTableData" style="width: 100%">
+                <el-table-column prop="name" label="Name" width="200" />
+                <el-table-column prop="username" label="Username" width="200"/>
+                <el-table-column prop="email" label="Email" width="200"/>
+                <el-table-column align="right" width="200">
                   <template #header>
-                    <el-input v-model="search" size="small" placeholder="Type to search" />
+                    <el-input v-model="searchUser" size="small" placeholder="Type to search" @change="queryAllUser(searchUser)" />
                   </template>
                   <template #default="scope">
                     <el-button
@@ -87,7 +87,7 @@
         <el-main>
           <el-table :data="filterTableData" style="width: 100%">
             <el-table-column prop="name" label="Name" width="150" />
-            <el-table-column prop="nickname" label="Nickname" width="150"/>
+            <el-table-column prop="username" label="Nickname" width="150"/>
             <el-table-column prop="email" label="Email" width="180"/>
             <el-table-column align="right" width="150">
               <template #header>
@@ -125,9 +125,6 @@ import type { TableColumnCtx, TableInstance } from 'element-plus'
 
 import teamFunction from '../../api/team.js'
 import { InfoFilled } from '@element-plus/icons-vue'
-const filterRole = (value: string, row) => {
-  return row.role === value
-}
 const teamData = ref([]) //侧栏的数据
 const tableData = ref([]) //主表的数据
 const userTableData = ref([]) //搜索表中所有的数据
@@ -136,6 +133,7 @@ const dialogTableVisible = ref(false)
 const isAdd = ref(true)
 const titleName = ref('') //主表的标题
 const search = ref('') //搜索框用
+const searchUser = ref('')
 
 
 const formLabelWidth = '140px'
@@ -171,6 +169,13 @@ async function deleteTeam(team_id){
 }
 async function handleDelete(){
 
+}
+async function queryAllUser(search_number){
+  let result = await teamFunction.queryAllUser(search_number)
+  console.log('***********Userresult***********')
+  console.log(result.data)
+  console.log('***********result***********')
+  userTableData.value = result.data.results
 }
 
 onMounted(() => {
@@ -208,28 +213,6 @@ const handleEdit = (index, row) => {
 }
 
 
-const gridData = [
-  {
-    date: '2016-05-02',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-  {
-    date: '2016-05-04',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-  {
-    date: '2016-05-01',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-  {
-    date: '2016-05-03',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-]
 
 
 </script>

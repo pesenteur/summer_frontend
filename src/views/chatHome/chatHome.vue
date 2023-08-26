@@ -2,7 +2,13 @@
   <vue-advanced-chat :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)" :messages="JSON.stringify(messages)"
     :room-actions="JSON.stringify(roomActions)" :rooms-loaded="true" :messages-loaded="true"
     @fetch-messages="fetchMessages($event.detail[0])" @send-message="sendMessage($event.detail[0])" :height="height"
-    @add-room="addRoom" :menu-action-handler="menuActionHandler" :room-info-enabled="true">
+    @add-room="addRoom" :menu-action-handler="menuActionHandler($event.detail[0])" :room-info-enabled="true"
+    :message-actions="JSON.stringify(messageActions)" @message-action-handler="handleCustomMessageAction($event.detail[0])">
+    <template #message-content="{ message }">
+      <div :class="'message ' + 'sender-' + message.senderId">
+        {{ message.content }}
+      </div>
+    </template>
   </vue-advanced-chat>
 </template>
 
@@ -14,7 +20,8 @@ register()
 // window['vue-advanced-chat'].register()
 export default {
   methods: {
-    menuActionHandler({ roomId, action }) {
+    menuActionHandler({ action }) {
+      console.log(action)
       switch (action.name) {
         case 'inviteUser':
           console.log("invite")
@@ -93,10 +100,26 @@ export default {
         // this.addNewMessage()
       })
     },
-
+    handleCustomMessageAction({ roomId,action, message }) {
+      switch (action.name) {
+        case 'replyAction':
+          console.log(action.name)
+          // 处理回复操作的逻辑
+          break;
+        case 'editAction':
+          // 处理编辑操作的逻辑
+          break;
+        case 'deleteAction':
+          // 处理删除操作的逻辑
+          break;
+        case 'privateChatAction':
+          // 处理私聊操作的逻辑
+          break;
+        // Add more cases for other custom actions
+      }
+    },
     addMessages(reset) {
       const messages = []
-
       for (let i = 0; i < 30; i++) {
         messages.push({
           _id: reset ? i : this.messages.length + i,
@@ -125,6 +148,26 @@ export default {
       currentUserId: '1234',
       height: '800px',
       content: "",
+      messageActions: [
+        {
+          name: 'replyAction',
+          title: '回复'
+        },
+        {
+          name: 'editAction',
+          title: '编辑',
+          onlyMe: true
+        },
+        {
+          name: 'deleteAction',
+          title: '删除',
+          onlyMe: true
+        },
+        {
+          name: 'privateChatAction',
+          title: '私聊'
+        }
+      ],
       rooms: [{
         roomId: '1',
         roomName: 'Room 1',

@@ -25,6 +25,7 @@ const actions = {
         const response = await accountAPI.loginWithPassword(email, password);
         if (response.status === 200) {
             this.token = response.data.token;
+            console.log(this.token)
             setToken(response.data.token);
             return "登录成功";
         }

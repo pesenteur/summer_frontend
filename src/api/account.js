@@ -19,12 +19,12 @@ export default {
             }
         });
     },
-    register(name, password, confirm_password, email, nickname) {
+    register(name, password, confirm_password, email, username) {
         return requests({
             url: '/register',
             method: 'POST',
             data: {
-                name, password, confirm_password, email, nickname
+                name, password, confirm_password, email, username
             }
         });
     },

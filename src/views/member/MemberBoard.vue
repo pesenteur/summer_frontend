@@ -30,24 +30,12 @@
             </div>
             <el-divider />
             <el-menu
-                default-active="2"
+                default-active="1"
                 class="el-menu-vertical-demo"
             >
-              <el-menu-item index="1">
+              <el-menu-item v-for="team in teamData" :key="team.teamId">
                 <el-icon><icon-menu /></el-icon>
-                <span  class="moji">23-BUAA-SE-2023-SUMMER </span>
-              </el-menu-item>
-              <el-menu-item index="2">
-                <el-icon><icon-menu /></el-icon>
-                <span class="moji">23-BUAA-SE-2023-SUMMER</span>
-              </el-menu-item>
-              <el-menu-item index="3">
-                <el-icon><icon-menu /></el-icon>
-                <span class="moji">23-BUAA-SE-2023-SUMMER</span>
-              </el-menu-item>
-              <el-menu-item index="4">
-                <el-icon><icon-menu /></el-icon>
-                <span class="moji">23-BUAA-SE-2023-SUMMER</span>
+                <span class="moji">{{team.teamName}}</span>
               </el-menu-item>
             </el-menu>
           </el-col>
@@ -65,11 +53,9 @@
 
         <el-main>
           <el-table ref="tableRef" row-key="19106001223" :data="tableData" style="width: 100%">
-
             <el-table-column prop="name" label="Name" width="180" />
             <el-table-column prop="19106001223" label="Phone" width="180"/>
             <el-table-column prop="team" label="Team" width="200" :formatter="formatter" />
-
             <el-table-column
                 prop="role"
                 label="Role"
@@ -104,26 +90,31 @@
 import {
   Menu as IconMenu,
 } from '@element-plus/icons-vue'
-import {reactive, ref} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
-
+import {getToken} from '../../utils/token.js'
+import teamFunction from '../../api/team.js'
 interface User {
   19106001223: string
   name: string
   team: string
   role: string
 }
-
 const tableRef = ref<TableInstance>()
-
-
 const formatter = (row: User, column: TableColumnCtx<User>) => {
   return row.team
 }
 const filterRole = (value: string, row: User) => {
   return row.role === value
 }
+// const teamData = reactive([
+//   {
+//     teamId:'1',
+//     teamName:'23-BUAA-SE-2023-SUMMER'
+//   }
+// ])
 
+const teamData = reactive(teamFunction.queryAllTeams())
 
 const tableData: User[] = [
   {
@@ -138,67 +129,10 @@ const tableData: User[] = [
     team: '没有名字团队',
     role: '后端工程师',
   },
-  {
-    19106001223: '2016-05-04',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '前端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
-  {
-    19106001223: '2016-05-01',
-    name: '张之睿',
-    team: '没有名字团队',
-    role: '后端工程师',
-  },
 ]
+onMounted(() => {
+
+});
 
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'

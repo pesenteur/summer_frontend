@@ -5,7 +5,7 @@
 <template>
   <div class="common-layout">
     <el-container class="all">
-      <a class="foot">北航小学期 &nbsp; ©2012-2023 &nbsp; 京ICP备14055711号-2 &nbsp; 京公网安备11010502045884号</a>
+      <a class="foot">北航小学期 &nbsp; ©2012-2023 &nbsp; 归xxx小组所有 &nbsp; </a>
     </el-container>
   </div>
 </template>

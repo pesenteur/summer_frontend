@@ -91,4 +91,11 @@ export default {
             }
         });
     },
+    queryAllUser(search) {
+        console.log(`users?${search}`)
+        return requests({
+            url: `users?search=${search}`,
+            method: 'GET',
+        });
+    },
 }

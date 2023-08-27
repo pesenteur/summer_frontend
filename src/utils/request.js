@@ -24,6 +24,7 @@ requests.interceptors.response.use(response => {
     console.log(response)
     return response
 }, error => {
+    console.log(error)
     if (error.response && error.response.status === 401) {
         const accountStore = useAccountStore();
         accountStore.logout();

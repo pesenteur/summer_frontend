@@ -9,6 +9,11 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.4.2",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/vue-fontawesome": "^3.0.3",
     "@hocuspocus/provider": "^2.4.0",
     "@tiptap/extension-character-count": "^2.1.7",
     "@tiptap/extension-collaboration": "^2.1.7",
@@ -20,12 +25,13 @@
     "@tiptap/vue-3": "^2.1.7",
     "axios": "^1.4.0",
     "element-plus": "^2.3.9",
+    "font-awesome": "^4.7.0",
     "pinia": "^2.1.6",
     "vue": "^3.3.4",
     "vue-advanced-chat": "^2.0.7",
     "vue-native-websocket": "^2.0.15",
     "vue-router": "^4.2.4",
-    "yjs": "^13.6.7"
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.3.1",

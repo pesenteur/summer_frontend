@@ -3,8 +3,6 @@
     <el-aside width="200px" >
       <el-row class="tac">
         <el-col :span="24">
-
-
           <el-menu
               default-active="2"
               class="element-back"

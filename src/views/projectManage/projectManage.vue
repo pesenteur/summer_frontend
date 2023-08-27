@@ -28,12 +28,7 @@
 
             <el-menu-item index="5">
 
-              <span class="element-deracote2">我管理的</span>
-            </el-menu-item>
-
-            <el-menu-item index="6">
-
-              <span class="element-deracote2">我参与的</span>
+              <span class="element-deracote2">回收站</span>
             </el-menu-item>
 
           </el-menu>

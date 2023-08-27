@@ -10,8 +10,11 @@ const router = createRouter({
         path: '/login',
         component: () => import('@/views/account/LoginComponent.vue')
     }, {
+        path: '/buttonGroup',
+        component:()=>import('@/views/editor/buttonGroup.vue')
+    }, {
         path: '/test',
-        component:()=>import('@/views/dragger/draggerTotal.vue')
+        component:()=>import('@/views/myTest/myTest.vue')
     }, {
         path: '/member',
         component: () => import('@/views/member/MemberBoard.vue')
@@ -29,10 +32,13 @@ const router = createRouter({
         component:()=>import('@/views/dragger/draggerTotal.vue')
     },{
         path:'/chatHome',
-        component:()=>import('@/views/home.vue')
+        component:()=>import('@/views/chatHome/chatHome.vue')
     },{
         path:'/switch',
         component:()=>import('@/views/switch/SwitchBoard.vue')
+    },{
+        path:'/document',
+        component:()=>import('@/views/editor/editor.vue')
     }]
 
 });

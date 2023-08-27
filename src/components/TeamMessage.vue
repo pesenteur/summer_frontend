@@ -1,5 +1,8 @@
 <template>
   <button @click="table = true" class="custom-icon-button" />
+  <div class="badge-container">
+    <span class="badge_top" v-if="unreadCount > 0"></span>
+  </div>
   <el-drawer class="aside_msg" v-model="table" title="我的消息" direction="rtl">
     <el-col>
       <div class="card-container">
@@ -7,9 +10,9 @@
           <div class="details-container">
             <details @click="switchState(msg)">
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
-                  来自{{ msg.name }}的消息
-                  <span class="badge">{{ msg.isread === 'unread' ? '未读' : '已读' }}</span>
-                </summary>
+                来自{{ msg.name }}的消息
+                <span class="badge" v-if="msg.isread === 'unread'"></span>
+              </summary>
               <div class="content">{{ msg.content }}</div>
             </details>
           </div>
@@ -20,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { ref, computed } from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 
 import { Edit, Message } from "@element-plus/icons-vue";
@@ -89,9 +92,13 @@ const messages: User[] = [
   },
 ]
 
+const unreadCount = computed(() => {
+  return messages.filter(msg => msg.isread === 'unread').length;
+});
+
 const switchState = (msg: User) => {
   msg.isread = msg.isread === 'unread' ? 'read' : 'unread';
-}
+};
 
 </script>
 
@@ -104,8 +111,18 @@ const switchState = (msg: User) => {
   height: 2px;
 }
 
+.badge_top {
+  position: absolute;
+  margin-left: -33px;
+  margin-top: 17px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+}
+
 .custom-icon-button {
-  background-image: url('@/assets/gif/home.gif');
+  background-image: url('@/assets/envelope-regular.svg');
   /* 根据您的项目路径调整 */
   background-size: 25px;
   /* 根据需要调整 */
@@ -182,6 +199,7 @@ const switchState = (msg: User) => {
   border-radius: 50%;
   /* visibility: hidden; */
 }
+
 .content {
   padding: 10px;
   max-height: 0;
@@ -205,4 +223,5 @@ const switchState = (msg: User) => {
   width: 100%;
   margin: auto;
   font-size: 12px;
-}</style>
+}
+</style>

@@ -6,7 +6,7 @@
           <img @click="getSingleProject" src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
             <span>项目名称:{{projectName[(rowIndex)*4+colIndex]}}</span>
-            <el-button @click="deleteCard((rowIndex)*4+colIndex)" text><el-icon><CircleCloseFilled /></el-icon></el-button>
+            <el-button @click="restore((rowIndex)*4+colIndex)" text><el-icon><RefreshLeft /></el-icon></el-button>
           </div>
         </el-card>
       </el-col>
@@ -29,17 +29,16 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, computed} from 'vue'
+import {ref, reactive, onMounted, computed, onUpdated, onBeforeUpdate} from 'vue'
 import projectDialog from "./projectDialog.vue";
 import {useRouter} from "vue-router";
 
 import projectAPI from '@/api/proj.js'
-import {CircleCloseFilled} from "@element-plus/icons-vue";
+import {CircleCloseFilled, RefreshLeft} from "@element-plus/icons-vue";
 
 const router = useRouter()
 
-
-const currentDate = reactive(new Date())
+const props = defineProps(['teamId'])
 
 const projectName = ref([])
 
@@ -56,13 +55,11 @@ const numRows = computed(()=>{
 
 const dialogFormVisible = ref(false)
 
-const formLabelWidth = '140px'
-
-const props = defineProps(['teamId'])
-
 const team=ref('')
 
 team.value = props.teamId
+
+console.log(team.value)
 
 const form = reactive({
   name: '',
@@ -83,21 +80,21 @@ async function getSingleProject() {
     console.log('getSingleProject成功被调用！')
 }
 
-async function deleteCard(projPos) {
-  let projId = myResult.value[projPos].id
-  console.log('projPos',projPos)
-  totalCards.value--
-
-  const result = await projectAPI.deleteProject(team.value,projId)
-  await showProjects1()
-
-}
-async function showProjects1(){
+// async function deleteCard(projPos) {
+//   let projId = myResult.value[projPos].id
+//   console.log('projPos',projPos)
+//   totalCards.value--
+//
+//   const result = await projectAPI.deleteProject(team.value,projId)
+//   await showProjects()
+//
+// }
+async function showProjects(){
   rows.value = []
-  const result = await projectAPI.getAllProjects(team.value)
+  const result = await projectAPI.getReProject(team.value)
   myResult.value = result.data
   // projectName.value = result.data.name
-  console.log('result',result)
+  console.log('result111',result)
   let projNames = []
   for(const proj of result.data){
     projNames.push(proj.name)
@@ -106,7 +103,7 @@ async function showProjects1(){
   totalCards.value = projNames.length
   console.log('numRows',numRows.value)
   for (let i = 0; i < numRows.value; i++) {
-    console.log('mco;rejwvc')
+
     let row = []
     for (let j = 0; j < cardsPerRow; j++) {
       let cardIndex = i * cardsPerRow + j
@@ -124,14 +121,28 @@ async function showProjects1(){
   console.log('name@@@@',projectName.value[0])
 }
 
+async function restore(projPos){
+  let projId = myResult.value[projPos].id
+  console.log('projPos',projPos)
+  console.log('projId',projId)
+  totalCards.value--
+  const result = await projectAPI.restoreProject(team.value,projId)
+  await showProjects()
+}
+
 defineExpose({
-  showProjects1
+  showProjects
 })
 
 onMounted(async() => {
-  await showProjects1()
+  await showProjects()
   console.log('$$$$$$$$$$',totalCards.value)
 })
+
+// onBeforeUpdate(async() => {
+//   await showProjects()
+//   console.log('$$$$$$$$$$',totalCards.value)
+// })
 
 </script>
 

@@ -21,18 +21,18 @@ export default {
         return requests({
             url:'projects',
             method: 'GET',
-            data: {
+            params: {
                 team
             }
         })
 
     },
-    deleteProject(id){
+    deleteProject(team, projectId){
         return requests({
-            url:`/projects/${id}`,
+            url:`/projects/${projectId}`,
             method:'DELETE',
             data:{
-                id
+                team
             }
         })
     },
@@ -43,16 +43,22 @@ export default {
         })
 
     },
-    errorPrintTest(){
-        return requests({
-            url:'/project',
-            method:'GET'
-        })
-    },
-    getReProject(){
+    getReProject(team){
         return requests({
             url:'/project/deleted',
-            mehtod:'GET'
+            mehtod:'GET',
+            params:{
+                team
+            }
         })
     },
+    restoreProject(team,id){
+        return requests({
+            url:'/project/restore',
+            method:'PATCH',
+            data:{
+                team,id
+            }
+        })
+    }
 }

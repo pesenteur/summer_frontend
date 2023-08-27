@@ -1,6 +1,5 @@
 <template>
   <div class="back">
-
     <div class="board">
       <span class="title">请选择团体</span>
       <br>
@@ -10,9 +9,14 @@
         <el-menu-item index="1" @click="jumpToHome(team.id)">
           <div class="moji">
             <el-icon><icon-menu /></el-icon>
-            <span class="moji">{{ team.name }}</span>
+            <span class="team-name">{{ team.name }}</span>
           </div>
         </el-menu-item>
+      </el-menu>
+      <el-menu>
+        <div class="create-team-btn" @click="createTeam">
+          <font-awesome-icon :icon="['fas', 'plus']" />
+        </div>
       </el-menu>
     </div>
   </div>
@@ -27,7 +31,7 @@ import {
 import { onMounted, ref } from 'vue'
 import teamFunction from "@/api/team";
 import { useRoute, useRouter } from "vue-router";
-import {setTeamId} from "@/utils/token"
+import { setTeamId } from "@/utils/token"
 
 const teamTeamTable = ref([])
 const route = useRoute();
@@ -38,11 +42,11 @@ async function queryALL() {
 }
 
 function jumpToHome(team_id) {
-	console.log('*******TeamId********')
-    console.log(team_id)
-	console.log('*********************')
-	setTeamId(team_id)
-	router.push(('/'))
+  console.log('*******TeamId********')
+  console.log(team_id)
+  console.log('*********************')
+  setTeamId(team_id)
+  router.push(('/'))
 
 }
 
@@ -62,6 +66,14 @@ onMounted(() => {
 
 
 <style scoped>
+.team-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  /* Change the color to your preference */
+  margin-left: 10px;
+}
+
 .back {
   display: flex;
   justify-content: center;
@@ -72,11 +84,11 @@ onMounted(() => {
 
 .board {
   background-color: white;
+  height: 70%;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  
+  width: 50%;
   text-align: center;
 }
 
@@ -116,17 +128,62 @@ onMounted(() => {
 .team-icon {
   margin-right: 10px;
 }
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease; /* 添加过渡效果 */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  /* 添加过渡效果 */
 }
+
 .fade-enter,
 .fade-leave-to {
-  opacity: 0; /* 初始状态为透明 */
-  transform: translateY(20px); /* 初始状态下向下偏移一些 */
+  opacity: 0;
+  /* 初始状态为透明 */
+  transform: translateY(20px);
+  /* 初始状态下向下偏移一些 */
 }
+
 .team-name {
   font-size: 18px;
   font-weight: bold;
+}
+
+.create-team-btn {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.create-team-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.create-team-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.create-team-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  background-color: #f0f0f0;
+  border: 2px #333;
+  height: 40px;
+  margin: 0 auto;
+}
+
+.create-team-btn:hover {
+  background-color: #999;
+}
+
+.create-team-icon {
+  font-size: 24px;
+  color: #333;
 }
 </style>

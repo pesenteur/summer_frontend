@@ -3,7 +3,7 @@
     <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
       <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
         <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-          <img @click="getSingleProject" src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+          <img src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
             <span>项目名称:{{projectName[(rowIndex)*4+colIndex]}}</span>
             <el-button @click="restore((rowIndex)*4+colIndex)" text><el-icon><RefreshLeft /></el-icon></el-button>
@@ -71,14 +71,14 @@ function handleExtraCardClick(){
 }
 
 
-async function getSingleProject() {
-    const result = await projectAPI.getSingleProject(form.name, form.describe, team.value);
-
-    dialogFormVisible.value = false
-    projectName.value = result.data.name
-    await router.push('/drag')
-    console.log('getSingleProject成功被调用！')
-}
+// async function getSingleProject() {
+//     const result = await projectAPI.getSingleProject(form.name, form.describe, team.value);
+//
+//     dialogFormVisible.value = false
+//     projectName.value = result.data.name
+//     await router.push('/drag')
+//     console.log('getSingleProject成功被调用！')
+// }
 
 // async function deleteCard(projPos) {
 //   let projId = myResult.value[projPos].id

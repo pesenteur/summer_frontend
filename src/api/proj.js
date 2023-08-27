@@ -12,14 +12,16 @@ export default {
     },
     changeProject(name,describe){
       return requests({
-          url:`/projects/${name, describe}`,
+          url:'/projects',
           method: 'PATCH',
-
+          params:{
+              name,describe
+          }
       })
     },
     getAllProjects(team){
         return requests({
-            url:'projects',
+            url:'/projects',
             method: 'GET',
             params: {
                 team
@@ -32,21 +34,24 @@ export default {
             url:`/projects/${projectId}`,
             method:'DELETE',
             data:{
-                team
+                team,projectId
             }
         })
     },
-    getSingleProject(){
+    getSingleProject(id){
         return requests({
             url:'/projects',
-            method:'GET'
+            method:'GET',
+            params:{
+                id
+            }
         })
 
     },
     getReProject(team){
         return requests({
             url:'/project/deleted',
-            mehtod:'GET',
+            method:'GET',
             params:{
                 team
             }

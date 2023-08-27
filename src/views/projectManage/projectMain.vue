@@ -1,11 +1,12 @@
 <template>
   <div>
-    <el-row v-for="(row, rowIndex) in rows" :key="rowIndex">
+    <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
       <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
         <el-card @click="getSingleProject" shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
           <img src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
-            <span>项目名称</span>
+            <span>项目名称{{projectName}}</span>
+            <el-button @click="deleteCard" text><el-icon><CircleCloseFilled /></el-icon></el-button>
           </div>
         </el-card>
       </el-col>
@@ -28,14 +29,24 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import {ref, reactive, onMounted} from 'vue'
 import projectDialog from "./projectDialog.vue";
-import router from "@/router";
+import {useRouter} from "vue-router";
+
 import projectAPI from '@/api/proj.js'
+import {CircleCloseFilled} from "@element-plus/icons-vue";
+
+const router = useRouter()
 
 const currentDate = reactive(new Date())
 
-const totalCards = 5
+const projectName = reactive([])
+
+const
+
+// const totalCards = ref()
+
+const totalCards = 12
 const cardsPerRow = 4
 const rows = ref([])
 
@@ -61,6 +72,7 @@ for (let i = 0; i < numRows; i++) {
     }
   }
   rows.value.push(row)
+  console.log("@@@",rows.value[1])
 }
 
 function handleExtraCardClick(){
@@ -71,9 +83,22 @@ function handleExtraCardClick(){
 async function getSingleProject() {
     const result = await projectAPI.getSingleProject(form.name, form.describe, team.value);
     dialogFormVisible.value = false
+    projectName.value = result.data.name
     await router.push('/drag')
     console.log('getSingleProject成功被调用！')
 }
+
+async function deleteCard() {
+  const result = await projectAPI.deleteProject()
+}
+
+onMounted(() => {
+
+    const result = projectAPI.getAllProjects()
+    projectName.value = result.data.name
+
+})
+
 </script>
 
 <style>
@@ -107,7 +132,12 @@ async function getSingleProject() {
   height: 100%;
 }
 
+.card-row{
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .card-col {
-  margin:50px;
+  margin:30px;
 }
 </style>

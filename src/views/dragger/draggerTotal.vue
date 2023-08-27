@@ -16,7 +16,16 @@
               </div>
             </el-menu-item>
             <el-divider/>
+
             <el-menu-item index="2">
+              <div class="menu-item-container">
+                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="image">
+                <span class="element-title" @click="jump">项目文档</span>
+              </div>
+            </el-menu-item>
+            <el-divider/>
+
+            <el-menu-item index="3">
               <div class="menu-item-container">
                 <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="image">
                 <span class="element-title" @click="addCanvas">新建画布</span>
@@ -24,7 +33,7 @@
             </el-menu-item>
             <el-divider/>
 
-            <el-menu-item index="3">
+            <el-menu-item index="4">
               <img src="@/assets/imgs/emoji/rainbow.png" alt="!!!" class="image">
               <span class="element-title">页面视图</span>
             </el-menu-item>
@@ -65,7 +74,12 @@
 <script setup>
 import {computed, reactive, ref} from 'vue'
 import {Menu as IconMenu, Message, Search, Setting} from '@element-plus/icons-vue'
-import router from "@/router";
+
+import { useRoute,useRouter} from "vue-router";
+
+import editor from '../editor/editor.vue'
+
+const router = useRouter()
 
 const projectName = ref('')
 
@@ -89,6 +103,10 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 function addCanvas(){
   const page = {id:(parseInt(pageId.value)+1).toString(),type:'plain',text:'画布'}
   pages.push(page)
+}
+
+function jump(){
+  router.push('/document')
 }
 
 </script>

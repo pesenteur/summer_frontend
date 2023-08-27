@@ -75,10 +75,9 @@ function handleExtraCardClick(){
 
 
 async function getSingleProject() {
-    const result = await projectAPI.getSingleProject(form.name, form.describe, team.value);
+    const result = await projectAPI.getSingleProject();
 
     dialogFormVisible.value = false
-    projectName.value = result.data.name
     await router.push('/drag')
     console.log('getSingleProject成功被调用！')
 }

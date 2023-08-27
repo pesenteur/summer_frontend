@@ -1,14 +1,18 @@
 <template>
   <button @click="table = true" class="custom-icon-button" />
-  <el-drawer class="aside_msg" v-model="table" title="我的消息" direction="rtl" >
+  <el-drawer class="aside_msg" v-model="table" title="我的消息" direction="rtl">
     <el-col>
       <div class="card-container">
-        <el-card v-for="msg in messages" :key="msg.userId" shadow="hover" class="decorate-card" @click="switchState">
-          <span style="font-size:13px">{{ msg.userId }}</span>
-          <el-divider />
-          {{ msg.name }}
-          <br />
-          {{ msg.content }}
+        <el-card v-for="(msg, index) in messages" :key="msg.userId" class="decorate-card">
+          <div class="details-container">
+            <details @click="switchState(msg)">
+              <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
+                  来自{{ msg.name }}的消息
+                  <span class="badge">{{ msg.isread === 'unread' ? '未读' : '已读' }}</span>
+                </summary>
+              <div class="content">{{ msg.content }}</div>
+            </details>
+          </div>
         </el-card>
       </div>
     </el-col>
@@ -18,10 +22,10 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { ElDrawer, ElMessageBox } from 'element-plus'
+
 import { Edit, Message } from "@element-plus/icons-vue";
 const table = ref(false)
 const isRead = ref('hover')
-
 
 
 
@@ -85,12 +89,8 @@ const messages: User[] = [
   },
 ]
 
-function switchState() {
-  if (isRead.value === 'hover') {
-    isRead.value = 'never'
-  } else {
-    console.log('该消息已读')
-  }
+const switchState = (msg: User) => {
+  msg.isread = msg.isread === 'unread' ? 'read' : 'unread';
 }
 
 </script>
@@ -120,13 +120,89 @@ function switchState() {
   cursor: pointer;
   outline: none;
 }
-::v-deep .aside_msg{
+
+::v-deep .aside_msg {
   margin: 20px 20px 20px 0px;
   height: calc(100vh - 40px) !important;
 }
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.decorate-card {
+  position: relative;
+  /* Add this to make the badge position relative to the card */
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+
+.decorate-card:hover {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.details-container {
+  padding: 10px;
+  font-size: 14px;
+  position: relative;
+  /* Add this to make the badge position relative to the container */
+}
+
+.summary {
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+  /* Add this to make the badge position relative to the summary */
+  list-style: none;
+  /* Remove the default list-style */
+  padding-left: 0;
+  /* Remove the default padding */
+  margin: 0;
+  font-size: 20px;
+  /* Remove the default margin */
+  outline: none;
+  /* Remove the default outline */
+  justify-content: space-between;
+  /* Align items to the right */
+  align-items: center;
+  /* Center vertically */
+}
+
+.badge {
+  position: absolute;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+  /* visibility: hidden; */
+}
+.content {
+  padding: 10px;
+  max-height: 0;
+  /* Initially hidden */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  /* Add transition effect */
+}
+
+.open .content {
+  max-height: 1000px;
+  /* Show content when open */
+}
+
+.el-divider {
+  margin: 10px 0;
+  border-color: #ccc;
+}
+
 .decorate-card {
   width: 100%;
   margin: auto;
   font-size: 12px;
-}
-</style>
+}</style>

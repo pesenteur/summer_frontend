@@ -378,16 +378,15 @@ export default {
   padding: 1px;
 }
 
-
-
 .editor {
-  height: 600px;
+  min-height: 600px;
   background-color: #FFF;
   border: 1px solid #0D0D0D;
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
   color: #0D0D0D;
   display: flex;
   flex-direction: column;
+  padding: 0 1em;
   // max-height: 26rem;
 
   &__header {
@@ -578,5 +577,15 @@ export default {
       }
     }
   }
+}
+</style>
+
+<style>
+.ProseMirror:focus {
+  outline: none !important;
+}
+
+.editor {
+  overflow: auto;
 }
 </style>

@@ -10,4 +10,22 @@ export default {
             },
         })
     },
+    getSingle(design){
+        return requests({
+            url:'/design',
+            method: 'GET',
+            params: {
+                design
+            }
+        })
+    },
+    getAllDesign(project){
+        return requests({
+            url:`/design`,
+            method: 'GET',
+            params:{
+                project
+            }
+        })
+    }
 }

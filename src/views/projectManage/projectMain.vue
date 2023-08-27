@@ -3,7 +3,7 @@
     <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
       <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
         <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-          <img @click="getSingleProject" src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+          <img @click="getSingleProj" src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
             <span>项目名称:{{projectName[(rowIndex)*4+colIndex]}}</span>
             <el-button @click="deleteCard((rowIndex)*4+colIndex)" text><el-icon><CircleCloseFilled /></el-icon></el-button>
@@ -35,6 +35,7 @@ import {useRouter} from "vue-router";
 
 import projectAPI from '@/api/proj.js'
 import {CircleCloseFilled} from "@element-plus/icons-vue";
+import {setProjId} from "@/utils/token";
 
 const router = useRouter()
 
@@ -74,8 +75,13 @@ function handleExtraCardClick(){
 }
 
 
-async function getSingleProject() {
-    const result = await projectAPI.getSingleProject();
+async function getSingleProj(projPos) {
+    let projId = myResult.value[projPos].id
+    console.log('projPos',projPos)
+
+    const result = await projectAPI.getSingleProject(projId);
+
+    setProjId(projId)
 
     dialogFormVisible.value = false
     await router.push('/drag')

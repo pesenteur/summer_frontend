@@ -21,7 +21,7 @@ export default {
     },
     getAllProjects(team){
         return requests({
-            url:'projects',
+            url:'/projects',
             method: 'GET',
             params: {
                 team
@@ -38,10 +38,13 @@ export default {
             }
         })
     },
-    getSingleProject(){
+    getSingleProject(id){
         return requests({
             url:'/projects',
-            method:'GET'
+            method:'GET',
+            params:{
+                id
+            }
         })
 
     },

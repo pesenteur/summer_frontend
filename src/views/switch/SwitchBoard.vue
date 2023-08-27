@@ -43,7 +43,7 @@
 import {
   Menu as IconMenu,
 } from '@element-plus/icons-vue'
-import { onMounted, ref,  reactive } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import teamFunction from "@/api/team";
 import { useRoute, useRouter } from "vue-router";
 import { setTeamId } from "@/utils/token"

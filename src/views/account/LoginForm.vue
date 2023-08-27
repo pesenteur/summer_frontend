@@ -88,7 +88,7 @@ async function loginWithPassword() {
             } else {
                 router.push('/');
             }
-        }, 2000);
+        }, 1000);
     } catch (error) {
         ElMessage({
             message: error,
@@ -215,7 +215,15 @@ async function loginWithPassword() {
     font-size: 30px;
 
 }
-
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    -webkit-text-fill-color: black !important;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    background-color: transparent;
+    background-image: none;
+    transition: background-color 50000s ease-in-out 0s;
+}
 .text-item h2 {
     font-size: 40px;
     line-height: 1;

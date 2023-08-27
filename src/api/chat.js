@@ -22,7 +22,7 @@ export default {
     },
     queryAllMessage(chat_id) {
         return requests({
-            url: `/chats/${chat_id}/message?count=100`,
+            url: `/chat/${chat_id}/message?count=10`,
             method: 'GET',
         });
     },

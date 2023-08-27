@@ -27,6 +27,7 @@ import {
 import { onMounted, ref } from 'vue'
 import teamFunction from "@/api/team";
 import { useRoute, useRouter } from "vue-router";
+import {setTeamId} from "@/utils/token"
 
 const teamTeamTable = ref([])
 const route = useRoute();
@@ -37,8 +38,12 @@ async function queryALL() {
 }
 
 function jumpToHome(team_id) {
-  console.log(team_id)
-  router.push(`/team/${team_id}/chatHome`)
+	console.log('*******TeamId********')
+    console.log(team_id)
+	console.log('*********************')
+	setTeamId(team_id)
+	router.push(('/'))
+
 }
 
 onMounted(() => {

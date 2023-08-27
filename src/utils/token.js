@@ -4,6 +4,11 @@ export const setToken = (token) => {
 export const setUser = (user_id) => {
     localStorage.setItem('USER', user_id);
 }
+export const setTeamId = (team_id) => {
+    localStorage.setItem('TEAM', team_id);
+}
+
+export const getTeamId = () => localStorage.getItem('TEAM');
 
 export const getToken = () => localStorage.getItem('TOKEN');
 

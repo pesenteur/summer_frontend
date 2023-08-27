@@ -23,6 +23,7 @@
 import { reactive, ref } from 'vue'
 import router from "@/router";
 import { useRoute } from 'vue-router';
+import {getTeamId} from '@/utils/token'
 const drawer = ref(false)
 
 const buttons = reactive([
@@ -46,9 +47,7 @@ function jump(buttonId) {
     drawer.value = !drawer.value
     console.log('##############')
     console.log(router)
-    router.push({
-      path: '/chatHome',
-    })
+	  router.push(`/team/${getTeamId()}/chatHome`)
   } else {
     router.push('/')
   }

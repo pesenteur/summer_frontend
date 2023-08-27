@@ -5,25 +5,23 @@
         <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
           <img @click="getSingleProj" src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
-            <span>项目名称:{{ projectName[(rowIndex) * 4 + colIndex] }}</span>
-            <el-button @click="deleteCard((rowIndex) * 4 + colIndex)" text><el-icon>
-                <CircleCloseFilled />
-              </el-icon></el-button>
+            <span>项目名称:{{projectName[(rowIndex)*4+colIndex]}}</span>
+            <el-button @click="deleteCard((rowIndex)*4+colIndex)" text><el-icon><CircleCloseFilled /></el-icon></el-button>
           </div>
         </el-card>
       </el-col>
 
 
-      <!--      <el-col :span="4" class="card-col" v-if="rowIndex === rows.length - 1">-->
-      <!--        <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card" @click="handleExtraCardClick">-->
-      <!--          <img src="https://pic1.zhimg.com/v2-48232582b70ecd9c53a3026ffb21e078_r.jpg?source=1940ef5c" class="image" />-->
-      <!--          <div style="padding: 10px">-->
+<!--      <el-col :span="4" class="card-col" v-if="rowIndex === rows.length - 1">-->
+<!--        <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card" @click="handleExtraCardClick">-->
+<!--          <img src="https://pic1.zhimg.com/v2-48232582b70ecd9c53a3026ffb21e078_r.jpg?source=1940ef5c" class="image" />-->
+<!--          <div style="padding: 10px">-->
 
-      <!--            <projectDialog :teamId="team"/>-->
+<!--            <projectDialog :teamId="team"/>-->
 
-      <!--          </div>-->
-      <!--        </el-card>-->
-      <!--      </el-col>-->
+<!--          </div>-->
+<!--        </el-card>-->
+<!--      </el-col>-->
 
     </el-row>
 
@@ -31,10 +29,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import {ref, reactive, onMounted, computed} from 'vue'
 import projectDialog from "./projectDialog.vue";
-import { useRouter } from "vue-router";
-import { getTeamId, setProjId } from '@/utils/token'
+import {useRouter} from "vue-router";
 
 import projectAPI from '@/api/proj.js'
 import {CircleCloseFilled} from "@element-plus/icons-vue";
@@ -54,7 +51,7 @@ const myResult = ref([])
 const cardsPerRow = 4
 const rows = ref([])
 
-const numRows = computed(() => {
+const numRows = computed(()=>{
   return Math.ceil(totalCards.value / cardsPerRow)
 })
 
@@ -64,17 +61,16 @@ const formLabelWidth = '140px'
 
 const props = defineProps(['teamId'])
 
-const team = ref('')
+const team=ref('')
 
 team.value = props.teamId
-console.log(team.value)
 
 const form = reactive({
   name: '',
-  describe: '',
+  describe:'',
 })
 
-function handleExtraCardClick() {
+function handleExtraCardClick(){
   console.log('成功被调用！')
 }
 
@@ -88,33 +84,32 @@ async function getSingleProj(projPos) {
     setProjId(projId)
 
     dialogFormVisible.value = false
-    await router.push(`/drag/${projId}`)
+    await router.push('/drag')
     console.log('getSingleProject成功被调用！')
 }
 
 async function deleteCard(projPos) {
   let projId = myResult.value[projPos].id
-  console.log('projPos', projPos)
+  console.log('projPos',projPos)
   totalCards.value--
 
-  const result = await projectAPI.deleteProject(team.value, projId)
+  const result = await projectAPI.deleteProject(team.value,projId)
   await showProjects1()
 
 }
-async function showProjects1() {
+async function showProjects1(){
   rows.value = []
-  console.log(team.value)
   const result = await projectAPI.getAllProjects(team.value)
   myResult.value = result.data
   // projectName.value = result.data.name
-  console.log('result', result)
+  console.log('result',result)
   let projNames = []
-  for (const proj of result.data) {
+  for(const proj of result.data){
     projNames.push(proj.name)
   }
   projectName.value = projNames
   totalCards.value = projNames.length
-  console.log('numRows', numRows.value)
+  console.log('numRows',numRows.value)
   for (let i = 0; i < numRows.value; i++) {
     console.log('mco;rejwvc')
     let row = []
@@ -126,21 +121,21 @@ async function showProjects1() {
     }
 
     rows.value.push(row)
-    console.log("rows", rows)
+    console.log("rows",rows)
   }
 
   console.log(totalCards.value)
-  console.log('name::::', projectName.value)
-  console.log('name@@@@', projectName.value[0])
+  console.log('name::::',projectName.value)
+  console.log('name@@@@',projectName.value[0])
 }
 
 defineExpose({
   showProjects1
 })
 
-onMounted(async () => {
+onMounted(async() => {
   await showProjects1()
-  console.log('$$$$$$$$$$', totalCards.value)
+  console.log('$$$$$$$$$$',totalCards.value)
 })
 
 </script>
@@ -176,12 +171,12 @@ onMounted(async () => {
   height: 100%;
 }
 
-.card-row {
+.card-row{
   margin-left: auto;
   margin-right: auto;
 }
 
 .card-col {
-  margin: 30px;
+  margin:30px;
 }
 </style>

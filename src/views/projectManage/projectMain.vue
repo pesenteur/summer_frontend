@@ -32,6 +32,7 @@
 import {ref, reactive, onMounted, computed} from 'vue'
 import projectDialog from "./projectDialog.vue";
 import {useRouter} from "vue-router";
+import {getTeamId, setProjId} from '@/utils/token'
 
 import projectAPI from '@/api/proj.js'
 import {CircleCloseFilled} from "@element-plus/icons-vue";
@@ -64,6 +65,7 @@ const props = defineProps(['teamId'])
 const team=ref('')
 
 team.value = props.teamId
+console.log(team.value)
 
 const form = reactive({
   name: '',
@@ -84,7 +86,7 @@ async function getSingleProj(projPos) {
     setProjId(projId)
 
     dialogFormVisible.value = false
-    await router.push('/drag')
+    await router.push(`/drag/${projId}`)
     console.log('getSingleProject成功被调用！')
 }
 

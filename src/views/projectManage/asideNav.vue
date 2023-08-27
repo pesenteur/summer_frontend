@@ -3,9 +3,9 @@
         <a href="#" class="box"><i class="iconfont icon-liebiao"></i><span>工作项 </span></a>
         <a href="#" class="box"><i class="iconfont icon-cangku"></i><span> 项目</span></a>
         <a href="#" class="box"><i class="iconfont icon-zhuti_tiaosepan"></i><span>theme</span></a>
-        <a href="#" class="box"><i class="iconfont icon-qianbao" @click="showProj"></i><span>全部项目</span></a>
+        <a href="#" class="box"><i class="iconfont icon-qianbao"></i><span>全部项目</span></a>
         <a href="#" class="box"><i class="iconfont icon-tupian"></i><span>项目视图</span></a>
-        <a href="#" class="box"><i class="iconfont icon-erweima" @click="unShowProj"></i><span>回收站</span></a>
+        <a href="#" class="box"><i class="iconfont icon-erweima"></i><span>回收站</span></a>
         <a href="#" class="box"><i class="iconfont icon-dunpaibaoxianrenzheng"></i><span>authentication</span></a>
         <a href="#" class="box"><i class="iconfont icon-dengchu"></i><span>cancellation</span></a>
     </div>
@@ -38,24 +38,6 @@ const toggleSubMenu = (index) => {
 const toggleSidebar = () => {
     isSidebarClosed.value = !isSidebarClosed.value;
 };
-
-const props = defineProps(['ifShow'])
-
-const ifShow = ref(true)
-
-ifShow.value = props.ifShow.value
-
-function showProj(){
-  ifShow.value = true
-}
-
-function unShowProj(){
-  ifShow.value = false
-}
-
-defineExpose({
-
-})
 </script>
 <style scoped>
 * {

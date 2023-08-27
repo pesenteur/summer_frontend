@@ -190,11 +190,11 @@ async function addHistoryMessage({ room, options = {} }){
 
 
 function upMessage(event) {
-	let temp = JSON.parse(event.data).data
+	let temp = JSON.parse(event.data)
 	let message = {
 		_id: temp.id,
 		content: temp.content,
-		senderId: user_id.value,
+		senderId: user_id.value.toString(),
 		username: 'John Doe',
 		date: temp.created_time,
 		timestamp: temp.created_time,
@@ -212,7 +212,7 @@ onMounted(() => {
 	getTeamMember()
 	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
-	socket.value.addEventListener('error', event => console.log(event))
+
 })
 
 

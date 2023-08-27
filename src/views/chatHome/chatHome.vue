@@ -86,8 +86,6 @@ const messageActions = reactive([
 		title: '私聊'
 	}
 ])
-
-
 const roomActions = reactive([
 	{name: 'inviteUser', title: 'Invite User'},
 	{name: 'removeUser', title: 'Remove User'},
@@ -130,6 +128,29 @@ async function addData() {
 	rooms.value = modifiedRoom
 	console.log('***********result***********')
 }
+async function addHistoryMessage(){
+	console.log('**************')
+	let res = await chatFunction.queryAllMessage('cec5978e78604609bf74accb4fb08b5a')
+	console.log(res.data)
+	let tempMessage = []
+	res.data.forEach((temp) => {
+		let message = {
+			_id: temp.id,
+			content: temp.content,
+			senderId: temp.sender.toString(),
+			username: 'John Doe',
+			date: temp.created_time,
+			timestamp: temp.created_time,
+			avatar: '',
+		}
+		console.log(message)
+		messages.value.unshift(message)
+	})
+	// messages.value = tempMessage
+	console.log('curentId '+currentUserId.value)
+	console.log('**************')
+}
+
 
 function upMessage(event) {
 	let temp = JSON.parse(event.data).data
@@ -146,12 +167,12 @@ function upMessage(event) {
 	console.log(messages)
 }
 
-
 onMounted(() => {
 	team_id.value = route.params.team_id
 	user_id.value = getUserId()
-	currentUserId.value = getUserId()
+	currentUserId.value = user_id.value
 	addData()
+	addHistoryMessage()
 	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
 	socket.value.addEventListener('error', event => console.log(event))
@@ -173,7 +194,7 @@ function sendMessage(message) {
 	let formatMessage = {
 		"team": team_id.value,
 		"receiver": "",
-		"chat": "a5a8e999-6dc9-468b-8b90-47e372951454",
+		"chat": "cec5978e78604609bf74accb4fb08b5a",
 		"content": message.content,
 		"type": "text"
 	}
@@ -192,7 +213,6 @@ function sendMessage(message) {
 	//   }
 	// ]
 }
-
 function fetchMessages({options = {}}) {
 	// setTimeout(() => {
 	//   if (options.reset) {
@@ -204,7 +224,6 @@ function fetchMessages({options = {}}) {
 	//   // this.addNewMessage()
 	// })
 }
-
 function handleCustomMessageAction({roomId, action, message}) {
 	switch (action.name) {
 		case 'replyAction':
@@ -223,7 +242,6 @@ function handleCustomMessageAction({roomId, action, message}) {
 		// Add more cases for other custom actions
 	}
 }
-
 function addMessages(reset) {
 	const messages = []
 	for (let i = 0; i < 30; i++) {

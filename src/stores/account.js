@@ -17,6 +17,7 @@ const actions = {
         if (result.result === '1') {
             this.token = result.data.token;
             setToken(result.data.token);
+            setUser(response.data.id);
             return "登录成功";
         }
         return Promise.reject(result.message);
@@ -28,7 +29,9 @@ const actions = {
             console.log(this.token)
             setToken(response.data.token);
             setUser(response.data.id);
-
+            console.log('*******DataId*******')
+            console.log(response.data.id)
+            console.log('*******DataId*******')
             return "登录成功";
         }
         return Promise.reject(result.message);

@@ -65,8 +65,10 @@ export default {
         });
     },
     addAdmin(team_id,member) {
+        console.log(team_id)
+        console.log(member)
         return requests({
-            url: `/team-invite/resolve/${team_id}/admin/add`,
+            url: `/team/${team_id}/admin/add`,
             method: 'POST',
             data:{
                 member
@@ -75,7 +77,7 @@ export default {
     },
     deleteAdmin(team_id,member) {
         return requests({
-            url: `/team-invite/resolve/${team_id}/admin/remove`,
+            url: `/team/${team_id}/admin/remove`,
             method: 'POST',
             data:{
                 member
@@ -84,7 +86,7 @@ export default {
     },
     deleteTeamMember(team_id,member) {
         return requests({
-            url: `/team-invite/resolve/${team_id}/member/remove`,
+            url: `/team/${team_id}/member/remove`,
             method: 'POST',
             data:{
                 member

@@ -49,13 +49,16 @@ const form = reactive({
   describe:'',
 })
 
+const props = defineProps(['teamId'])
+
 async function addProject() {
   if(form.name === ''){
     dialogFormVisible.value = true
   }else {
-    const result = await projectAPI.addProject(form.name, form.describe, team.value);
+    const result = await projectAPI.addProject(form.name, form.describe, props.teamId.value);
     dialogFormVisible.value = false
     await router.push('/drag')
+
     console.log('addProject成功被调用！')
   }
 }

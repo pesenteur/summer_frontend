@@ -116,8 +116,8 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 <style scoped>
 .element-back{
   background-color: rgba(177,184,191,0.25);
-  //background-image: url('../../assets/2.jpg');
-  //background-size: cover;
+ /* //background-image: url('../../assets/2.jpg'); */
+  /* //background-size: cover; */
 }
 .layout-container-demo .el-header {
   position: relative;
@@ -126,8 +126,8 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 }
 .layout-container-demo .el-aside {
   background-color: rgba(177,184,191,0.25);
-  //background-image: url('../../assets/2.jpg');
-  //background-size: cover;
+  /* //background-image: url('../../assets/2.jpg');
+  //background-size: cover; */
 }
 .layout-container-demo .el-menu {
   border-right: none;

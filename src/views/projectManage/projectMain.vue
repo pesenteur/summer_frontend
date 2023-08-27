@@ -42,7 +42,6 @@ const currentDate = reactive(new Date())
 
 const projectName = reactive([])
 
-const
 
 // const totalCards = ref()
 

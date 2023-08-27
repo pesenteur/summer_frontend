@@ -6,6 +6,12 @@ import api from "@/api";
 import router from "@/router";
 import { createPinia } from "pinia";
 import Mock from 'mockjs';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+library.add(fas)
 
 
 Mock.mock(/friend\/friendList/, 'post', () => { //三个参数。第一个：路径，第二个：请求方式post/get，第三个：回调，返回值
@@ -225,7 +231,13 @@ let chatMsg1004 = Mock.mock(
     ]
 )
 const app = createApp(App)
+.component('font-awesome-icon', FontAwesomeIcon)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
+library.add(faUserSecret)
 
+/* add font awesome icon component */
 app.use(ElementPlus)
 
 app.use(router)

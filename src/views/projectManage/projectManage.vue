@@ -6,7 +6,6 @@
           <el-menu
               default-active="2"
               class="element-back"
-
           >
             <el-menu-item index="1">
               <el-icon><icon-menu /></el-icon>
@@ -29,12 +28,7 @@
 
             <el-menu-item index="5">
 
-              <span class="element-deracote2">我管理的</span>
-            </el-menu-item>
-
-            <el-menu-item index="6">
-
-              <span class="element-deracote2">我参与的</span>
+              <span class="element-deracote2">回收站</span>
             </el-menu-item>
 
           </el-menu>
@@ -45,7 +39,31 @@
     <el-container>
       <el-header style="text-align: right; font-size: 12px">
         <div class="toolbar">
-          <el-button style="margin-right: 8px; margin-top: 0px" >新建项目</el-button>
+              <div>
+                <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true">新建项目</el-button>
+                <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
+                  <el-form :model="form">
+                    <el-form-item label="项目名称" :label-width="formLabelWidth">
+                      <el-input v-model="form.name" autocomplete="off" class="element-form"/>
+                    </el-form-item>
+
+                    <el-form-item label="项目描述" :label-width="formLabelWidth">
+                      <el-input v-model="form.describe" autocomplete="off" class="element-form"/>
+                    </el-form-item>
+
+                  </el-form>
+                  <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogFormVisible = false">
+                    取消
+                  </el-button>
+                  <el-button type="primary" @click="addProject">
+                    确定
+                  </el-button>
+                </span>
+                  </template>
+                </el-dialog>
+              </div>
         </div>
       </el-header>
 
@@ -56,10 +74,23 @@
   </el-container>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
+<script setup>
+import {reactive, ref} from 'vue'
 import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 import projectMain from './projectMain.vue'
+import projectAPI from '@/api/proj.js'
+import router from "@/router";
+
+const dialogFormVisible = ref(false)
+
+const formLabelWidth = '140px'
+
+const team=ref('2145f25c-f9ec-4a42-9b90-1e2fac1b9ddd')
+
+const form = reactive({
+  name: '',
+  describe:'',
+})
 
 const item = {
   date: '2016-05-02',
@@ -68,13 +99,25 @@ const item = {
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
 
+
+  async function addProject() {
+    if(form.name === ''){
+      dialogFormVisible.value = true
+    }else {
+      const result = await projectAPI.addProject(form.name, form.describe, team.value);
+      dialogFormVisible.value = false
+      await router.push('/drag')
+      console.log('addProject成功被调用！')
+    }
+  }
+
 </script>
 
 <style scoped>
 .element-back{
   background-color: rgba(177,184,191,0.25);
-  //background-image: url('../../assets/2.jpg');
-  //background-size: cover;
+ /* //background-image: url('../../assets/2.jpg'); */
+  /* //background-size: cover; */
 }
 .layout-container-demo .el-header {
   position: relative;
@@ -83,8 +126,8 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 }
 .layout-container-demo .el-aside {
   background-color: rgba(177,184,191,0.25);
-  //background-image: url('../../assets/2.jpg');
-  //background-size: cover;
+  /* //background-image: url('../../assets/2.jpg');
+  //background-size: cover; */
 }
 .layout-container-demo .el-menu {
   border-right: none;
@@ -99,8 +142,10 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
   height: 100%;
   right: 20px;
 }
-.element-deracote2{
-  right: 0;
+
+.element-form{
+  width:auto;
+  height:auto;
 }
 
 </style>

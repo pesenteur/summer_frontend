@@ -99,7 +99,7 @@
                 <el-table-column align="right" width="200">
                   <template #header>
                     <form class="search-bar">
-                      <input type="text" placeholder="Search..." />
+                      <input v-model="search" type="text" placeholder="Search..." />
                       <button><i class='bx bx-search'></i></button>
                     </form>
                   </template>

@@ -259,4 +259,6 @@ function addMessages(reset) {
 .dialog-footer button:first-child {
 	margin-right: 10px;
 }
+
 </style>
+

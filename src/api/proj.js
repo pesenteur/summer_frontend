@@ -12,9 +12,11 @@ export default {
     },
     changeProject(name,describe){
       return requests({
-          url:`/projects/${name, describe}`,
+          url:'/projects',
           method: 'PATCH',
-
+          params:{
+              name,describe
+          }
       })
     },
     getAllProjects(team){
@@ -32,7 +34,7 @@ export default {
             url:`/projects/${projectId}`,
             method:'DELETE',
             data:{
-                team
+                team,projectId
             }
         })
     },
@@ -46,7 +48,7 @@ export default {
     getReProject(team){
         return requests({
             url:'/project/deleted',
-            mehtod:'GET',
+            method:'GET',
             params:{
                 team
             }

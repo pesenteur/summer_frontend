@@ -49,8 +49,6 @@
               </el-col>
             </el-row>
           </div>
-
-
         </el-aside>
         <div class="back">
           <el-aside width="20px" />
@@ -82,7 +80,7 @@
                         </form>
                       </template>
                       <template #default="scope">
-                        <el-button size="small" type="danger" @click="handleAdd()">ADD</el-button>
+                        <el-button size="small" type="danger" @click="handleAdd(scope.row)">ADD</el-button>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -94,8 +92,9 @@
             <el-main>
               <el-table :data="filterTableData" style="width: 800px">
                 <el-table-column prop="name" label="Name" />
-                <el-table-column prop="username" label="Nickname" />
+                <el-table-column prop="username" label="Username"/>
                 <el-table-column prop="email" label="Email" />
+                <el-table-column prop="role" label="Role" />
                 <el-table-column align="right" width="200">
                   <template #header>
                     <form class="search-bar" @submit.prevent>
@@ -103,9 +102,10 @@
                       <button><i class='bx bx-search'></i></button>
                     </form>
                   </template>
-                  <template #default="scope">
-                    <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-                    <el-button size="small" type="danger" @click="handleDelete()">Delete</el-button>
+                  <template #default="scope" >
+	                  <el-button size="small" v-if="scope.row.role==='团队管理员'" @click="handleRmv(scope.$index, scope.row)">RmvAuth</el-button>
+	                  <el-button size="small" v-if="scope.row.role==='普通成员'" @click="handleEdit(scope.$index, scope.row)">Auth</el-button>
+	                  <el-button size="small" v-if="scope.row.role!='团队创建者'" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -138,29 +138,31 @@ const isAdd = ref(true)
 const titleName = ref('') //主表的标题
 const search = ref('') //搜索框用
 const searchUser = ref('')
-
-
 const formLabelWidth = '140px'
+const teamId = ref()
 
 const cancelEvent = () => {
   console.log('cancel!')
 }
-async function handleAdd() {
-
+async function handleAdd(userInfo) {
+	let res = await teamFunction.inviteTeamMember(teamId.value,userInfo.id)
+	console.log('*********InviteId*******')
+	console.log(res.data)
+	//todo 以后记得删
+	await teamFunction.acceptInvitation(res.data.id,true)
+	await refreshTeamMember()
 }
 async function queryALL() {
   let result = await teamFunction.queryAllTeams();
   teamData.value = result.data
 }
 async function selectTeam(team_id, teamName) {
-  console.log(team_id)
-  let result = await teamFunction.queryTeamMember(team_id)
-  console.log('***********result***********')
-  console.log(result.data.members)
-  console.log('***********result***********')
-  tableData.value = result.data.members
-  titleName.value = teamName
-  isAdd.value = false
+	console.log(team_id)
+	let result = await teamFunction.queryTeamMember(team_id)
+	tableData.value = result.data.members
+	titleName.value = teamName
+	isAdd.value = false
+	teamId.value = team_id
 }
 async function submitTeam() {
   dialogFormVisible.value = false
@@ -171,8 +173,14 @@ async function deleteTeam(team_id) {
   await teamFunction.deleteTeam(team_id)
   await queryALL()
 }
-async function handleDelete() {
-
+async function handleDelete(userInfo) {
+	await teamFunction.deleteTeamMember(teamId.value,userInfo.id)
+	if (userInfo.role === "普通成员"){
+	
+	}else{
+	
+	}
+	await refreshTeamMember()
 }
 async function queryAllUser(search_number) {
   let result = await teamFunction.queryAllUser(search_number)
@@ -181,11 +189,23 @@ async function queryAllUser(search_number) {
   console.log('***********result***********')
   userTableData.value = result.data.results
 }
-
+async function refreshTeamMember() {
+	let result = await teamFunction.queryTeamMember(teamId.value)
+	tableData.value = result.data.members
+}
+async function addAdminister(memberId) {
+	console.log("handle")
+	console.log(memberId)
+	await teamFunction.addAdmin(teamId.value,memberId)
+	await refreshTeamMember()
+}
+async function rmvAdminister(memberId){
+	await teamFunction.deleteAdmin(teamId.value,memberId)
+	await refreshTeamMember()
+}
 onMounted(() => {
   queryALL()
 });
-
 const form = reactive({
   name: '',
   region: '',
@@ -200,22 +220,25 @@ const form = reactive({
 const filterTableData = computed(() =>
   tableData.value.filter(
     (data) =>
-      !search.value ||
-      data.name.toLowerCase().includes(search.value.toLowerCase())
+      !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
   )
 )
 
-const filterUserTableData = computed(() =>
-  userTableData.value.filter(
-    (data) =>
-      !search.value ||
-      data.name.toLowerCase().includes(search.value.toLowerCase())
-  )
-)
-const handleEdit = (index, row) => {
-  console.log(index, row)
+// const filterUserTableData = computed(() =>
+//   userTableData.value.filter(
+//     (data) =>
+//       !search.value ||
+//       data.name.toLowerCase().includes(search.value.toLowerCase())
+//   )
+// )
+
+
+const handleEdit = (index, userInfo) => {
+	addAdminister(userInfo.id)
 }
-
+const handleRmv = (index, userInfo) => {
+	rmvAdminister(userInfo.id)
+}
 
 
 
@@ -386,8 +409,6 @@ h2 {
 .dialog-footer button:first-child {
   margin-right: 10px;
 }
-
-
 
 .btton {
   margin-left: 10px;

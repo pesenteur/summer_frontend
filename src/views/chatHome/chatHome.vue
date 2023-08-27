@@ -159,7 +159,6 @@ async function addData() {
 }
 async function addHistoryMessage({ room, options = {} }){
 	let res;
-
 	if (options.reset) {
 		messages.value=[]
 		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)

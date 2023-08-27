@@ -23,10 +23,38 @@
             <el-divider />
 
             <el-menu-item index="3">
-              <div class="menu-item-container">
-                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="image">
-                <span class="element-title" @click="addCanvas">新建画布</span>
+
+              <div>
+                <el-button style="margin-right: 8px; margin-top: 0px;" @click="dialogFormVisible = true" >新建画布</el-button>
+                <el-dialog z-index="999999" :draggable=true v-model="dialogFormVisible" title="创建一个新的画布:" center width="30%">
+                  <el-form :model="form">
+                    <el-form-item label="画布名称" :label-width="formLabelWidth">
+                      <el-input v-model="form.name" autocomplete="off" class="element-form"/>
+                    </el-form-item>
+
+                    <el-form-item label="画布描述" :label-width="formLabelWidth">
+                      <el-input v-model="form.describe" autocomplete="off" class="element-form"/>
+                    </el-form-item>
+
+                  </el-form>
+                  <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogFormVisible = false">
+                    取消
+                  </el-button>
+                  <el-button type="primary" @click="addCanvas">
+                    确定
+                  </el-button>
+                </span>
+                  </template>
+                </el-dialog>
               </div>
+
+
+<!--              <div class="menu-item-container">-->
+<!--                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="image">-->
+<!--                <span class="element-title" @click="addCanvas">新建画布</span>-->
+<!--              </div>-->
             </el-menu-item>
             <el-divider />
 
@@ -74,9 +102,18 @@ import { useRoute, useRouter } from "vue-router";
 
 import editor from '../editor/editor.vue'
 
+import originAPI from '@/api/originDesign'
+
+import projectAPI from "@/api/proj";
+import form from "mockjs";
+
+const dialogFormVisible = ref(false)
+
 const router = useRouter()
 
 const projectName = ref('')
+
+const formLabelWidth = '140px'
 
 const iframeSrc = computed(() => {
   return `../../public/dist/index.html?id=${pageId.value}`;
@@ -95,10 +132,24 @@ const item = {
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
 
-function addCanvas() {
-  const page = { id: (parseInt(pageId.value) + 1).toString(), type: 'plain', text: '画布' }
-  pages.push(page)
+
+async function addCanvas() {
+  if(form.name === ''){
+    dialogFormVisible.value = true
+  }else {
+    const result = await projectAPI.addProject(form.name, form.describe, team.value);
+    dialogFormVisible.value = false
+    await router.push('/drag')
+    console.log('addProject成功被调用！')
+  }
 }
+
+// async function addCanvas() {
+//
+//   const result = await originAPI.addOrigin()
+//   const page = { id: (parseInt(pageId.value) + 1).toString(), type: 'plain', text: '画布' }
+//   pages.push(page)
+// }
 
 function jump() {
   router.push('/document')

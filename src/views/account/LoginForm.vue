@@ -5,7 +5,7 @@
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-envelope'></i></span>
                 <input type="text" v-model="email" id="su_email" required>
-                <label>邮箱/用户名</label>
+                <label>邮箱</label>
             </div>
             <div class="input-box">
                 <span class="icon"><i class='bx bxs-lock-alt'></i></span>
@@ -86,9 +86,10 @@ async function loginWithPassword() {
             if (route.query.redirect) {
                 router.push(route.query.redirect);
             } else {
-                router.push('/');
+                router.push('/switch');
             }
-        }, 1000);
+        }, 50);
+        
     } catch (error) {
         ElMessage({
             message: error,

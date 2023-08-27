@@ -14,11 +14,9 @@
                 <el-form-item label="项目名称" :label-width="formLabelWidth">
                   <el-input v-model="form.name" autocomplete="off" class="element-form" />
                 </el-form-item>
-
                 <el-form-item label="项目描述" :label-width="formLabelWidth">
                   <el-input v-model="form.describe" autocomplete="off" class="element-form" />
                 </el-form-item>
-
               </el-form>
               <template #footer>
                 <span class="dialog-footer">
@@ -67,18 +65,18 @@ const item = {
 const tableData = ref(Array.from({ length: 20 }).fill(item))
 
 
-  async function addProject() {
-    if(form.name === ''){
-      dialogFormVisible.value = true
-    }else {
-      console.log(form.name, form.describe, team.value)
-      const result = await projectAPI.addProject(form.name, form.describe, team.value);
-      dialogFormVisible.value = false
-      await router.push('/drag')
-      console.log('addProject成功被调用！')
-    }
+async function addProject() {
+  if (form.name === '') {
+    dialogFormVisible.value = true
+  } else {
+    console.log(form.name, form.describe, team.value)
+    const result = await projectAPI.addProject(form.name, form.describe, team.value);
+    dialogFormVisible.value = false
+    await router.push('/drag')
+    console.log('addProject成功被调用！')
   }
 }
+
 
 </script>
 
@@ -120,4 +118,5 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 .element-form {
   width: auto;
   height: auto;
-}</style>
+}
+</style>

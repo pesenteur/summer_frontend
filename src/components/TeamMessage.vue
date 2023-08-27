@@ -1,5 +1,8 @@
 <template>
   <button @click="table = true" class="custom-icon-button" />
+  <div class="badge-container">
+    <span class="badge_top" v-if="unreadCount > 0"></span>
+  </div>
   <el-drawer class="aside_msg" v-model="table" title="我的消息" direction="rtl">
     <el-col>
       <div class="card-container">
@@ -8,7 +11,7 @@
             <details @click="switchState(msg)">
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
                 来自{{ msg.name }}的消息
-                <span class="badge" v-if="msg.isread === 'unread'">{{ msg.isread === 'unread' ? '未读' : '已读' }}</span>
+                <span class="badge" v-if="msg.isread === 'unread'"></span>
               </summary>
               <div class="content">{{ msg.content }}</div>
             </details>
@@ -106,6 +109,16 @@ const switchState = (msg: User) => {
 
 .message_icon {
   height: 2px;
+}
+
+.badge_top {
+  position: absolute;
+  margin-left: -33px;
+  margin-top: 17px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
 }
 
 .custom-icon-button {

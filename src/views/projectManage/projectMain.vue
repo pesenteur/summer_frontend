@@ -3,7 +3,8 @@
     <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
       <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
         <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-          <img @click="getSingleProject((rowIndex)*4+colIndex)" src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+          <img @click="getSingleProject((rowIndex) * 4 + colIndex)"
+            src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
             <span>项目名称:{{ projectName[(rowIndex) * 4 + colIndex] }}</span>
             <el-button @click="deleteCard((rowIndex) * 4 + colIndex)" text><el-icon>
@@ -33,8 +34,8 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import projectDialog from "./projectDialog.vue";
-import {useRouter} from "vue-router";
-import {getTeamId, setProjId} from '@/utils/token'
+import { useRouter } from "vue-router";
+import { getTeamId, setProjId } from '@/utils/token'
 
 import projectAPI from '@/api/proj.js'
 import { CircleCloseFilled } from "@element-plus/icons-vue";
@@ -79,12 +80,12 @@ function handleExtraCardClick() {
 
 
 async function getSingleProject(projPos) {
-    let projId = myResult.value[projPos].id
-    const result = await projectAPI.getSingleProject(projId);
-    setProjId(projId)
-    dialogFormVisible.value = false
-    await router.push(`/drag/${projId}`)
-    console.log('getSingleProject成功被调用！')
+  let projId = myResult.value[projPos].id
+  const result = await projectAPI.getSingleProject(projId);
+  setProjId(projId)
+  dialogFormVisible.value = false
+  await router.push(`/drag/${projId}`)
+  console.log('getSingleProject成功被调用！')
 }
 
 async function deleteCard(projPos) {
@@ -178,4 +179,5 @@ onMounted(async () => {
 
 .card-col {
   margin: 30px;
-}</style>
+}
+</style>

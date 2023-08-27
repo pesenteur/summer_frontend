@@ -1,7 +1,7 @@
 <template>
   <div class="back">
     <div class="board">
-      <span class="title">请选择团体</span>
+      <span class="title">请选择团队</span>
       <br>
       <span class="subtitle">选择后将自动为您跳转到主页面</span>
       <el-divider />
@@ -14,9 +14,24 @@
         </el-menu-item>
       </el-menu>
       <el-menu>
-        <div class="create-team-btn" @click="createTeam">
+        <div class="create-team-btn" @click="dialogFormVisible = true">
           <font-awesome-icon :icon="['fas', 'plus']" />
         </div>
+        <el-dialog v-model="dialogFormVisible" title="欢迎来到寄了网站，请创建团队" center width="35%">
+          <el-form :model="form">
+            <el-form-item label="团队名称" :label-width="formLabelWidth">
+              <el-input v-model="form.name" autocomplete="off" />
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="dialogFormVisible = false">Cancel</el-button>
+              <el-button type="primary" @click="submitTeam">
+                Confirm
+              </el-button>
+            </span>
+          </template>
+        </el-dialog>
       </el-menu>
     </div>
   </div>
@@ -28,19 +43,29 @@
 import {
   Menu as IconMenu,
 } from '@element-plus/icons-vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref,  reactive } from 'vue'
 import teamFunction from "@/api/team";
 import { useRoute, useRouter } from "vue-router";
 import { setTeamId } from "@/utils/token"
-
+const dialogFormVisible = ref(false) //弹出的对话框的属性值
 const teamTeamTable = ref([])
 const route = useRoute();
 const router = useRouter();
 async function queryALL() {
+  console.log('================')
   let result = await teamFunction.queryAllTeams();
   teamTeamTable.value = result.data
 }
-
+const form = reactive({
+  name: '',
+  region: '',
+  date1: '',
+  date2: '',
+  delivery: false,
+  type: [],
+  resource: '',
+  desc: '',
+})
 function jumpToHome(team_id) {
   console.log('*******TeamId********')
   console.log(team_id)
@@ -49,16 +74,13 @@ function jumpToHome(team_id) {
   router.push(('/'))
 
 }
-
+async function submitTeam() {
+  dialogFormVisible.value = false
+  await teamFunction.addTeam(form.name);
+  await queryALL()
+}
 onMounted(() => {
   queryALL()
-});
-const showItems = ref(false);
-
-onMounted(() => {
-  setTimeout(() => {
-    showItems.value = true;
-  }, 200);
 });
 
 </script>

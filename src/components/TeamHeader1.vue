@@ -13,7 +13,7 @@
     <div class="button-container">
 
       <button text v-for="button in buttons" :key="button.id" :type="button.type" :icon="button.icon"
-        @click="jump(button.id)" class="custom-button" :id="button.id"><i :class="button.icon"  style="margin-right: 15px; width: 30px; height: 30px;"></i>{{
+        @click="jump(button.id)" class="custom-button" :id="button.id"><i :class="button.icon"  style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{
           button.text }}</button>
     </div>
   </el-drawer>
@@ -23,7 +23,6 @@
 import { reactive, ref } from 'vue'
 import router from "@/router";
 import { useRoute } from 'vue-router';
-import {getTeamId} from '@/utils/token'
 const drawer = ref(false)
 
 const buttons = reactive([
@@ -47,7 +46,9 @@ function jump(buttonId) {
     drawer.value = !drawer.value
     console.log('##############')
     console.log(router)
-	  router.push(`/team/${getTeamId()}/chatHome`)
+    router.push({
+      path: '/chatHome',
+    })
   } else {
     router.push('/')
   }

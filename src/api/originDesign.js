@@ -10,4 +10,13 @@ export default {
             },
         })
     },
+    getSaveData(project) {
+        return requests({
+            url: '/drag/saveData',
+            method: 'GET',
+            data: {
+                project,
+            },
+        })
+    },
 }

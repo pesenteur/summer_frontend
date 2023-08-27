@@ -65,14 +65,18 @@ const item = {
   address: 'No. 189, Grove St, Los Angeles',
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
-async function addProject() {
-  if (form.name === '') {
-    dialogFormVisible.value = true
-  } else {
-    const result = await projectAPI.addProject(form.name, form.describe, team.value);
-    dialogFormVisible.value = false
-    await router.push('/drag')
-    console.log('addProject成功被调用！')
+
+
+  async function addProject() {
+    if(form.name === ''){
+      dialogFormVisible.value = true
+    }else {
+      console.log(form.name, form.describe, team.value)
+      const result = await projectAPI.addProject(form.name, form.describe, team.value);
+      dialogFormVisible.value = false
+      await router.push('/drag')
+      console.log('addProject成功被调用！')
+    }
   }
 }
 

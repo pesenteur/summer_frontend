@@ -75,7 +75,7 @@
                     <el-table-column prop="email" label="Email" />
                     <el-table-column align="right" width="200">
                       <template #header>
-                        <form class="search-bar">
+                        <form class="search-bar" @submit.prevent>
                           <input v-model="searchUser" size="small" placeholder="Type to search"
                             @change="queryAllUser(searchUser)" />
                           <button><i class='bx bx-search'></i></button>
@@ -98,8 +98,8 @@
                 <el-table-column prop="email" label="Email" />
                 <el-table-column align="right" width="200">
                   <template #header>
-                    <form class="search-bar">
-                      <input type="text" placeholder="Search..." />
+                    <form class="search-bar" @submit.prevent>
+                      <input v-model="search" type="text" placeholder="Search..." @change=""/>
                       <button><i class='bx bx-search'></i></button>
                     </form>
                   </template>

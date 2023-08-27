@@ -7,7 +7,6 @@
       @select="handleSelect"
   >
     <TeamHeader1/>
-
     <div class="flex-grow" />
     <TeamMessage></TeamMessage>
     <div class="flex flex-wrap items-center">
@@ -19,8 +18,7 @@
           <el-dropdown-menu>
             <el-dropdown-item>个人简介</el-dropdown-item>
             <el-dropdown-item @click="jump">切换团队</el-dropdown-item>
-            <el-dropdown-item>退出登录</el-dropdown-item>
-
+            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -33,7 +31,10 @@ import { ref } from 'vue'
 import TeamHeader1 from './TeamHeader1.vue'
 import TeamMessage from "./TeamMessage.vue";
 import {ArrowDown} from "@element-plus/icons-vue";
-import router from "../router";
+import {clearToken} from "../utils/token.js"
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
 
 const activeIndex = ref('1')
 const handleSelect = (key: string, keyPath: string[]) => {
@@ -41,6 +42,11 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 function jump() {
   router.push('/switch')
+}
+
+function logout(){
+	clearToken()
+	router.push('/login')
 }
 </script>
 
@@ -58,7 +64,6 @@ function jump() {
   display: flex;
   align-items: center;
 }
-
 .custom-icon-button {
   background-image: url('@/assets/userAvtar.png'); /* 根据您的项目路径调整 */
   background-size: 40px; /* 根据需要调整 */

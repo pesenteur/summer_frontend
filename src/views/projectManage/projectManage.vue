@@ -137,8 +137,8 @@ const showProjects1 = ref(null)
 <style scoped>
 .element-back{
   background-color: rgba(177,184,191,0.25);
-  //background-image: url('../../assets/2.jpg');
-  //background-size: cover;
+ /* //background-image: url('../../assets/2.jpg'); */
+  /* //background-size: cover; */
 }
 .layout-container-demo .el-header {
   position: relative;
@@ -147,8 +147,8 @@ const showProjects1 = ref(null)
 }
 .layout-container-demo .el-aside {
   background-color: rgba(177,184,191,0.25);
-  //background-image: url('../../assets/2.jpg');
-  //background-size: cover;
+  /* //background-image: url('../../assets/2.jpg');
+  //background-size: cover; */
 }
 .layout-container-demo .el-menu {
   border-right: none;

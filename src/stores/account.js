@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import accountAPI from "@/api/account";
-import { getToken, setToken, clearToken } from "@/utils/token";
+import {getToken, setToken, clearToken, setUser, getUserId} from "@/utils/token";
 
 const state = () => {
     return {
@@ -27,6 +27,8 @@ const actions = {
             this.token = response.data.token;
             console.log(this.token)
             setToken(response.data.token);
+            setUser(response.data.id);
+
             return "登录成功";
         }
         return Promise.reject(result.message);

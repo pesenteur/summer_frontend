@@ -1,185 +1,235 @@
 <template>
-
   <div class="common-layout">
     <el-container>
       <el-header>
-        <div v-if="editor" class="button-container">
-          <div class="column">
-          <el-popover
-              placement="top-start"
-              title="加粗(Ctrl+B)"
-              :width="100"
-              trigger="hover"
-              content="将文本加粗"
-          >
-            <template #reference>
-              <el-button
-                  @click="editor.chain().focus().toggleBold().run()"
-                  :disabled="!editor.can().chain().focus().toggleBold().run()"
-                  :class="{ 'is-active': editor.isActive('bold') }"
-              >
-                B
-              </el-button>
+        <div class="editor__footer">
+          <h1>项目协作</h1>
+          <div :class="`editor__status editor__status--${status}`">
+            <template v-if="status === 'connected'">
+              {{ editor.storage.collaborationCursor.users.length }} user{{
+                editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
             </template>
-          </el-popover>
-
-          <el-popover
-              placement="top-start"
-              title="倾斜(Ctrl+l)"
-              :width="100"
-              trigger="hover"
-              content="将文字变为斜体"
-          >
-            <template #reference>
-              <el-button
-                  @click="editor.chain().focus().toggleItalic().run()"
-                  :disabled="!editor.can().chain().focus().toggleItalic().run()"
-                  :class="{ 'is-active': editor.isActive('italic') }"
-              >
-                I
-              </el-button>
+            <template v-else>
+              offline
             </template>
-          </el-popover>
-
-          <el-popover
-              placement="top-start"
-              title="删除线"
-              :width="100"
-              trigger="hover"
-              content="在文本中间画一条线"
-          >
-            <template #reference>
-              <el-button
-                  @click="editor.chain().focus().toggleStrike().run()"
-                  :disabled="!editor.can().chain().focus().toggleStrike().run()"
-                  :class="{ 'is-active': editor.isActive('strike') }"
-              >
-                S
-              </el-button>
-            </template>
-          </el-popover>
-
-          <el-popover
-              placement="top-start"
-              title="代码块"
-              :width="100"
-              trigger="hover"
-              content="将文本转换为代码块"
-          >
-            <template #reference>
-              <el-button
-                  @click="editor.chain().focus().toggleCode().run()"
-                  :disabled="!editor.can().chain().focus().toggleCode().run()"
-                  :class="{ 'is-active': editor.isActive('code') }"
-              >
-                C
-              </el-button>
-            </template>
-          </el-popover>
-
-        </div>
-
-<!--          <el-button @click="editor.chain().focus().toggleBold().run()" :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
-<!--            bold-->
-<!--&lt;!&ndash;          </el-button>&ndash;&gt;-->
-<!--          <el-button @click="editor.chain().focus().toggleItalic().run()" :disabled="!editor.can().chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
-<!--            italic-->
-<!--          </el-button>-->
-<!--          <el-button @click="editor.chain().focus().toggleStrike().run()" :disabled="!editor.can().chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
-<!--            strike-->
-<!--          </el-button>-->
-        <div class="colmn">
-
-<!--          <el-button @click="editor.chain().focus().toggleCode().run()" :disabled="!editor.can().chain().focus().toggleCode().run()" :class="{ 'is-active': editor.isActive('code') }">-->
-<!--          code-->
-<!--          </el-button>-->
-          <el-button @click="editor.chain().focus().unsetAllMarks().run()">
-            cm
-          </el-button>
-          <el-button @click="editor.chain().focus().clearNodes().run()">
-            cn
-          </el-button>
-          </div>
-
-          <div class="column">
-          <el-button @click="editor.chain().focus().setParagraph().run()" :class="{ 'is-active': editor.isActive('paragraph') }">
-            paragraph
-          </el-button>
-          <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
-            h1
-          </el-button>
-          <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
-            h2
-          </el-button>
-          <el-button text @click="editor.chain().focus().toggleHeading({ level: 3 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
-            h3
-          </el-button>
-          <el-button text @click="editor.chain().focus().toggleHeading({ level: 4 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }">
-            h4
-          </el-button>
-          <el-button text @click="editor.chain().focus().toggleHeading({ level: 5 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }">
-            h5
-          </el-button>
-          <el-button text @click="editor.chain().focus().toggleHeading({ level: 6 }).run()" :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }">
-            h6
-          </el-button>
-            </div>
-
-          <div class="column">
-            <div class="buttonSet">
-                <el-button style="width: calc(33.33% - 10px);margin-bottom: 10px;" @click="editor.chain().focus().toggleBulletList().run()" :class="{ 'is-active': editor.isActive('bulletList') }">
-                  bullet list
-                </el-button>
-                <el-button style="width: calc(33.33% - 10px);margin-bottom: 10px;" @click="editor.chain().focus().toggleOrderedList().run()" :class="{ 'is-active': editor.isActive('orderedList') }">
-                  ordered list
-                </el-button>
-                <el-button style="width: calc(33.33% - 10px);margin-bottom: 10px;" @click="editor.chain().focus().toggleCodeBlock().run()" :class="{ 'is-active': editor.isActive('codeBlock') }">
-                  code block
-                </el-button>
-                <el-button style="width: calc(33.33% - 10px);margin-bottom: 10px;" @click="editor.chain().focus().toggleBlockquote().run()" :class="{ 'is-active': editor.isActive('blockquote') }">
-                  blockquote
-                </el-button>
-                <el-button style="width: calc(33.33% - 10px);margin-bottom: 10px;" @click="editor.chain().focus().setHorizontalRule().run()">
-                  horizontal rule
-                </el-button>
-                <el-button style="width: calc(33.33% - 10px);margin-bottom: 10px;" @click="editor.chain().focus().setHardBreak().run()">
-                  hard break
-                </el-button>
-              </div>
-            </div>
-          <div class="column">
-          <el-button @click="editor.chain().focus().undo().run()" :disabled="!editor.can().chain().focus().undo().run()">
-            undo
-          </el-button>
-          <el-button @click="editor.chain().focus().redo().run()" :disabled="!editor.can().chain().focus().redo().run()">
-            redo
-          </el-button>
           </div>
         </div>
       </el-header>
-
       <el-main>
-        <div class="editor" v-if="editor">
+        <div v-if="editor" class="button-container">
+          <div class="column">
+            <el-popover placement="top-start" title="加粗(Ctrl+B)" :width="100" trigger="hover" content="将文本加粗">
+              <template #reference>
+                <el-button @click="editor.chain().focus().toggleBold().run()"
+                  :disabled="!editor.can().chain().focus().toggleBold().run()"
+                  :class="{ 'is-active': editor.isActive('bold') }">
+                  <font-awesome-icon :icon="['fas', 'bold']" />
+                </el-button>
+              </template>
+            </el-popover>
 
-          <editor-content :editor="editor" />
-          <div class="editor__footer">
-            <h1>qqqq</h1>
-            <div :class="`editor__status editor__status--${status}`">
-              <template v-if="status === 'connected'">
-                {{ editor.storage.collaborationCursor.users.length }} user{{ editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
+            <el-popover placement="top-start" title="倾斜(Ctrl+l)" :width="100" trigger="hover" content="将文字变为斜体">
+              <template #reference>
+                <el-button @click="editor.chain().focus().toggleItalic().run()"
+                  :disabled="!editor.can().chain().focus().toggleItalic().run()"
+                  :class="{ 'is-active': editor.isActive('italic') }">
+                  <font-awesome-icon :icon="['fas', 'italic']" />
+                </el-button>
               </template>
-              <template v-else>
-                offline
+            </el-popover>
+
+            <el-popover placement="top-start" title="删除线" :width="100" trigger="hover" content="在文本中间画一条线">
+              <template #reference>
+                <el-button @click="editor.chain().focus().toggleStrike().run()"
+                  :disabled="!editor.can().chain().focus().toggleStrike().run()"
+                  :class="{ 'is-active': editor.isActive('strike') }">
+                  <font-awesome-icon :icon="['fas', 'strikethrough']" />
+                </el-button>
               </template>
-            </div>
-            <div class="editor__name">
-              <button @click="setName">
-                {{ currentUser.name }}
-              </button>
+            </el-popover>
+
+            <el-popover placement="top-start" title="代码块" :width="100" trigger="hover" content="将文本转换为代码块">
+              <template #reference>
+                <el-button @click="editor.chain().focus().toggleCode().run()"
+                  :disabled="!editor.can().chain().focus().toggleCode().run()"
+                  :class="{ 'is-active': editor.isActive('code') }">
+                  <font-awesome-icon :icon="['fas', 'code']" />
+                </el-button>
+              </template>
+            </el-popover>
+
+          </div>
+
+          <!--          <el-button @click="editor.chain().focus().toggleBold().run()" :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
+          <!--            bold-->
+          <!--&lt;!&ndash;          </el-button>&ndash;&gt;-->
+          <!--          <el-button @click="editor.chain().focus().toggleItalic().run()" :disabled="!editor.can().chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
+          <!--            italic-->
+          <!--          </el-button>-->
+          <!--          <el-button @click="editor.chain().focus().toggleStrike().run()" :disabled="!editor.can().chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
+          <!--            strike-->
+          <!--          </el-button>-->
+          <div class="column">
+            <el-popover title="段落" content="一段文字">
+              <template #reference>
+                <el-button @click="editor.chain().focus().setParagraph().run()"
+                  :class="{ 'is-active': editor.isActive('paragraph') }" tooltip="段落">
+                  <font-awesome-icon :icon="['fas', 'paragraph']" />
+                </el-button>
+              </template>
+            </el-popover>
+
+            <el-popover placement="top-start" title="Heading 1" :width="100" trigger="hover" content="设置为一级标题">
+              <template #reference>
+                <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+                  <font-awesome-icon :icon="['fas', 'h1']" />
+                  h1
+                </el-button>
+              </template>
+            </el-popover>
+
+            <!-- 标题按钮 - Heading 2 -->
+            <el-popover placement="top-start" title="Heading 2" :width="100" trigger="hover" content="设置为二级标题">
+              <template #reference>
+                <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+                  <font-awesome-icon :icon="['fas', 'h2']" />
+                  h2
+                </el-button>
+              </template>
+            </el-popover>
+
+            <!-- 标题按钮 - Heading 3 -->
+            <el-popover placement="top-start" title="Heading 3" :width="100" trigger="hover" content="设置为三级标题">
+              <template #reference>
+                <el-button text @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
+                  <font-awesome-icon :icon="['fas', 'h3']" />
+                  h3
+                </el-button>
+              </template>
+            </el-popover>
+
+            <!-- 标题按钮 - Heading 4 -->
+            <el-popover placement="top-start" title="Heading 4" :width="100" trigger="hover" content="设置为四级标题">
+              <template #reference>
+                <el-button text @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }">
+                  <font-awesome-icon :icon="['fas', 'h4']" />
+                  h4
+                </el-button>
+              </template>
+            </el-popover>
+
+            <!-- 标题按钮 - Heading 5 -->
+            <el-popover placement="top-start" title="Heading 5" :width="100" trigger="hover" content="设置为五级标题">
+              <template #reference>
+                <el-button text @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }">
+                  <font-awesome-icon :icon="['fas', 'h5']" />
+                  h5
+                </el-button>
+              </template>
+            </el-popover>
+
+            <!-- 标题按钮 - Heading 6 -->
+            <el-popover placement="top-start" title="Heading 6" :width="100" trigger="hover" content="设置为六级标题">
+              <template #reference>
+                <el-button text @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
+                  :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }">
+                  <font-awesome-icon :icon="['fas', 'h6']" />
+                  h6
+                </el-button>
+              </template>
+            </el-popover>
+
+          </div>
+
+          <div class="column">
+            <div class="buttonSet">
+              <el-popover title="无序列表" content="将选中文本转换为无序列表" placement="top-start">
+                <template #reference>
+                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBulletList().run()"
+                    :class="{ 'is-active': editor.isActive('bulletList') }">
+                    <font-awesome-icon :icon="['fas', 'bars-staggered']" />
+                  </el-button>
+                </template>
+              </el-popover>
+              <el-popover title="有序列表" content="将选中文本转换为有序列表" placement="top-start">
+                <template #reference>
+                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleOrderedList().run()"
+                    :class="{ 'is-active': editor.isActive('orderedList') }">
+                    <font-awesome-icon :icon="['fas', 'list']" />
+                  </el-button>
+                </template>
+              </el-popover>
+              <el-popover title="引用块" content="将选中文本转换为引用块" placement="top-start">
+                <template #reference>
+                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBlockquote().run()"
+                    :class="{ 'is-active': editor.isActive('blockquote') }">
+                    <font-awesome-icon :icon="['fas', 'quote-left']" />
+                  </el-button>
+                </template>
+              </el-popover>
+
+              <el-popover title="水平线" content="插入水平分隔线" placement="top-start">
+                <template #reference>
+                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHorizontalRule().run()">
+                    <font-awesome-icon :icon="['fas', 'ruler-horizontal']" />
+                  </el-button>
+                </template>
+              </el-popover>
+
+              <el-popover title="硬换行" content="插入硬换行" placement="top-start">
+                <template #reference>
+                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHardBreak().run()">
+                    <font-awesome-icon :icon="['fas', 'bacon']" />
+                  </el-button>
+                </template>
+              </el-popover>
             </div>
           </div>
+          <div class="column">
+            <el-popover title="撤销" placement="top-start">
+              <template #reference>
+                <el-button @click="editor.chain().focus().undo().run()"
+                  :disabled="!editor.can().chain().focus().undo().run()">
+                  <font-awesome-icon :icon="['fas', 'rotate-left']" />
+                </el-button>
+              </template>
+            </el-popover>
+
+            <el-popover title="重做" placement="top-start">
+              <template #reference>
+                <el-button @click="editor.chain().focus().redo().run()"
+                  :disabled="!editor.can().chain().focus().redo().run()">
+                  <font-awesome-icon :icon="['fas', 'arrow-rotate-right']" />
+                </el-button>
+              </template>
+            </el-popover>
+          </div>
+          <div class="column">
+
+            <el-button @click="editor.chain().focus().unsetAllMarks().run()">
+              cm
+            </el-button>
+            <el-button @click="editor.chain().focus().clearNodes().run()">
+              cn
+            </el-button>
+          </div>
         </div>
-        </el-main>
+        <div class="editor" v-if="editor">
+          <editor-content :editor="editor" />
+        </div>
+        <div class="editor__footer">
+          <div class="editor__name">
+            <button @click="setName">
+              {{ currentUser.name }}
+            </button>
+          </div>
+        </div>
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -194,6 +244,7 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import StarterKit from '@tiptap/starter-kit'
 import { Editor, EditorContent } from '@tiptap/vue-3'
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
 import * as Y from 'yjs'
 // import buttonGroup from './buttonGroup.vue'
 
@@ -203,7 +254,7 @@ const getRandomElement = list => {
 }
 
 const getRandomRoom = () => {
-  const roomNumbers =  [10, 11, 12]
+  const roomNumbers = [10, 11, 12]
 
   return getRandomElement(roomNumbers.map(number => `rooms.${number}`))
 }
@@ -265,8 +316,8 @@ export default {
   methods: {
     setName() {
       const name = (window.prompt('Name') || '')
-          .trim()
-          .substring(0, 32)
+        .trim()
+        .substring(0, 32)
 
       if (name) {
         return this.updateCurrentUser({
@@ -309,36 +360,40 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.button-container{
+@font-face {
+  font-family: 'element-icons';
+  src: url('path/to/element-icons.woff') format('woff'),
+    url('path/to/element-icons.ttf') format('truetype');
+  /* 其他样式 */
+}
+
+.button-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 2fr 1fr;
-  grid-gap: 2px; /* 列之间的间隔 */
+  grid-template-columns: 2fr 3fr 2fr 1fr 1fr;
+  grid-gap: 2px;
+  /* 列之间的间隔 */
 }
 
 .column {
   padding: 1px;
 }
 
-.buttonSet {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; /* 每行按钮之间平均分布空间 */
-  align-items: flex-start; /* 上对齐 */
-}
+
 
 .editor {
+  height: 600px;
   background-color: #FFF;
-  border: 3px solid #0D0D0D;
-  border-radius: 0.75rem;
+  border: 1px solid #0D0D0D;
+  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
   color: #0D0D0D;
   display: flex;
   flex-direction: column;
-  max-height: 26rem;
+  // max-height: 26rem;
 
   &__header {
+    color: #0D0D0D;
     align-items: center;
     background: #0d0d0d;
-    border-bottom: 3px solid #0d0d0d;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
     display: flex;
@@ -357,7 +412,6 @@ export default {
 
   &__footer {
     align-items: center;
-    border-top: 3px solid #0D0D0D;
     color: #0D0D0D;
     display: flex;
     flex: 0 0 auto;
@@ -443,7 +497,7 @@ export default {
 
 /* Basic editor styles */
 .tiptap {
-  > * + * {
+  >*+* {
     margin-top: 0.75em;
   }
 
@@ -513,13 +567,13 @@ export default {
       align-items: center;
       display: flex;
 
-      > label {
+      >label {
         flex: 0 0 auto;
         margin-right: 0.5rem;
         user-select: none;
       }
 
-      > div {
+      >div {
         flex: 1 1 auto;
       }
     }

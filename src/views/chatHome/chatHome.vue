@@ -1,22 +1,11 @@
 <template>
-	<vue-advanced-chat :current-user-id="currentUserId"
-	                   :room-info-enabled="true"
-	                   :rooms="JSON.stringify(rooms)"
-	                   :messages="JSON.stringify(messages)"
-	                   @open-user-tag="console.log"
-	                   :room-actions="JSON.stringify(roomActions)"
-	                   :rooms-loaded="true"
-	                   @send-message="sendMessage($event.detail[0])"
-	                   :height="height"
-	                   @add-room="dialogFormVisible = true"
-	                   :menu-action-handler="menuActionHandler"
-	                   :message-actions="JSON.stringify(messageActions)"
-	                   @message-action-handler="handleCustomMessageAction($event.detail[0])"
-	                   :messages-loaded="messagesLoaded"
-	                   :load-first-room="false"
-	                   :room-id="room_id"
-	                   @fetch-messages="addHistoryMessage(($event.detail[0]))"
-	>
+	<vue-advanced-chat :current-user-id="currentUserId" :room-info-enabled="true" :rooms="JSON.stringify(rooms)"
+		:messages="JSON.stringify(messages)" @open-user-tag="console.log" :room-actions="JSON.stringify(roomActions)"
+		:rooms-loaded="true" @send-message="sendMessage($event.detail[0])" :height="height"
+		@add-room="dialogFormVisible = true" :menu-action-handler="menuActionHandler"
+		:message-actions="JSON.stringify(messageActions)"
+		@message-action-handler="handleCustomMessageAction($event.detail[0])" :messages-loaded="messagesLoaded"
+		:load-first-room="false" :room-id="room_id" @fetch-messages="addHistoryMessage(($event.detail[0]))">
 		<template #message-content="{ message }">
 			<div :class="'message ' + 'sender-' + message.senderId">
 				{{ message.content }}
@@ -26,32 +15,32 @@
 	<el-dialog v-model="dialogFormVisible" title="创建群聊">
 		<el-form :model="newTeamName">
 			<el-form-item label="群聊名称" :label-width="formLabelWidth">
-				<el-input v-model="newTeamName" autocomplete="off"/>
+				<el-input v-model="newTeamName" autocomplete="off" />
 			</el-form-item>
 			<el-form-item label="群聊成员" :label-width="formLabelWidth">
 				<el-select v-model="newTeamMember" multiple placeholder="Select">
-					<el-option v-for="opt in teamOption" :key="opt.id" :label="opt.name" :value="opt.name"/>
+					<el-option v-for="opt in teamOption" :key="opt.id" :label="opt.name" :value="opt.name" />
 				</el-select>
 			</el-form-item>
 		</el-form>
 		<template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="createNewRoom">
-          Confirm
-        </el-button>
-      </span>
+			<span class="dialog-footer">
+				<el-button @click="dialogFormVisible = false">Cancel</el-button>
+				<el-button type="primary" @click="createNewRoom">
+					Confirm
+				</el-button>
+			</span>
 		</template>
 	</el-dialog>
 </template>
 
 <script setup>
 // import {VueAdvancedChat} from "vue-advanced-chat";
-import {register} from 'vue-advanced-chat'
+import { register } from 'vue-advanced-chat'
 import teamFunction from '@/api/team'
-import {onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref} from "vue"
-import {onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
-import {getUserId} from "@/utils/token";
+import { onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue"
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { getUserId } from "@/utils/token";
 import chatFunction from "@/api/chat.js";
 
 register()
@@ -92,37 +81,37 @@ const messageActions = reactive([
 	}
 ])
 const roomActions = reactive([
-	{name: 'inviteUser', title: 'Invite User'},
-	{name: 'removeUser', title: 'Remove User'},
-	{name: 'deleteRoom', title: 'Delete Room'}
+	{ name: 'inviteUser', title: 'Invite User' },
+	{ name: 'removeUser', title: 'Remove User' },
+	{ name: 'deleteRoom', title: 'Delete Room' }
 ])
 const room_id = ref()
 const messagesLoaded = ref(false)
 const messagesPerPage = 20
 
-async function getTeamMember(){
+async function getTeamMember() {
 	let res = await teamFunction.queryTeamMember(team_id.value)
 	console.log("***************")
 	console.log(res.data.members)
 	teamOption.value = res.data.members
 }
 
-async function createNewRoom(){
+async function createNewRoom() {
 	console.log('#######')
 	console.log(newTeamMember.value)
 	console.log('#######')
 	let member = []
-	
+
 	newTeamMember.value.forEach((item) => {
 		teamOption.value.forEach((team) => {
-			if (item === team.name){
+			if (item === team.name) {
 				member.push(team.id)
 			}
 		})
 	})
 	console.log(member)
 	dialogFormVisible.value = false
-	await chatFunction.createRoom(team_id.value,member,newTeamName.value)
+	await chatFunction.createRoom(team_id.value, member, newTeamName.value)
 
 }
 async function addData() {
@@ -157,22 +146,22 @@ async function addData() {
 	})
 	rooms.value = modifiedRoom
 }
-async function addHistoryMessage({ room, options = {} }){
+async function addHistoryMessage({ room, options = {} }) {
 	let res;
 
 	if (options.reset) {
-		messages.value=[]
+		messages.value = []
 		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
 	} else {
 		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
 	}
-	
+
 	if (res.data.length === 0 || res.data.length < messagesPerPage) {
 		setTimeout(() => {
 			messagesLoaded.value = true
 		}, 0)
 	}
-	
+
 	res.data.forEach((temp) => {
 		let message = {
 			_id: temp.id,
@@ -216,7 +205,7 @@ onMounted(() => {
 })
 
 
-function menuActionHandler({action,}) {
+function menuActionHandler({ action, }) {
 	console.log(action)
 	switch (action.name) {
 		case 'inviteUser':
@@ -237,7 +226,7 @@ function sendMessage(message) {
 		"type": "text"
 	}
 	socket.value.send(JSON.stringify(formatMessage))
-	
+
 	// this.messages = [
 	//   ...this.messages,
 	//   {
@@ -251,7 +240,7 @@ function sendMessage(message) {
 	//   }
 	// ]
 }
-function fetchMessages({options = {}}) {
+function fetchMessages({ options = {} }) {
 	// setTimeout(() => {
 	//   if (options.reset) {
 	//     this.messages = this.addMessages(true)
@@ -262,7 +251,7 @@ function fetchMessages({options = {}}) {
 	//   // this.addNewMessage()
 	// })
 }
-function handleCustomMessageAction({roomId, action, message}) {
+function handleCustomMessageAction({ roomId, action, message }) {
 	switch (action.name) {
 		case 'replyAction':
 			console.log(action.name)
@@ -301,7 +290,7 @@ function addMessages(reset) {
 			disableReactions: false,
 		})
 	}
-	
+
 	return messages
 }
 
@@ -311,10 +300,8 @@ function addMessages(reset) {
 </script>
 
 <style scoped>
-
 .dialog-footer button:first-child {
 	margin-right: 10px;
 }
-
 </style>
 

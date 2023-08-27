@@ -7,9 +7,9 @@
           <div class="details-container">
             <details @click="switchState(msg)">
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
-                  来自{{ msg.name }}的消息
-                  <span class="badge">{{ msg.isread === 'unread' ? '未读' : '已读' }}</span>
-                </summary>
+                来自{{ msg.name }}的消息
+                <span class="badge" v-if="msg.isread === 'unread'">{{ msg.isread === 'unread' ? '未读' : '已读' }}</span>
+              </summary>
               <div class="content">{{ msg.content }}</div>
             </details>
           </div>
@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { ref, computed } from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 
 import { Edit, Message } from "@element-plus/icons-vue";
@@ -89,9 +89,13 @@ const messages: User[] = [
   },
 ]
 
+const unreadCount = computed(() => {
+  return messages.filter(msg => msg.isread === 'unread').length;
+});
+
 const switchState = (msg: User) => {
   msg.isread = msg.isread === 'unread' ? 'read' : 'unread';
-}
+};
 
 </script>
 
@@ -105,7 +109,7 @@ const switchState = (msg: User) => {
 }
 
 .custom-icon-button {
-  background-image: url('@/assets/gif/home.gif');
+  background-image: url('@/assets/envelope-regular.svg');
   /* 根据您的项目路径调整 */
   background-size: 25px;
   /* 根据需要调整 */
@@ -182,6 +186,7 @@ const switchState = (msg: User) => {
   border-radius: 50%;
   /* visibility: hidden; */
 }
+
 .content {
   padding: 10px;
   max-height: 0;
@@ -205,4 +210,5 @@ const switchState = (msg: User) => {
   width: 100%;
   margin: auto;
   font-size: 12px;
-}</style>
+}
+</style>

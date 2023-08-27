@@ -38,10 +38,13 @@ export default {
             }
         })
     },
-    getSingleProject(){
+    getSingleProject(id){
         return requests({
             url:'/projects',
-            method:'GET'
+            method:'GET',
+            params:{
+                id
+            }
         })
 
     },

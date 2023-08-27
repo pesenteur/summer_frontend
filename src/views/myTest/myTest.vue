@@ -2,6 +2,20 @@
   <div class="common-layout">
     <el-container>
       <el-header>
+        <div class="editor__footer">
+          <h1>项目协作</h1>
+          <div :class="`editor__status editor__status--${status}`">
+            <template v-if="status === 'connected'">
+              {{ editor.storage.collaborationCursor.users.length }} user{{
+                editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
+            </template>
+            <template v-else>
+              offline
+            </template>
+          </div>
+        </div>
+      </el-header>
+      <el-main>
         <div v-if="editor" class="button-container">
           <div class="column">
             <el-popover placement="top-start" title="加粗(Ctrl+B)" :width="100" trigger="hover" content="将文本加粗">
@@ -55,19 +69,6 @@
           <!--          <el-button @click="editor.chain().focus().toggleStrike().run()" :disabled="!editor.can().chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
           <!--            strike-->
           <!--          </el-button>-->
-          <div class="column">
-
-            <!--          <el-button @click="editor.chain().focus().toggleCode().run()" :disabled="!editor.can().chain().focus().toggleCode().run()" :class="{ 'is-active': editor.isActive('code') }">-->
-            <!--          code-->
-            <!--          </el-button>-->
-            <el-button @click="editor.chain().focus().unsetAllMarks().run()">
-              cm
-            </el-button>
-            <el-button @click="editor.chain().focus().clearNodes().run()">
-              cn
-            </el-button>
-          </div>
-
           <div class="column">
             <el-popover title="段落" content="一段文字">
               <template #reference>
@@ -207,27 +208,21 @@
                 </el-button>
               </template>
             </el-popover>
+          </div>
+          <div class="column">
 
+            <el-button @click="editor.chain().focus().unsetAllMarks().run()">
+              cm
+            </el-button>
+            <el-button @click="editor.chain().focus().clearNodes().run()">
+              cn
+            </el-button>
           </div>
         </div>
-      </el-header>
-
-      <el-main>
         <div class="editor" v-if="editor">
           <editor-content :editor="editor" />
-
         </div>
         <div class="editor__footer">
-          <h1>共享文档</h1>
-          <div :class="`editor__status editor__status--${status}`">
-            <template v-if="status === 'connected'">
-              {{ editor.storage.collaborationCursor.users.length }} user{{
-                editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
-            </template>
-            <template v-else>
-              offline
-            </template>
-          </div>
           <div class="editor__name">
             <button @click="setName">
               {{ currentUser.name }}
@@ -374,7 +369,7 @@ export default {
 
 .button-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 2fr 1fr;
+  grid-template-columns: 2fr 3fr 2fr 1fr 1fr;
   grid-gap: 2px;
   /* 列之间的间隔 */
 }
@@ -396,6 +391,7 @@ export default {
   // max-height: 26rem;
 
   &__header {
+    color: #0D0D0D;
     align-items: center;
     background: #0d0d0d;
     border-top-left-radius: 0.25rem;

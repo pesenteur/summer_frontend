@@ -8,6 +8,12 @@ export const setTeamId = (team_id) => {
     localStorage.setItem('TEAM', team_id);
 }
 
+export const setProjId = (projId) => {
+    localStorage.setItem('PROJTD', projId)
+}
+
+export const getProjId = () => localStorage.getItem('PROJID')
+
 export const getTeamId = () => localStorage.getItem('TEAM');
 
 export const getToken = () => localStorage.getItem('TOKEN');

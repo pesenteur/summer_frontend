@@ -72,6 +72,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
     if(form.name === ''){
       dialogFormVisible.value = true
     }else {
+      console.log(form.name, form.describe, team.value)
       const result = await projectAPI.addProject(form.name, form.describe, team.value);
       dialogFormVisible.value = false
       await router.push('/drag')

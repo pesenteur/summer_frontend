@@ -6,14 +6,17 @@
 	                   @open-user-tag="console.log"
 	                   :room-actions="JSON.stringify(roomActions)"
 	                   :rooms-loaded="true"
-	                   :messages-loaded="true"
-	                   @fetch-messages="fetchMessages($event.detail[0])"
 	                   @send-message="sendMessage($event.detail[0])"
 	                   :height="height"
 	                   @add-room="dialogFormVisible = true"
 	                   :menu-action-handler="menuActionHandler"
 	                   :message-actions="JSON.stringify(messageActions)"
-	                   @message-action-handler="handleCustomMessageAction($event.detail[0])">
+	                   @message-action-handler="handleCustomMessageAction($event.detail[0])"
+	                   :messages-loaded="messagesLoaded"
+	                   :load-first-room="false"
+	                   :room-id="room_id"
+	                   @fetch-messages="addHistoryMessage(($event.detail[0]))"
+	>
 		<template #message-content="{ message }">
 			<div :class="'message ' + 'sender-' + message.senderId">
 				{{ message.content }}
@@ -26,15 +29,15 @@
 				<el-input v-model="newTeamName" autocomplete="off"/>
 			</el-form-item>
 			<el-form-item label="群聊成员" :label-width="formLabelWidth">
-				<el-select v-model="newTeamMember" placeholder="Please select a zone">
-					<el-option label="Zone No.1" value="shanghai"/>
+				<el-select v-model="newTeamMember" multiple placeholder="Select">
+					<el-option v-for="opt in teamOption" :key="opt.id" :label="opt.name" :value="opt.name"/>
 				</el-select>
 			</el-form-item>
 		</el-form>
 		<template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">
+        <el-button type="primary" @click="createNewRoom">
           Confirm
         </el-button>
       </span>
@@ -45,8 +48,9 @@
 <script setup>
 // import {VueAdvancedChat} from "vue-advanced-chat";
 import {register} from 'vue-advanced-chat'
-import {onMounted, onUnmounted, reactive, ref} from "vue"
-import {useRoute, useRouter} from "vue-router";
+import teamFunction from '@/api/team'
+import {onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref} from "vue"
+import {onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
 import {getUserId} from "@/utils/token";
 import chatFunction from "@/api/chat.js";
 
@@ -66,6 +70,7 @@ const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
 const newTeamName = ref()
 const newTeamMember = ref([])
+const teamOption = ref([])
 const messageActions = reactive([
 	{
 		name: 'replyAction',
@@ -91,7 +96,35 @@ const roomActions = reactive([
 	{name: 'removeUser', title: 'Remove User'},
 	{name: 'deleteRoom', title: 'Delete Room'}
 ])
+const room_id = ref()
+const messagesLoaded = ref(false)
+const messagesPerPage = 20
 
+async function getTeamMember(){
+	let res = await teamFunction.queryTeamMember(team_id.value)
+	console.log("***************")
+	console.log(res.data.members)
+	teamOption.value = res.data.members
+}
+
+async function createNewRoom(){
+	console.log('#######')
+	console.log(newTeamMember.value)
+	console.log('#######')
+	let member = []
+	
+	newTeamMember.value.forEach((item) => {
+		teamOption.value.forEach((team) => {
+			if (item === team.name){
+				member.push(team.id)
+			}
+		})
+	})
+	console.log(member)
+	dialogFormVisible.value = false
+	await chatFunction.createRoom(team_id.value,member,newTeamName.value)
+
+}
 async function addData() {
 	let result = await chatFunction.queryAllRoom(team_id.value)
 	const modifiedRoom = []
@@ -122,17 +155,24 @@ async function addData() {
 		}
 		modifiedRoom.push(room)
 	})
-	console.log('***********Userresult***********')
-	console.log(result.data)
-	console.log(modifiedRoom)
 	rooms.value = modifiedRoom
-	console.log('***********result***********')
 }
-async function addHistoryMessage(){
-	console.log('**************')
-	let res = await chatFunction.queryAllMessage('cec5978e78604609bf74accb4fb08b5a')
-	console.log(res.data)
-	let tempMessage = []
+async function addHistoryMessage({ room, options = {} }){
+	let res;
+
+	if (options.reset) {
+		messages.value=[]
+		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
+	} else {
+		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
+	}
+	
+	if (res.data.length === 0 || res.data.length < messagesPerPage) {
+		setTimeout(() => {
+			messagesLoaded.value = true
+		}, 0)
+	}
+	
 	res.data.forEach((temp) => {
 		let message = {
 			_id: temp.id,
@@ -141,14 +181,11 @@ async function addHistoryMessage(){
 			username: 'John Doe',
 			date: temp.created_time,
 			timestamp: temp.created_time,
-			avatar: '',
+			avatar: '/doe.png',
 		}
-		console.log(message)
 		messages.value.unshift(message)
 	})
-	// messages.value = tempMessage
-	console.log('curentId '+currentUserId.value)
-	console.log('**************')
+
 }
 
 
@@ -161,10 +198,9 @@ function upMessage(event) {
 		username: 'John Doe',
 		date: temp.created_time,
 		timestamp: temp.created_time,
-		avatar: '',
+		avatar: '/doe.png',
 	}
 	messages.value.push(message)
-	console.log(messages)
 }
 
 onMounted(() => {
@@ -173,10 +209,12 @@ onMounted(() => {
 	currentUserId.value = user_id.value
 	addData()
 	addHistoryMessage()
+	getTeamMember()
 	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
 	socket.value.addEventListener('error', event => console.log(event))
 })
+
 
 function menuActionHandler({action,}) {
 	console.log(action)
@@ -194,7 +232,7 @@ function sendMessage(message) {
 	let formatMessage = {
 		"team": team_id.value,
 		"receiver": "",
-		"chat": "cec5978e78604609bf74accb4fb08b5a",
+		"chat": message.roomId,
 		"content": message.content,
 		"type": "text"
 	}
@@ -252,7 +290,7 @@ function addMessages(reset) {
 			username: 'John Doe',
 			date: '13 November',
 			timestamp: '10:20',
-			avatar: '',
+			avatar: '/doe.png',
 			system: false,
 			saved: true,
 			distributed: true,

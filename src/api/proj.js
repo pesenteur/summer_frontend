@@ -21,7 +21,7 @@ export default {
     },
     getAllProjects(team){
         return requests({
-            url:'projects',
+            url:'/projects',
             method: 'GET',
             params: {
                 team

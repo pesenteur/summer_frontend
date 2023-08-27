@@ -10,13 +10,22 @@ export default {
             },
         })
     },
-    getSaveData(project) {
+    getSingle(design){
         return requests({
-            url: '/drag/saveData',
+            url:'/design',
             method: 'GET',
-            data: {
-                project,
-            },
+            params: {
+                design
+            }
         })
     },
+    getAllDesign(project){
+        return requests({
+            url:`/design`,
+            method: 'GET',
+            params:{
+                project
+            }
+        })
+    }
 }

@@ -102,11 +102,13 @@ import { useRoute, useRouter } from "vue-router";
 
 import editor from '../editor/editor.vue'
 import projectAPI from "@/api/proj";
-import originAPI from '@/api/originDesign'
-import form from "mockjs";
+import originAPI from "@/api/originDesign";
+import form, {navy as designId} from "mockjs";
 import {getProjId} from "@/utils/token";
 
 const dialogFormVisible = ref(false)
+
+const designId = ref('')
 
 const router = useRouter()
 
@@ -115,14 +117,12 @@ const projectName = ref('')
 const formLabelWidth = '140px'
 
 const iframeSrc = computed(() => {
-  return `../../public/dist/index.html?id=${pageId.value}`;
+  return `../../public/dist/index.html?id=${designId.value}`;
 });
 
-const pageId = ref('1')
+// const pageId = ref('1')
 
-const pages = reactive([
-  { id: '1', type: 'plain', text: '画布' },
-])
+const pages = reactive([])
 
 const item = {
   date: '2016-05-02',
@@ -154,10 +154,14 @@ function jump() {
   router.push('/document')
 }
 
-// onMounted(async ()=>{
-//   const result = await originAPI.getSaveData(getProjId())
-//
-// })
+onMounted(async ()=>{
+
+  const result = await originAPI.getAllDesign(getProjId())
+
+
+
+})
+
 </script>
 
 <style scoped>

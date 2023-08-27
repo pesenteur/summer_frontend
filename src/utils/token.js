@@ -8,8 +8,8 @@ export const setTeamId = (team_id) => {
     localStorage.setItem('TEAM', team_id);
 }
 
-export const setProjId = (projId) => {
-    localStorage.setItem('PROJTD', projId)
+export const setProjId = (proj_id) => {
+    localStorage.setItem('PROJID', proj_id);
 }
 
 export const getProjId = () => localStorage.getItem('PROJID')

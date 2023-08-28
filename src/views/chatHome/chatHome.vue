@@ -102,11 +102,8 @@ const messagesPerPage = 20
 
 async function getTeamMember(){
 	let res = await teamFunction.queryTeamMember(team_id.value)
-	console.log("***************")
-	console.log(res.data.members)
 	teamOption.value = res.data.members
 }
-
 async function createNewRoom(){
 	console.log('#######')
 	console.log(newTeamMember.value)
@@ -186,8 +183,6 @@ async function addHistoryMessage({ room, options = {} }){
 	})
 
 }
-
-
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
 	let message = {
@@ -201,20 +196,6 @@ function upMessage(event) {
 	}
 	messages.value.push(message)
 }
-
-onMounted(() => {
-	team_id.value = route.params.team_id
-	user_id.value = getUserId()
-	currentUserId.value = user_id.value
-	addData()
-	addHistoryMessage()
-	getTeamMember()
-	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
-	socket.value.addEventListener('message', upMessage)
-
-})
-
-
 function menuActionHandler({action,}) {
 	console.log(action)
 	switch (action.name) {
@@ -279,30 +260,19 @@ function handleCustomMessageAction({roomId, action, message}) {
 		// Add more cases for other custom actions
 	}
 }
-function addMessages(reset) {
-	const messages = []
-	for (let i = 0; i < 30; i++) {
-		messages.push({
-			_id: reset ? i : this.messages.length + i,
-			content: `${reset ? '' : 'paginated'} message ${i + 1}`,
-			senderId: '4321',
-			username: 'John Doe',
-			date: '13 November',
-			timestamp: '10:20',
-			avatar: '/doe.png',
-			system: false,
-			saved: true,
-			distributed: true,
-			seen: true,
-			deleted: false,
-			failure: true,
-			disableActions: false,
-			disableReactions: false,
-		})
-	}
-	
-	return messages
-}
+
+
+onMounted(() => {
+	team_id.value = route.params.team_id
+	user_id.value = getUserId()
+	currentUserId.value = user_id.value
+	addData()
+	addHistoryMessage()
+	getTeamMember()
+	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
+	socket.value.addEventListener('message', upMessage)
+
+})
 
 // Or if you used CDN import
 // window['vue-advanced-chat'].register()

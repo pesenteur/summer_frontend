@@ -93,6 +93,7 @@ async function getTeamMember() {
 	let res = await teamFunction.queryTeamMember(team_id.value)
 	teamOption.value = res.data.members
 }
+
 async function createNewRoom() {
 	console.log('#######')
 	console.log(newTeamMember.value)

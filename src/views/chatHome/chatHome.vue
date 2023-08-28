@@ -48,6 +48,7 @@
 <script setup>
 // import {VueAdvancedChat} from "vue-advanced-chat";
 import {register} from 'vue-advanced-chat'
+import { ElMessage } from 'element-plus'
 import teamFunction from '@/api/team'
 import {onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref} from "vue"
 import {onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
@@ -100,28 +101,38 @@ const room_id = ref()
 const messagesLoaded = ref(false)
 const messagesPerPage = 20
 
-async function getTeamMember(){
+async function getTeamMember() {
 	let res = await teamFunction.queryTeamMember(team_id.value)
-	teamOption.value = res.data.members
-}
-async function createNewRoom(){
-	console.log('#######')
-	console.log(newTeamMember.value)
-	console.log('#######')
-	let member = []
-	
-	newTeamMember.value.forEach((item) => {
-		teamOption.value.forEach((team) => {
-			if (item === team.name){
-				member.push(team.id)
-			}
-		})
+	console.log(res.data.members)
+	let filterRes = []
+	res.data.members.forEach((member)=>{
+		if (member.id != user_id.value){
+			filterRes.push(member)
+		}
 	})
-	console.log(member)
-	dialogFormVisible.value = false
-	await chatFunction.createRoom(team_id.value,member,newTeamName.value)
-
+	teamOption.value = filterRes
 }
+
+async function createNewRoom() {
+	let member = []
+	if (!!newTeamMember.value){
+		ElMessage.error('您还未添加任何一名群聊成员')
+	}
+	else {
+		newTeamMember.value.forEach((item) => {
+			teamOption.value.forEach((team) => {
+				if (item === team.name) {
+					member.push(team.id)
+				}
+			})
+		})
+		member.push(user_id.value)
+		dialogFormVisible.value = false
+		await chatFunction.createRoom(team_id.value, member, newTeamName.value)
+		await addData()
+	}
+}
+
 async function addData() {
 	let result = await chatFunction.queryAllRoom(team_id.value)
 	const modifiedRoom = []
@@ -141,23 +152,24 @@ async function addData() {
 			roomName: item.name,
 			users: users,
 			avatar: "/doe.png",
-			unreadCount: item.unread_count,
-			lastMessage: {
-				_id: 'xyz',
-				content: 'Last message received',
-				senderId: '1234',
-				username: 'John Doe',
-				timestamp: '10:20',
-			}
+			// unreadCount: item.unread_count,
+			// lastMessage: {
+			// 	_id: 'xyz',
+			// 	content: 'Last message received',
+			// 	senderId: '1234',
+			// 	username: 'John Doe',
+			// 	timestamp: '10:20',
+			// }
 		}
 		modifiedRoom.push(room)
 	})
 	rooms.value = modifiedRoom
 }
-async function addHistoryMessage({ room, options = {} }){
+
+async function addHistoryMessage({room, options = {}}) {
 	let res;
 	if (options.reset) {
-		messages.value=[]
+		messages.value = []
 		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
 	} else {
 		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
@@ -181,8 +193,9 @@ async function addHistoryMessage({ room, options = {} }){
 		}
 		messages.value.unshift(message)
 	})
-
+	
 }
+
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
 	let message = {
@@ -196,6 +209,7 @@ function upMessage(event) {
 	}
 	messages.value.push(message)
 }
+
 function menuActionHandler({action,}) {
 	console.log(action)
 	switch (action.name) {
@@ -208,6 +222,7 @@ function menuActionHandler({action,}) {
 		// call a method to delete the room
 	}
 }
+
 function sendMessage(message) {
 	let formatMessage = {
 		"team": team_id.value,
@@ -231,6 +246,7 @@ function sendMessage(message) {
 	//   }
 	// ]
 }
+
 function fetchMessages({options = {}}) {
 	// setTimeout(() => {
 	//   if (options.reset) {
@@ -242,6 +258,7 @@ function fetchMessages({options = {}}) {
 	//   // this.addNewMessage()
 	// })
 }
+
 function handleCustomMessageAction({roomId, action, message}) {
 	switch (action.name) {
 		case 'replyAction':
@@ -271,7 +288,7 @@ onMounted(() => {
 	getTeamMember()
 	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
-
+	
 })
 
 // Or if you used CDN import

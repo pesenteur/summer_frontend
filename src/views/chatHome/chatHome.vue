@@ -101,11 +101,12 @@ async function getTeamMember() {
 		}
 	})
 	teamOption.value = filterRes
+	console.log(filterRes)
 }
 
 async function createNewRoom() {
 	let member = []
-	if (!!newTeamMember.value){
+	if (newTeamMember.value.length === 0){
 		ElMessage.error('您还未添加任何一名群聊成员')
 	}
 	else {

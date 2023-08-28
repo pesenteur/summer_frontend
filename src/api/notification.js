@@ -7,15 +7,15 @@ export default {
             method: 'GET',
         });
     },
-    querySingleNoti(message_id) {
+    querySingleNoti(notId) {
         return requests({
-            url: `/messages${message_id}`,
+            url: `/messages${notId}`,
             method: 'GET',
         });
     },
-    readSingleNoti(message_id) {
+    readSingleNoti(notId) {
         return requests({
-            url: `/messages/${message_id}`,
+            url: `/messages/${notId}`,
             method: 'PUT',
         });
     },
@@ -31,9 +31,9 @@ export default {
             method: 'DELETE',
         });
     },
-    deleteSingleNoti(message_id) {
+    deleteSingleNoti(notId) {
         return requests({
-            url: `/messages/${message_id}`,
+            url: `/messages/${notId}`,
             method: 'DELETE',
         });
     },

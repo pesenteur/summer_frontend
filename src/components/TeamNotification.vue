@@ -1,14 +1,16 @@
 <template>
-  <button @click="table = true" class="custom-icon-button" />
+  <button @click="clickButton" class="custom-icon-button" />
   <div class="badge-container">
     <span class="badge_top" v-if="unreadCount > 0"></span>
   </div>
   <el-drawer class="aside_msg" v-model="table" title="我的消息" direction="rtl">
     <el-col>
       <div class="card-container">
-        <el-card v-for="msg in messages" :key="msg.chatId" class="decorate-card">
+	      <button @click="readAllNoti">一键已读所有消息</button><button @click="deleteAllRead">一键删除所有已读消息</button>
+        <el-card v-for="msg in messages" :key="msg.notId" class="decorate-card" @click="readNoti(msg.notId)">
+	        <button @click="deleteSingleNoti(msg.notId)">删除</button>
           <div class="details-container">
-            <details @click="switchState(msg)">
+            <details >
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
                 {{ msg.content }}
                 <span class="badge" v-if="msg.isread === 'unread'"></span>
@@ -33,21 +35,38 @@ const messages = ref( [])
 const unreadCount = () => {
 	return messages.filter(msg => msg.isread === 'unread').length;
 };
-const switchState = (msg) => {
-  msg.isread = msg.isread === 'unread' ? 'read' : 'unread';
-};
 getAllNoti()
+
+async function clickButton(){
+	table.value = true
+	getAllNoti()
+}
+async function deleteAllRead(){
+	await notiFunction.deleteReadNoti()
+	getAllNoti()
+}
+async function deleteSingleNoti(NotId){
+	await notiFunction.deleteSingleNoti(NotId)
+	getAllNoti()
+}
+async function readAllNoti(){
+	await notiFunction.readAllNoti()
+	getAllNoti()
+}
+async function readNoti(NotId){
+	await notiFunction.readSingleNoti(NotId)
+	getAllNoti()
+}
 async function getAllNoti(){
 	let res = await notiFunction.queryAllNoti()
 	console.log(res.data)
 	let filtermessages = []
 	res.data.forEach((item)=>{
 		const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
-		// const usertagPart = item.content.match(/<usertag>(\d+)<\/usertag>/)?.[1] || "";
 		let noti = {
 			content : messagePart ,
 			isread : item.is_read === true ? 'read' : 'unread' ,
-			chatId : item.id
+			notId : item.id
 		}
 		filtermessages.push(noti)
 	})

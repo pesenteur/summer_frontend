@@ -3,14 +3,29 @@
   <div class="badge-container">
     <span class="badge_top" v-if="unreadCount > 0"></span>
   </div>
-  <el-drawer class="aside_msg" v-model="table" title="我的消息" direction="rtl">
+  <el-drawer size="20%" class="aside_msg" v-model="table" title="我的消息" direction="rtl">
     <el-col>
       <div class="card-container">
-	      <button @click="readAllNoti">一键已读所有消息</button><button @click="deleteAllRead">一键删除所有已读消息</button>
+        <div class="button-left">
+          <el-popover placement="bottom-start" :width="100" trigger="hover" content="已读所有消息">
+            <template #reference>
+              <button @click="readAllNoti" class="action-button"><font-awesome-icon :icon="['fas', 'check']" />
+              </button>
+            </template>
+          </el-popover>
+        </div>
+        <div class="button-right">
+          <el-popover placement="bottom-start" :width="100" trigger="hover" content="删除所有已读消息">
+            <template #reference>
+              <button @click="deleteAllRead" class="action-button"><font-awesome-icon
+                  :icon="['fas', 'delete-left']" /></button>
+            </template>
+          </el-popover>
+        </div>
         <el-card v-for="msg in messages" :key="msg.notId" class="decorate-card" @click="readNoti(msg.notId)">
-	        <button @click="deleteSingleNoti(msg.notId)">删除</button>
+          <button @click="deleteSingleNoti(msg.notId)">删除</button>
           <div class="details-container">
-            <details >
+            <details>
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
                 {{ msg.content }}
                 <span class="badge" v-if="msg.isread === 'unread'"></span>
@@ -28,50 +43,51 @@
 import { ref, computed } from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
+
 const table = ref(false)
 // TODO: improvement typing when refactor table
-const messages = ref( [])
+const messages = ref([])
 
 const unreadCount = () => {
-	return messages.filter(msg => msg.isread === 'unread').length;
+  return messages.filter(msg => msg.isread === 'unread').length;
 };
 getAllNoti()
 
-async function clickButton(){
-	table.value = true
-	getAllNoti()
+async function clickButton() {
+  table.value = true
+  getAllNoti()
 }
-async function deleteAllRead(){
-	await notiFunction.deleteReadNoti()
-	getAllNoti()
+async function deleteAllRead() {
+  await notiFunction.deleteReadNoti()
+  getAllNoti()
 }
-async function deleteSingleNoti(NotId){
-	await notiFunction.deleteSingleNoti(NotId)
-	getAllNoti()
+async function deleteSingleNoti(NotId) {
+  await notiFunction.deleteSingleNoti(NotId)
+  getAllNoti()
 }
-async function readAllNoti(){
-	await notiFunction.readAllNoti()
-	getAllNoti()
+async function readAllNoti() {
+  await notiFunction.readAllNoti()
+  getAllNoti()
 }
-async function readNoti(NotId){
-	await notiFunction.readSingleNoti(NotId)
-	getAllNoti()
+async function readNoti(NotId) {
+  await notiFunction.readSingleNoti(NotId)
+  getAllNoti()
 }
-async function getAllNoti(){
-	let res = await notiFunction.queryAllNoti()
-	console.log(res.data)
-	let filtermessages = []
-	res.data.forEach((item)=>{
-		const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
-		let noti = {
-			content : messagePart ,
-			isread : item.is_read === true ? 'read' : 'unread' ,
-			notId : item.id
-		}
-		filtermessages.push(noti)
-	})
-	console.log(filtermessages)
-	messages.value = filtermessages
+async function getAllNoti() {
+  let res = await notiFunction.queryAllNoti()
+  console.log(res.data)
+  let filtermessages = []
+  res.data.forEach((item) => {
+    const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
+    let noti = {
+      content: messagePart,
+      isread: item.is_read === true ? 'read' : 'unread',
+      notId: item.id
+    }
+    filtermessages.push(noti)
+  })
+  console.log(filtermessages)
+  messages.value = filtermessages
 }
 </script>
 
@@ -196,5 +212,35 @@ async function getAllNoti(){
   width: 100%;
   margin: auto;
   font-size: 12px;
+}
+
+.action-button {
+  padding: 8px 16px;
+  color: rgb(92, 86, 86);
+  border: none;
+  font-size: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.3s;
+}
+
+.action-button:hover {
+  background-color: #aac1d9;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-left {
+  flex: 1;
+  margin-right: 50px;
+}
+
+.button-right {
+  flex: 1;
+  margin-left: 100px;
 }
 </style>

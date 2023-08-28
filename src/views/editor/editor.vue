@@ -27,7 +27,14 @@
                 </el-button>
               </template>
             </el-popover>
-
+            <el-popover placement="top-start" title="高亮" :width="100" trigger="hover" content="将文本高亮">
+              <template #reference>
+                <el-button @click="editor.chain().focus().toggleHighlight().run()"
+                  :class="{ 'is-active': editor.isActive('highlight') }">
+                  <font-awesome-icon :icon="['fas', 'highlighter']" />
+                </el-button>
+              </template>
+            </el-popover>
             <el-popover placement="top-start" title="倾斜(Ctrl+l)" :width="100" trigger="hover" content="将文字变为斜体">
               <template #reference>
                 <el-button @click="editor.chain().focus().toggleItalic().run()"
@@ -83,7 +90,6 @@
               <template #reference>
                 <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
                   :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
-                  <font-awesome-icon :icon="['fas', 'h1']" />
                   h1
                 </el-button>
               </template>
@@ -94,7 +100,6 @@
               <template #reference>
                 <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
                   :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
-                  <font-awesome-icon :icon="['fas', 'h2']" />
                   h2
                 </el-button>
               </template>
@@ -105,7 +110,6 @@
               <template #reference>
                 <el-button text @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
                   :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
-                  <font-awesome-icon :icon="['fas', 'h3']" />
                   h3
                 </el-button>
               </template>
@@ -116,7 +120,6 @@
               <template #reference>
                 <el-button text @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
                   :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }">
-                  <font-awesome-icon :icon="['fas', 'h4']" />
                   h4
                 </el-button>
               </template>
@@ -127,7 +130,6 @@
               <template #reference>
                 <el-button text @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
                   :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }">
-                  <font-awesome-icon :icon="['fas', 'h5']" />
                   h5
                 </el-button>
               </template>
@@ -138,7 +140,6 @@
               <template #reference>
                 <el-button text @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
                   :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }">
-                  <font-awesome-icon :icon="['fas', 'h6']" />
                   h6
                 </el-button>
               </template>
@@ -210,13 +211,13 @@
             </el-popover>
           </div>
           <div class="column">
-
-            <el-button @click="editor.chain().focus().unsetAllMarks().run()">
-              cm
-            </el-button>
-            <el-button @click="editor.chain().focus().clearNodes().run()">
-              cn
-            </el-button>
+            <el-popover title="清除所有标记" placement="top-start">
+              <template #reference>
+                <el-button @click="editor.chain().focus().unsetAllMarks().run()">
+                  <font-awesome-icon :icon="['fas', 'broom']" />
+                </el-button>
+              </template>
+            </el-popover>
           </div>
         </div>
         <div class="editor" v-if="editor">
@@ -243,7 +244,10 @@ import Highlight from '@tiptap/extension-highlight'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import StarterKit from '@tiptap/starter-kit'
+import Mention from '@tiptap/extension-mention'
 import { Editor, EditorContent } from '@tiptap/vue-3'
+import suggestion from './suggestion.js'
+
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
 import * as Y from 'yjs'
 // import buttonGroup from './buttonGroup.vue'
@@ -281,7 +285,7 @@ export default {
     const ydoc = new Y.Doc()
 
     this.provider = new HocuspocusProvider({
-      url: 'ws://10.192.201.181:1234/textcollab/937d259e-a552-43f4-943e-97b9b5219f04',
+      url: 'ws://azure.bienboy.store/hocuspocus',
       document: ydoc,
     })
 
@@ -306,6 +310,13 @@ export default {
         }),
         CharacterCount.configure({
           limit: 10000,
+        }),
+        StarterKit,
+        Mention.configure({
+          HTMLAttributes: {
+            class: 'mention',
+          },
+          suggestion,
         }),
       ],
     })
@@ -376,6 +387,14 @@ export default {
 
 .column {
   padding: 1px;
+}
+
+.mention {
+  border: 1px solid #000;
+  border-radius: 0.4rem;
+  padding: 0.1rem 0.3rem;
+  color: black;
+  box-decoration-break: clone;
 }
 
 .editor {
@@ -583,6 +602,32 @@ export default {
 <style>
 .ProseMirror:focus {
   outline: none !important;
+}
+
+.collaboration-cursor__caret {
+  border-left: 1px solid #0D0D0D;
+  border-right: 1px solid #0D0D0D;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Render the username above the caret */
+.collaboration-cursor__label {
+  border-radius: 3px 3px 3px 0;
+  color: #0D0D0D;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  left: -1px;
+  line-height: normal;
+  padding: 0.1rem 0.3rem;
+  position: absolute;
+  top: -1.4em;
+  user-select: none;
+  white-space: nowrap;
 }
 
 .editor {

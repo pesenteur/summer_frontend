@@ -1,7 +1,7 @@
 import requests from "@/utils/request";
 
 export default {
-    addOrigin(title,project){
+    addOrigin(title,project){//返回design
         return requests({
             url:'/designs',
             method: 'POST',
@@ -10,18 +10,18 @@ export default {
             },
         })
     },
-    getSingle(design){
+    getSingle(project,design){
         return requests({
-            url:'/design',
+            url:`/design/${design}`,
             method: 'GET',
             params: {
-                design
+                project
             }
         })
     },
     getAllDesign(project){
         return requests({
-            url:`/design`,
+            url:`/designs`,
             method: 'GET',
             params:{
                 project

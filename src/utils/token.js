@@ -12,6 +12,12 @@ export const setProjId = (proj_id) => {
     localStorage.setItem('PROJID', proj_id);
 }
 
+export const setDesignId = (des_id) => {
+    localStorage.setItem('DESID', des_id);
+}
+
+export const getDesignId = () => localStorage.getItem('DESID')
+
 export const getProjId = () => localStorage.getItem('PROJID')
 
 export const getTeamId = () => localStorage.getItem('TEAM');

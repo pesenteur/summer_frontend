@@ -88,7 +88,9 @@
                border: 2px rgb(255,255,255) solid;">
           <iframe :src="iframeSrc" title="SUMMER" style="position: absolute; width: 100%; height: 100%; top: 0;">
           </iframe>
+
         </div>
+
       </el-scrollbar>
     </el-main>
   </el-container>
@@ -103,11 +105,12 @@ import { useRoute, useRouter } from "vue-router";
 import editor from '../editor/editor.vue'
 import projectAPI from "@/api/proj";
 import originAPI from "@/api/originDesign";
-import {getProjId} from "@/utils/token";
+import form from "mockjs";
+import {getDesignId, getProjId, getUserId} from "@/utils/token";
 
 const dialogFormVisible = ref(false)
 
-const designId = ref('')
+const designId = ref()
 
 const router = useRouter()
 
@@ -115,21 +118,26 @@ const projectName = ref('')
 
 const formLabelWidth = '140px'
 
-const iframeSrc = computed(() => {
-  return `../../public/dist/index.html?id=${designId.value}`;
-});
+// const iframeSrc = computed(() => {
+//   console.log(`../../public/dist/index.html?id=${getDesignId()+'.'+getProjId()}`)
+//   return `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
+// });
+const iframeSrc = ref('../../public/dist')
+
+onMounted(()=>{
+  iframeSrc.value = `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
+})
 
 // const pageId = ref('1')
 
 const pages = reactive([])
-
 const item = {
   date: '2016-05-02',
   name: 'Tom',
   address: 'No. 189, Grove St, Los Angeles',
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
-
+const myResult = ref([])
 
 // async function addCanvas() {
 //   if(form.name === ''){
@@ -156,7 +164,11 @@ function jump() {
 onMounted(async ()=>{
 
   const result = await originAPI.getAllDesign(getProjId())
+  // const result = await originAPI.getAllDesign(getProjId())
 
+
+
+  const result1 = await originAPI.getSingle(getProjId(),getDesignId())
 
 
 })
@@ -175,9 +187,9 @@ onMounted(async ()=>{
 }
 
 .layout-container-demo .el-aside {
-  opacity: 0.15;
-  background-image: url('../../assets/2.jpg');
-  background-size: cover;
+  //opacity: 0.15;
+  //background-image: url('../../assets/2.jpg');
+  //background-size: cover;
 }
 
 .layout-container-demo .el-menu {

@@ -6,9 +6,11 @@
       :ellipsis="false"
       @select="handleSelect"
   >
-    <TeamHeader1/>
+	  <TeamHeader1/>
+	  
     <div class="flex-grow" />
-    <TeamMessage></TeamMessage>
+	  <button @click="jumpToHome" class="home-button" />
+	  <TeamMessage></TeamMessage>
     <div class="flex flex-wrap items-center">
       <el-dropdown>
         <el-button text class="custom-icon-button">
@@ -29,7 +31,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import TeamHeader1 from './TeamHeader1.vue'
-import TeamMessage from "./TeamMessage.vue";
+import TeamMessage from "./TeamNotification.vue";
 import {ArrowDown} from "@element-plus/icons-vue";
 import {clearToken} from "../utils/token.js"
 import { useRoute, useRouter } from "vue-router";
@@ -43,7 +45,9 @@ const handleSelect = (key: string, keyPath: string[]) => {
 function jump() {
   router.push('/switch')
 }
-
+function jumpToHome(){
+	router.push('/')
+}
 function logout(){
 	clearToken()
 	router.push('/login')
@@ -73,6 +77,24 @@ function logout(){
   margin-top: 10px;
   margin-bottom: 10px;
   margin-right: 30px;
+}
+.home-button{
+	margin-right: 10px;
+
+	background-image: url('@/assets/gif/home.gif');
+	/* 根据您的项目路径调整 */
+	background-size: 25px;
+	/* 根据需要调整 */
+	background-repeat: no-repeat;
+	margin-top: 18px;
+	width: 25px;
+	/* 根据需要调整 */
+	height: 25px;
+	/* 根据需要调整 */
+	display: inline-block;
+	border: none;
+	cursor: pointer;
+	outline: none;
 }
 </style>
 

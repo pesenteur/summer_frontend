@@ -8,7 +8,7 @@
       <div class="card-container">
         <el-card v-for="(msg, index) in messages" :key="msg.userId" class="decorate-card">
           <div class="details-container">
-            <details @click="switchState(msg)">
+            <details @click="markAsRead(msg)">
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
                 来自{{ msg.name }}的消息
                 <span class="badge" v-if="msg.isread === 'unread'"></span>
@@ -96,8 +96,10 @@ const unreadCount = computed(() => {
   return messages.filter(msg => msg.isread === 'unread').length;
 });
 
-const switchState = (msg: User) => {
-  msg.isread = msg.isread === 'unread' ? 'read' : 'unread';
+const markAsRead = (msg: User) => {
+  if (msg.isread === 'unread') {
+    msg.isread = 'read';
+  }
 };
 
 </script>

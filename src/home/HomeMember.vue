@@ -7,33 +7,34 @@
       </div>
     </template>
     <el-table :data="tableData" height="150" style="width: 100%">
-      <el-table-column prop="time" label="时间" width="220" />
-      <el-table-column prop="content" label="内容" width="220" />
-      <el-table-column prop="isread" label="是否已读" width="220" />
+      <el-table-column prop="name" label="姓名" width="220" />
+      <el-table-column prop="email" label="邮箱" width="220" />
+      <el-table-column prop="role" label="角色" width="220" />
     </el-table>
   </el-card>
 </template>
 <script setup>
 import {reactive} from "vue";
 import router from "@/router";
-const tableData = reactive([
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-])
+import teamFuction from '@/api/team'
+import {getTeamId} from "@/utils/token";
+const tableData = reactive([])
 
+async function getTeam(){
+	let res = await teamFuction.queryTeamMember(getTeamId())
+	console.log("############")
+	
+	res.data.members.forEach((item)=>{
+		let member={
+			name:item.name,
+			email:item.email,
+			role:item.role
+		}
+		tableData.push(member)
+	})
+	
+}
+getTeam()
 function jump() {
   router.push('/member')
 }

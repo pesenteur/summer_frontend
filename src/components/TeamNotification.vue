@@ -6,11 +6,11 @@
   <el-drawer class="aside_msg" v-model="table" title="我的消息" direction="rtl">
     <el-col>
       <div class="card-container">
-        <el-card v-for="(msg, index) in messages" :key="msg.userId" class="decorate-card">
+        <el-card v-for="msg in messages" :key="msg.chatId" class="decorate-card">
           <div class="details-container">
             <details @click="switchState(msg)">
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
-                来自{{ msg.name }}的消息
+                {{ msg.content }}
                 <span class="badge" v-if="msg.isread === 'unread'"></span>
               </summary>
               <div class="content">{{ msg.content }}</div>
@@ -22,84 +22,38 @@
   </el-drawer>
 </template>
 
-<script lang="ts" setup>
+<script lang="js" setup>
 import { ref, computed } from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
-
-import { Edit, Message } from "@element-plus/icons-vue";
+import notiFunction from '@/api/notification'
 const table = ref(false)
-const isRead = ref('hover')
-
-
-
-const drawerRef = ref<InstanceType<typeof ElDrawer>>()
-const onClick = () => {
-  drawerRef.value!.close()
-}
-
-import type { TableColumnCtx, TableInstance } from 'element-plus'
-
-interface User {
-  userId: string
-  date: string
-  name: string
-  content: string
-  isread: string
-}
-
-
-const tableRef = ref<TableInstance>()
-
-const resetDateFilter = () => {
-  tableRef.value!.clearFilter(['date'])
-}
 // TODO: improvement typing when refactor table
-const formatter = (row: User, column: TableColumnCtx<User>) => {
-  return row.content
-}
-const filterisread = (value: string, row: User) => {
-  return row.isread === value
-}
+const messages = ref( [])
 
-const messages: User[] = [
-  {
-    userId: '001',
-    date: '2016-05-03',
-    name: '吴鑫宇',
-    content: '很抱歉打扰您......',
-    isread: 'read',
-  },
-  {
-    userId: '002',
-    date: '2016-05-02',
-    name: '吴鑫宇',
-    content: '很抱歉打扰您......',
-    isread: 'unread',
-  },
-  {
-    userId: '003',
-    date: '2016-05-04',
-    name: '吴鑫宇',
-    content: '很抱歉打扰您......',
-    isread: 'read',
-  },
-  {
-    userId: '004',
-    date: '2016-05-01',
-    name: '吴鑫宇',
-    content: '很抱歉打扰您......',
-    isread: 'unread',
-  },
-]
-
-const unreadCount = computed(() => {
-  return messages.filter(msg => msg.isread === 'unread').length;
-});
-
-const switchState = (msg: User) => {
+const unreadCount = () => {
+	return messages.filter(msg => msg.isread === 'unread').length;
+};
+const switchState = (msg) => {
   msg.isread = msg.isread === 'unread' ? 'read' : 'unread';
 };
-
+getAllNoti()
+async function getAllNoti(){
+	let res = await notiFunction.queryAllNoti()
+	console.log(res.data)
+	let filtermessages = []
+	res.data.forEach((item)=>{
+		const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
+		// const usertagPart = item.content.match(/<usertag>(\d+)<\/usertag>/)?.[1] || "";
+		let noti = {
+			content : messagePart ,
+			isread : item.is_read === true ? 'read' : 'unread' ,
+			chatId : item.id
+		}
+		filtermessages.push(noti)
+	})
+	console.log(filtermessages)
+	messages.value = filtermessages
+}
 </script>
 
 <style scoped>

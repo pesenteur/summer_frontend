@@ -103,7 +103,6 @@ import { useRoute, useRouter } from "vue-router";
 import editor from '../editor/editor.vue'
 import projectAPI from "@/api/proj";
 import originAPI from "@/api/originDesign";
-import form, {navy as designId} from "mockjs";
 import {getProjId} from "@/utils/token";
 
 const dialogFormVisible = ref(false)

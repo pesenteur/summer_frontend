@@ -81,6 +81,7 @@ import projectMain from './projectMain.vue'
 import projectAPI from '@/api/proj.js'
 import router from "@/router";
 import projectMainRe from './projectMainRe.vue';
+import {getTeamId} from "@/utils/token";
 
 const ifShowTrash  = ref(true)
 
@@ -88,7 +89,10 @@ const dialogFormVisible = ref(false)
 
 const formLabelWidth = '140px'
 
-const team=ref('2145f25c-f9ec-4a42-9b90-1e2fac1b9ddd')
+// const team=ref('2145f25c-f9ec-4a42-9b90-1e2fac1b9ddd')
+
+const team = ref('')
+team.value = getTeamId()
 
 const form = reactive({
   name: '',

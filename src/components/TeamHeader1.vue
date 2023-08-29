@@ -40,7 +40,7 @@ function jump(buttonId) {
     router.push('/document')
   } else if (buttonId === '002') {
     drawer.value = !drawer.value
-    router.push('/')
+    router.push('/project')
   } else if (buttonId === '003') {
     drawer.value = !drawer.value
     router.push('/member')

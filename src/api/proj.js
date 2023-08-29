@@ -10,7 +10,7 @@ export default {
             }
         })
     },
-    changeProject(name,describe){
+    resetProject(name,describe){
       return requests({
           url:'/projects',
           method: 'PATCH',

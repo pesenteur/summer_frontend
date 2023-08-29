@@ -10,19 +10,6 @@
           </div>
         </el-card>
       </el-col>
-
-
-<!--      <el-col :span="4" class="card-col" v-if="rowIndex === rows.length - 1">-->
-<!--        <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card" @click="handleExtraCardClick">-->
-<!--          <img src="https://pic1.zhimg.com/v2-48232582b70ecd9c53a3026ffb21e078_r.jpg?source=1940ef5c" class="image" />-->
-<!--          <div style="padding: 10px">-->
-
-<!--            <projectDialog :teamId="team"/>-->
-
-<!--          </div>-->
-<!--        </el-card>-->
-<!--      </el-col>-->
-
     </el-row>
 
   </div>
@@ -81,7 +68,7 @@ async function getSingleProj(projPos) {
 
     console.log('projPos111',projPos)
 
-    // const result = await projectAPI.getSingleProject(projId);
+    const result = await projectAPI.getSingleProject(projId);
 
     setProjId(projId)
 
@@ -96,12 +83,14 @@ async function getSingleProj(projPos) {
     //     break;
     //   }
     // }
-    const result = await originAPI.getAllDesign(projId)
-    if (result.data){
-      console.log('data0',result.data[0])
-      let id = result.data[0].id
-      setDesignId(id)
-    }
+
+
+    // const result = await originAPI.getAllDesign(projId)
+    // if (result.data){
+    //   console.log('data0',result.data[0])
+    //   let id = result.data[0].id
+    //   setDesignId(id)
+    // }
     // const result = await originAPI.addOrigin(title,projId)
     // console.log('this is a result:',result)
     // setDesignId(result.data.id)

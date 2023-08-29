@@ -6,7 +6,7 @@
       <span class="subtitle">选择后将自动为您跳转到主页面</span>
       <el-divider />
       <el-menu v-for="team in teamTeamTable" key="team.id" class="el-menu-vertical-demo">
-        <el-menu-item index="1" @click="jumpToHome(team.id)">
+        <el-menu-item index="1" @click="jumpToHome(team.id,team.name)">
           <div class="moji">
             <el-icon><icon-menu /></el-icon>
             <span class="team-name">{{ team.name }}</span>
@@ -46,13 +46,12 @@ import {
 import { onMounted, ref, reactive } from 'vue'
 import teamFunction from "@/api/team";
 import { useRoute, useRouter } from "vue-router";
-import { setTeamId } from "@/utils/token"
+import { setTeamId,setTeamName } from "@/utils/token"
 const dialogFormVisible = ref(false) //弹出的对话框的属性值
 const teamTeamTable = ref([])
 const route = useRoute();
 const router = useRouter();
 async function queryALL() {
-  console.log('================')
   let result = await teamFunction.queryAllTeams();
   teamTeamTable.value = result.data
 }
@@ -66,11 +65,11 @@ const form = reactive({
   resource: '',
   desc: '',
 })
-function jumpToHome(team_id) {
-  console.log('*******TeamId********')
+function jumpToHome(team_id,team_name) {
   console.log(team_id)
-  console.log('*********************')
+  console.log(team_name)
   setTeamId(team_id)
+  setTeamName(team_name)
   router.push(('/'))
 
 }

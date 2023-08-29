@@ -6,7 +6,7 @@
   <el-drawer v-model="drawer" title="SUMMER" :with-header="false" direction="ltr" size="15%">
     <div class="drawer-content">
       <div class="summer-heading">
-        <span class="summer-text">团队管理系统</span>
+        <span class="summer-text" :v-model="teamName">团队：{{ teamName }}</span>
       </div>
       <el-divider class="custom-divider" />
     </div>
@@ -24,9 +24,9 @@
 import { reactive, ref } from 'vue'
 import router from "@/router";
 import { useRoute } from 'vue-router';
-import { getTeamId } from "@/utils/token";
+import { getTeamId, getTeamName } from "@/utils/token";
 const drawer = ref(false)
-
+const teamName = ref(getTeamName())
 const buttons = reactive([
   { id: "001", type: 'plain', text: '项目协作', icon: 'el-icon-my-help' },
   { id: "002", type: 'plain', text: '原型设计', icon: 'el-icon-my-platform' },
@@ -40,7 +40,7 @@ function jump(buttonId) {
     router.push('/document')
   } else if (buttonId === '002') {
     drawer.value = !drawer.value
-    router.push('/')
+    router.push('/project')
   } else if (buttonId === '003') {
     drawer.value = !drawer.value
     router.push('/member')
@@ -84,7 +84,6 @@ function jump(buttonId) {
 }
 
 .drawer-content {
-  padding: 20px;
   margin: 0px;
   /* 添加一些内边距 */
 }
@@ -97,7 +96,7 @@ function jump(buttonId) {
 }
 
 .summer-text {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: black;
   margin: 0px;
@@ -211,4 +210,5 @@ function jump(buttonId) {
   /* 按钮背景颜色（鼠标悬停时） */
   transform: scale(1.2);
   /* 鼠标悬停时放大按钮 */
-}</style>
+}
+</style>

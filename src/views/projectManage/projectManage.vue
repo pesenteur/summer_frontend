@@ -10,13 +10,13 @@
                 <span>项目视图</span>
               </template>
               <el-menu-item-group title="Group One">
-                <el-menu-item index="1-1">
+                <el-menu-item @click="showStage" index="1-1">
                   <font-awesome-icon class="icon" :icon="['fas', 'border-all']" />
-                  <span class="all_project" @click="showStage">全部项目</span>
+                  <span class="all_project">全部项目</span>
                 </el-menu-item>
-                <el-menu-item index="1-2">
+                <el-menu-item @click="showTrash" index="1-2">
                   <font-awesome-icon class="icon" :icon="['fas', 'recycle']" />
-                  <span class="" @click="showTrash">回收站</span>
+                  <span class="">回收站</span>
                 </el-menu-item>
               </el-menu-item-group>
             </el-sub-menu>
@@ -34,11 +34,9 @@
                 <el-form-item label="项目名称" :label-width="formLabelWidth">
                   <el-input v-model="form.name" autocomplete="off" class="element-form" />
                 </el-form-item>
-
                 <el-form-item label="项目描述" :label-width="formLabelWidth">
                   <el-input v-model="form.describe" autocomplete="off" class="element-form" />
                 </el-form-item>
-
               </el-form>
               <template #footer>
                 <span class="dialog-footer">
@@ -65,7 +63,6 @@
 
 <script setup>
 import { reactive, ref, watch } from 'vue'
-import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 import projectMain from './projectMain.vue'
 import projectAPI from '@/api/proj.js'
 import router from "@/router";

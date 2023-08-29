@@ -4,7 +4,7 @@
       <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
         <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
           shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-          <img @click="getSingleProj((rowIndex) * 4 + colIndex)"
+          <img @click="intoDesignManage((rowIndex)*4+colIndex)"
             src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
           <div style="padding: 10px">
             <span>项目名称: {{ projectName[(rowIndex) * 4 + colIndex] }}</span>
@@ -122,7 +122,17 @@ function openDialog(projIndex) {
   newName.value = ''; // 清空输入框
   dialogVisible.value = true; // 打开对话框
 }
+async function intoDesignManage(projPos) {
+  let projId = myResult.value[projPos].id
 
+  console.log('projPos111', projPos)
+
+  const result = await projectAPI.getSingleProject(projId);
+
+  setProjId(projId)
+
+  await router.push('/design')
+}
 function closeDialog() {
   dialogVisible.value = false; // 关闭对话框
 }

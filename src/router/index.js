@@ -29,7 +29,10 @@ const router = createRouter({
         component: () => import('@/views/chatHome/chatHome.vue')
     }, {
         path: '/drag',
-        component: () => import('@/views/dragger/draggerTotal.vue')
+        component: () => import('@/views/dragger/designDragger.vue')
+    }, {
+        path: '/design',
+        component: ()=> import('@/views/dragger/originDesign.vue')
     }, {
         path: '/chatHome',
         component: () => import('@/views/chatHome/chatHome.vue')

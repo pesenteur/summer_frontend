@@ -1,3 +1,4 @@
+
 <template>
   <el-container class="layout-container-demo" style="height: 700px">
     <el-aside width="200px">
@@ -24,7 +25,7 @@
         </el-col>
       </el-row>
     </el-aside>
-    <el-container>
+  <el-container>
       <el-header style="text-align: right; font-size: 12px">
         <div class="toolbar">
           <div>
@@ -34,9 +35,11 @@
                 <el-form-item label="项目名称" :label-width="formLabelWidth">
                   <el-input v-model="form.name" autocomplete="off" class="element-form" />
                 </el-form-item>
+
                 <el-form-item label="项目描述" :label-width="formLabelWidth">
                   <el-input v-model="form.describe" autocomplete="off" class="element-form" />
                 </el-form-item>
+
               </el-form>
               <template #footer>
                 <span class="dialog-footer">
@@ -62,14 +65,15 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import {reactive, ref, watch} from 'vue'
+import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 import projectMain from './projectMain.vue'
 import projectAPI from '@/api/proj.js'
 import router from "@/router";
 import projectMainRe from './projectMainRe.vue';
-import { getTeamId } from "@/utils/token";
+import {getTeamId, setProjectName, setProjId} from "@/utils/token";
 
-const ifShowTrash = ref(true)
+const ifShowTrash  = ref(true)
 
 const dialogFormVisible = ref(false)
 
@@ -82,7 +86,7 @@ team.value = getTeamId()
 
 const form = reactive({
   name: '',
-  describe: '',
+  describe:'',
 })
 
 const item = {
@@ -95,46 +99,46 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 const showProjects = ref(null)
 const showProjects1 = ref(null)
 
-async function addProject() {
-  if (form.name === '') {
-    dialogFormVisible.value = true
-  } else {
-    const result = await projectAPI.addProject(form.name, form.describe, team.value);
-    dialogFormVisible.value = false
-    await router.push('/drag')
-    console.log('addProject成功被调用！')
+  async function addProject() {
+    if(form.name === ''){
+      dialogFormVisible.value = true
+    }else {
+      const result = await projectAPI.addProject(form.name, form.describe, team.value);
+      dialogFormVisible.value = false
+      setProjId(result.data.id)
+      setProjectName(form.name)
+      await router.push('/design')
+      console.log('addProject成功被调用！')
+    }
   }
-}
 
-function showTrash() {
-  ifShowTrash.value = false
-  console.log('isShowTrash11111', ifShowTrash.value)
-}
+  function showTrash(){
+    ifShowTrash.value = false
+    console.log('isShowTrash11111',ifShowTrash.value)
+  }
 
-function showStage() {
-  ifShowTrash.value = true
-  console.log('isShowTrash22222', ifShowTrash.value)
-}
+  function showStage(){
+    ifShowTrash.value = true
+    console.log('isShowTrash22222',ifShowTrash.value)
+  }
 
-watch(ifShowTrash, (newVal) => {
-  showProjects.value.showProjects()
-  showProjects1.value.showProjects1()
-})
+  watch(ifShowTrash, (newVal) => {
+    showProjects.value.showProjects()
+    showProjects1.value.showProjects1()
+  })
 
 </script>
 
 <style scoped>
+.icon {
+  margin-right: 5px;
+}
 .layout-container-demo .el-header {
   position: relative;
   background-color: white;
   color: var(--el-text-color-primary);
 }
 
-.layout-container-demo .el-aside {
-  background-color: white
-    /* //background-image: url('../../assets/2.jpg');
-  //background-size: cover; */
-}
 
 .layout-container-demo .el-menu {
   border-right: none;
@@ -150,10 +154,6 @@ watch(ifShowTrash, (newVal) => {
   justify-content: center;
   height: 100%;
   right: 20px;
-}
-
-.icon {
-  margin-right: 5px;
 }
 
 .element-form {

@@ -12,7 +12,7 @@ import persons from './persons.vue'
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside width="100px">
+      <el-aside width="100px">z
       </el-aside>
       <el-main>
         <div class="waterfall-container">

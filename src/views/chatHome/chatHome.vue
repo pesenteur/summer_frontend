@@ -37,7 +37,7 @@
 <script setup>
 // import {VueAdvancedChat} from "vue-advanced-chat";
 
-import {register} from 'vue-advanced-chat'
+import { register } from 'vue-advanced-chat'
 import { ElMessage } from 'element-plus'
 import teamFunction from '@/api/team'
 import { onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue"
@@ -95,8 +95,8 @@ async function getTeamMember() {
 	let res = await teamFunction.queryTeamMember(team_id.value)
 	console.log(res.data.members)
 	let filterRes = []
-	res.data.members.forEach((member)=>{
-		if (member.id != user_id.value){
+	res.data.members.forEach((member) => {
+		if (member.id != user_id.value) {
 			filterRes.push(member)
 		}
 	})
@@ -106,7 +106,7 @@ async function getTeamMember() {
 
 async function createNewRoom() {
 	let member = []
-	if (newTeamMember.value.length === 0){
+	if (newTeamMember.value.length === 0) {
 		ElMessage.error('您还未添加任何一名群聊成员')
 	}
 	else {
@@ -131,7 +131,7 @@ async function addData() {
 		let users = []
 		item.members.forEach((member) => {
 			let user = {
-				_id: member.id,
+				_id: member.id.toString,
 				username: member.name,
 				timestamp: member.update_time,
 				avatar: '',
@@ -157,7 +157,7 @@ async function addData() {
 	rooms.value = modifiedRoom
 }
 
-async function addHistoryMessage({room, options = {}}) {
+async function addHistoryMessage({ room, options = {} }) {
 	let res;
 	if (options.reset) {
 		messages.value = []
@@ -184,7 +184,7 @@ async function addHistoryMessage({room, options = {}}) {
 		}
 		messages.value.unshift(message)
 	})
-	
+
 }
 
 function upMessage(event) {
@@ -201,7 +201,7 @@ function upMessage(event) {
 	messages.value.push(message)
 }
 
-function menuActionHandler({action,}) {
+function menuActionHandler({ action, }) {
 	console.log(action)
 	switch (action.name) {
 		case 'inviteUser':
@@ -239,7 +239,7 @@ function sendMessage(message) {
 }
 
 
-function fetchMessages({options = {}}) {
+function fetchMessages({ options = {} }) {
 
 	// setTimeout(() => {
 	//   if (options.reset) {
@@ -252,7 +252,7 @@ function fetchMessages({options = {}}) {
 	// })
 }
 
-function handleCustomMessageAction({roomId, action, message}) {
+function handleCustomMessageAction({ roomId, action, message }) {
 	switch (action.name) {
 		case 'replyAction':
 			console.log(action.name)
@@ -281,7 +281,7 @@ onMounted(() => {
 	getTeamMember()
 	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
-	
+
 })
 
 // Or if you used CDN import

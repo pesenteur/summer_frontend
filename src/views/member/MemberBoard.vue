@@ -53,7 +53,7 @@
         <div class="back">
           <el-aside width="20px" />
         </div>
-        <div class="rightbox">
+        <div class="rightbox" v-if="teamId">
           <el-container>
             <el-header height="40px" width="100%">
               <div class="mainTitle">
@@ -86,26 +86,28 @@
                   </el-table>
                 </el-dialog>
               </div>
-
             </el-header>
 
             <el-main>
               <el-table :data="filterTableData" style="width: 800px">
                 <el-table-column prop="name" label="Name" />
-                <el-table-column prop="username" label="Username"/>
+                <el-table-column prop="username" label="Username" />
                 <el-table-column prop="email" label="Email" />
                 <el-table-column prop="role" label="Role" />
                 <el-table-column align="right" width="200">
                   <template #header>
                     <form class="search-bar" @submit.prevent>
-                      <input v-model="search" type="text" placeholder="Search..." @change=""/>
+                      <input v-model="search" type="text" placeholder="Search..." @change="" />
                       <button><i class='bx bx-search'></i></button>
                     </form>
                   </template>
-                  <template #default="scope" >
-	                  <el-button size="small" v-if="scope.row.role==='团队管理员'" @click="handleRmv(scope.$index, scope.row)">RmvAuth</el-button>
-	                  <el-button size="small" v-if="scope.row.role==='普通成员'" @click="handleEdit(scope.$index, scope.row)">Auth</el-button>
-	                  <el-button size="small" v-if="scope.row.role!='团队创建者'" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
+                  <template #default="scope">
+                    <el-button size="small" v-if="scope.row.role === '团队管理员'"
+                      @click="handleRmv(scope.$index, scope.row)">RmvAuth</el-button>
+                    <el-button size="small" v-if="scope.row.role === '普通成员'"
+                      @click="handleEdit(scope.$index, scope.row)">Auth</el-button>
+                    <el-button size="small" v-if="scope.row.role != '团队创建者'" type="danger"
+                      @click="handleDelete(scope.row)">Delete</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -145,24 +147,24 @@ const cancelEvent = () => {
   console.log('cancel!')
 }
 async function handleAdd(userInfo) {
-	let res = await teamFunction.inviteTeamMember(teamId.value,userInfo.id)
-	console.log('*********InviteId*******')
-	console.log(res.data)
-	//todo 以后记得删
-	await teamFunction.acceptInvitation(res.data.id,true)
-	await refreshTeamMember()
+  let res = await teamFunction.inviteTeamMember(teamId.value, userInfo.id)
+  console.log('*********InviteId*******')
+  console.log(res.data)
+  //todo 以后记得删
+  await teamFunction.acceptInvitation(res.data.id, true)
+  await refreshTeamMember()
 }
 async function queryALL() {
   let result = await teamFunction.queryAllTeams();
   teamData.value = result.data
 }
 async function selectTeam(team_id, teamName) {
-	console.log(team_id)
-	let result = await teamFunction.queryTeamMember(team_id)
-	tableData.value = result.data.members
-	titleName.value = teamName
-	isAdd.value = false
-	teamId.value = team_id
+  console.log(team_id)
+  let result = await teamFunction.queryTeamMember(team_id)
+  tableData.value = result.data.members
+  titleName.value = teamName
+  isAdd.value = false
+  teamId.value = team_id
 }
 async function submitTeam() {
   dialogFormVisible.value = false
@@ -174,13 +176,13 @@ async function deleteTeam(team_id) {
   await queryALL()
 }
 async function handleDelete(userInfo) {
-	await teamFunction.deleteTeamMember(teamId.value,userInfo.id)
-	if (userInfo.role === "普通成员"){
-	
-	}else{
-	
-	}
-	await refreshTeamMember()
+  await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
+  if (userInfo.role === "普通成员") {
+
+  } else {
+
+  }
+  await refreshTeamMember()
 }
 async function queryAllUser(search_number) {
   let result = await teamFunction.queryAllUser(search_number)
@@ -190,18 +192,18 @@ async function queryAllUser(search_number) {
   userTableData.value = result.data.results
 }
 async function refreshTeamMember() {
-	let result = await teamFunction.queryTeamMember(teamId.value)
-	tableData.value = result.data.members
+  let result = await teamFunction.queryTeamMember(teamId.value)
+  tableData.value = result.data.members
 }
 async function addAdminister(memberId) {
-	console.log("handle")
-	console.log(memberId)
-	await teamFunction.addAdmin(teamId.value,memberId)
-	await refreshTeamMember()
+  console.log("handle")
+  console.log(memberId)
+  await teamFunction.addAdmin(teamId.value, memberId)
+  await refreshTeamMember()
 }
-async function rmvAdminister(memberId){
-	await teamFunction.deleteAdmin(teamId.value,memberId)
-	await refreshTeamMember()
+async function rmvAdminister(memberId) {
+  await teamFunction.deleteAdmin(teamId.value, memberId)
+  await refreshTeamMember()
 }
 onMounted(() => {
   queryALL()
@@ -234,10 +236,10 @@ const filterTableData = computed(() =>
 
 
 const handleEdit = (index, userInfo) => {
-	addAdminister(userInfo.id)
+  addAdminister(userInfo.id)
 }
 const handleRmv = (index, userInfo) => {
-	rmvAdminister(userInfo.id)
+  rmvAdminister(userInfo.id)
 }
 
 
@@ -435,6 +437,7 @@ h2 {
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.2);
   /* Adjust border properties as needed */
 }
+
 .rightbox {
   border-style: ridge;
   border-color: #e8e8e8;
@@ -446,5 +449,4 @@ h2 {
 .rightbox:hover {
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.2);
   /* Adjust border properties as needed */
-}
-</style>
+}</style>

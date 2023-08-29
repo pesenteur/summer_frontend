@@ -19,7 +19,6 @@
                   <span class="" @click="showTrash">回收站</span>
                 </el-menu-item>
               </el-menu-item-group>
-
             </el-sub-menu>
           </el-menu>
         </el-col>
@@ -71,13 +70,15 @@ import projectMain from './projectMain.vue'
 import projectAPI from '@/api/proj.js'
 import router from "@/router";
 import projectMainRe from './projectMainRe.vue';
-import {getTeamId} from "@/utils/token";
+import { getTeamId } from "@/utils/token";
 
 const ifShowTrash = ref(true)
 
 const dialogFormVisible = ref(false)
 
 const formLabelWidth = '140px'
+
+// const team=ref('2145f25c-f9ec-4a42-9b90-1e2fac1b9ddd')
 
 const team = ref('')
 team.value = getTeamId()
@@ -126,12 +127,6 @@ watch(ifShowTrash, (newVal) => {
 </script>
 
 <style scoped>
-.element-back {
-  background-color: white;
-  /* //background-image: url('../../assets/2.jpg'); */
-  /* //background-size: cover; */
-}
-
 .layout-container-demo .el-header {
   position: relative;
   background-color: white;
@@ -139,8 +134,8 @@ watch(ifShowTrash, (newVal) => {
 }
 
 .layout-container-demo .el-aside {
-  background-color: white;
-  /* //background-image: url('../../assets/2.jpg');
+  background-color: white
+    /* //background-image: url('../../assets/2.jpg');
   //background-size: cover; */
 }
 
@@ -159,9 +154,11 @@ watch(ifShowTrash, (newVal) => {
   height: 100%;
   right: 20px;
 }
-.icon{
+
+.icon {
   margin-right: 5px;
 }
+
 .element-form {
   width: auto;
   height: auto;

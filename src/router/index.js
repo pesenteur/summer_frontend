@@ -14,7 +14,7 @@ const router = createRouter({
         component: () => import('@/views/editor/buttonGroup.vue')
     }, {
         path: '/test',
-        component: () => import('@/views/myTest/myTest.vue')
+        component: () => import('@/views/dragger/originDesign.vue')
     }, {
         path: '/member',
         component: () => import('@/views/member/MemberBoard.vue')

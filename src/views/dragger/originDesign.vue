@@ -7,7 +7,7 @@
             <el-menu-item index="1">
               <div class="menu-item-container">
                 <img src="@/assets/imgs/emoji/smiling-face-with-horns.png" alt="!!!" class="image">
-                <span class="element-title">SUMMER</span>
+                <span class="element-title">{{projName}}</span>
 <!--                <el-button :icon="Search" text @click="resetName">-->
 <!--                </el-button>-->
 
@@ -75,9 +75,9 @@
                     link
                     type="primary"
                     size="small"
-                    @click.prevent="intoDesign"
+                    @click.prevent="intoDesign(scope.row.id)"
                 >
-                  Remove
+                  进入画布
                 </el-button>
               </template>
             </el-table-column>
@@ -116,9 +116,12 @@
 import {onMounted, onUpdated, ref} from 'vue'
 import {Menu as IconMenu, Message, Search, Setting} from '@element-plus/icons-vue'
 import {reactive} from "vue";
-import {getProjectName,getProjId} from '@/utils/token'
+import {getProjectName,getProjId,setDesignId} from '@/utils/token'
 import projAPI from '@/api/proj'
 import originAPI from '@/api/originDesign'
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 
 const form = reactive({
   name: '',
@@ -142,7 +145,10 @@ const deleteRow = (index: number) => {
   tableData.value.splice(index, 1)
 }
 
-function intoDesign(){
+function intoDesign(designId){
+  setDesignId(designId)
+  console.log('designId',designId)
+  router.push('/drag')
   console.log('11111111')
 }
 
@@ -154,7 +160,7 @@ async function renameProject() {
   }else {
     projName.value = form.name
     const result = await projAPI.resetProject(form.name,form.describe)
-    dialogFormVisible.value = true
+    dialogFormVisible.value = false
   }
 }
 
@@ -176,6 +182,8 @@ async function addDesign() {
 onMounted(async ()=>{
   const result = await originAPI.getAllDesign(getProjId())
   tableData.value = result.data
+  projName.value = getProjectName()
+  console.log('projName',projName.value)
   console.log('result',result)
   console.log('result.data',result.data)
   console.log('result.data.data',result.data.data)

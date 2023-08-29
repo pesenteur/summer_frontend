@@ -81,7 +81,7 @@ import projectMain from './projectMain.vue'
 import projectAPI from '@/api/proj.js'
 import router from "@/router";
 import projectMainRe from './projectMainRe.vue';
-import {getTeamId} from "@/utils/token";
+import {getTeamId, setProjectName, setProjId} from "@/utils/token";
 
 const ifShowTrash  = ref(true)
 
@@ -115,7 +115,9 @@ const showProjects1 = ref(null)
     }else {
       const result = await projectAPI.addProject(form.name, form.describe, team.value);
       dialogFormVisible.value = false
-      await router.push('/drag')
+      setProjId(result.data.id)
+      setProjectName(form.name)
+      await router.push('/design')
       console.log('addProject成功被调用！')
     }
   }

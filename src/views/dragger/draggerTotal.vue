@@ -63,19 +63,6 @@
               <span class="element-title">页面视图</span>
             </el-menu-item>
 
-            <!--            <el-menu-item index="4">-->
-
-            <div class="mb-4" style="display: flex;flex-direction: column;">
-
-              <el-menu-item v-for="page in pages" :key="page.id" index="4">
-
-                <el-button class="mb-4" text style="width:100%;margin:0">{{ page.text }}</el-button>
-
-              </el-menu-item>
-            </div>
-            <!--            </el-menu-item>-->
-
-
           </el-menu>
         </el-col>
       </el-row>
@@ -118,10 +105,6 @@ const projectName = ref('')
 
 const formLabelWidth = '140px'
 
-// const iframeSrc = computed(() => {
-//   console.log(`../../public/dist/index.html?id=${getDesignId()+'.'+getProjId()}`)
-//   return `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
-// });
 const iframeSrc = ref('../../public/dist')
 
 onMounted(()=>{
@@ -130,7 +113,7 @@ onMounted(()=>{
 
 // const pageId = ref('1')
 
-const pages = reactive([])
+// const pages = reactive([])
 const item = {
   date: '2016-05-02',
   name: 'Tom',
@@ -138,17 +121,6 @@ const item = {
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
 const myResult = ref([])
-
-// async function addCanvas() {
-//   if(form.name === ''){
-//     dialogFormVisible.value = true
-//   }else {
-//     const result = await projectAPI.addProject(form.name, form.describe, team.value);
-//     dialogFormVisible.value = false
-//     await router.push('/drag')
-//     console.log('addProject成功被调用！')
-//   }
-// }
 
 async function addCanvas() {
 

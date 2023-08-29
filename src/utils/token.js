@@ -16,6 +16,12 @@ export const setDesignId = (des_id) => {
     localStorage.setItem('DESID', des_id);
 }
 
+export const setProjectName = (proj_name)=> {
+    localStorage.setItem('PROJNAME', proj_name)
+}
+
+export const getProjectName = ()=> localStorage.getItem('PROJNAME')
+
 export const getDesignId = () => localStorage.getItem('DESID')
 
 export const getProjId = () => localStorage.getItem('PROJID')

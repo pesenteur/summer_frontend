@@ -1,7 +1,7 @@
 import { VueRenderer } from '@tiptap/vue-3'
 import tippy from 'tippy.js'
 import teamFuction from '@/api/team'
-import MentionList from './MentionList.vue'
+import MentionList from './mentionList.vue'
 import { getTeamId } from "@/utils/token";
 
 export default {

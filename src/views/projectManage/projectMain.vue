@@ -293,6 +293,8 @@ onMounted(async () => {
   padding-bottom: 20px;
   position: relative;
   height: 20px;
+  border-radius: 10px;
+  font-size: 16px;
   background-color: white;
   /* padding: 10px; */
   transition: top 0.3s ease;
@@ -315,7 +317,6 @@ onMounted(async () => {
 .project-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
   /* 调整按钮之间的间距 */
 }
 

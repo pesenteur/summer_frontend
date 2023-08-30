@@ -35,11 +35,9 @@
                 <el-form-item label="项目名称" :label-width="formLabelWidth">
                   <el-input v-model="form.name" autocomplete="off" class="element-form" />
                 </el-form-item>
-
                 <el-form-item label="项目描述" :label-width="formLabelWidth">
                   <el-input v-model="form.describe" autocomplete="off" class="element-form" />
                 </el-form-item>
-
               </el-form>
               <template #footer>
                 <span class="dialog-footer">

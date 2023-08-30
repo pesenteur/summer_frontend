@@ -4,36 +4,38 @@
       <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
         <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
           shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-          <img @click="intoDesignManage((rowIndex)*4+colIndex)"
+          <img @click="intoDesignManage((rowIndex) * 4 + colIndex)"
             src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
-          <div style="padding: 10px">
-            <span>项目名称: {{ projectName[(rowIndex) * 4 + colIndex] }}</span>
-            <el-button @click="deleteCard((rowIndex) * 4 + colIndex)" text>
-              <el-icon>
-                <CircleCloseFilled />
-              </el-icon>
-            </el-button>
-            <el-button @click="openDialog((rowIndex) * 4 + colIndex)" text>
-              <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-            </el-button>
-            <el-dialog :modal="false" v-model="dialogVisible" title="修改项目名称">
-              <el-input v-model="newName" placeholder="新项目名称">
-              </el-input>
-              <span slot="footer" class="dialog-footer">
-                <el-button @click="closeDialog">取消</el-button>
-                <el-button type="primary" @click="changeProjectName(projIndex, newName); closeDialog()">确认</el-button>
-              </span>
-            </el-dialog>
-            <div v-if="hoveredProjectIndex === (rowIndex) * 4 + colIndex" class="project-details">
-              <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>
+          <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
+            <div class="project-name">
+              <span>项目：{{ projectName[(rowIndex) * 4 + colIndex] }}</span>
+              <div class="project-actions">
+                <el-button @click="deleteCard((rowIndex) * 4 + colIndex)" text>
+                  <el-icon class="delete">
+                    <CircleCloseFilled />
+                  </el-icon>
+                </el-button>
+                <el-button class="edit" @click="openDialog((rowIndex) * 4 + colIndex)" text>
+                  <font-awesome-icon :icon="['fas', 'pen-to-square']" />
+                </el-button>
+                <el-dialog :modal="false" v-model="dialogVisible" title="修改项目名称" class="project-dialog">
+                  <el-input v-model="newName" placeholder="新项目名称" class="input-field">
+                  </el-input>
+                  <span class="dialog-footer">
+                    <el-button type="primary" @click="changeProjectName(projIndex, newName); closeDialog()"
+                      class="confirm-button">确认</el-button>
+                    <el-button @click="closeDialog" class="cancel-button">取消</el-button>
+                  </span>
+                </el-dialog>
+              </div>
             </div>
+            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>
           </div>
         </el-card>
       </el-col>
     </el-row>
   </div>
 </template>
-
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import projectDialog from "./projectDialog.vue";
@@ -200,11 +202,9 @@ onMounted(async () => {
 </script>
 
 <style>
-.time {
-  font-size: 12px;
-  color: #999;
+.layout-container-demo .el-aside {
+  background-color: white;
 }
-
 .bottom {
   margin-top: 13px;
   line-height: 12px;
@@ -220,13 +220,13 @@ onMounted(async () => {
 
 .image {
   width: 100%;
-  height: 80px;
+  height: 98px !important;
   display: block;
   object-fit: cover;
 }
 
 .small-card {
-  width: 100%;
+  width: 10%;
   height: 100%;
 }
 
@@ -246,37 +246,74 @@ onMounted(async () => {
   height: 100%;
 }
 
+.project-info {
+  padding-left: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  height: 20px;
+  background-color: white;
+  /* padding: 10px; */
+  transition: top 0.3s ease;
+  top: 0;
+}
+
+.project-info.active {
+  top: -40px;
+  /* 负数值根据实际需求调整，控制向上滑动的距离 */
+}
+
+
+.project-name {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* 调整按钮之间的间距 */
+}
+
 .project-details {
-  opacity: 0;
-  /* 初始时透明度为0，即隐藏状态 */
-  max-height: 0;
-  /* 初始时高度为0，即隐藏状态 */
-  overflow: hidden;
-  /* 隐藏溢出内容 */
-
-  transition: opacity 0.3s, max-height 0.3s;
-  /* 添加过渡效果 */
-}
-
-.card-col:hover .project-details {
+  margin-top: 10px;
+  display: block;
   opacity: 1;
-  /* 悬停时透明度为1，即显示状态 */
-  max-height: 100px;
-  /* 悬停时高度为实际高度，例如100px */
+  transition: opacity 0.3s ease;
 }
 
-/* 悬停时显示详情 */
-.small-card:hover>div[v-if="hoveredProjectIndex === (rowIndex) * 4 + colIndex"] {
+.project-info.active .project-details {
   opacity: 1;
-  max-height: 100px;
-  /* 根据需要调整该值 */
-  overflow: hidden;
 }
 
-/* 非悬停时隐藏详情 */
-.small-card>div[v-if="hoveredProjectIndex === (rowIndex) * 4 + colIndex"] {
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
+.project-dialog {
+  width: 300px;
+  /* 调整对话框的宽度 */
 }
-</style>
+
+.input-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.confirm-button {
+  background-color: #67c23a;
+  /* 修改按钮的背景颜色 */
+  color: white;
+  /* 修改按钮的文本颜色 */
+  border-color: #67c23a;
+}
+
+.cancel-button {
+  background-color: #909399;
+  color: white;
+  border-color: #909399;
+}</style>

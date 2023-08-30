@@ -145,8 +145,8 @@ const messagesPerPage = 20
 async function getTeamMember() {
 	let res = await teamFunction.queryTeamMember(team_id.value)
 	let filterRes = []
-	res.data.members.forEach((member)=>{
-		if (member.id != user_id.value){
+	res.data.members.forEach((member) => {
+		if (member.id != user_id.value) {
 			filterRes.push(member)
 		}
 	})
@@ -171,7 +171,7 @@ async function createRoom(member,name,type=null){
 }
 async function addRoom() {
 	let member = []
-	if (newTeamMember.value.length === 0){
+	if (newTeamMember.value.length === 0) {
 		ElMessage.error('您还未添加任何一名群聊成员')
 	}
 	else {
@@ -288,7 +288,7 @@ async function addHistoryMessage({room, options = {}}) {
 		}
 		messages.value.unshift(message)
 	})
-	
+
 }
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
@@ -306,7 +306,7 @@ function upMessage(event) {
 	messages.value.push(message)
 }
 
-function menuActionHandler({action,}) {
+function menuActionHandler({ action, }) {
 	console.log(action)
 	switch (action.name) {
 		case 'inviteUser':
@@ -344,7 +344,7 @@ async function sendMessage(message) {
 }
 
 
-function fetchMessages({options = {}}) {
+function fetchMessages({ options = {} }) {
 
 }
 
@@ -407,7 +407,7 @@ onMounted(() => {
 	getTeamMember()
 	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
-	
+
 })
 
 // Or if you used CDN import

@@ -2,7 +2,6 @@ import requests from "@/utils/request";
 
 export default {
     queryAllRoom(team) {
-        console.log(team)
         return requests({
             url:'/chats',
             method: 'GET',

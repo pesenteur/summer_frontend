@@ -63,19 +63,6 @@
               <span class="element-title">页面视图</span>
             </el-menu-item>
 
-            <!--            <el-menu-item index="4">-->
-
-            <div class="mb-4" style="display: flex;flex-direction: column;">
-
-              <el-menu-item v-for="page in pages" :key="page.id" index="4">
-
-                <el-button class="mb-4" text style="width:100%;margin:0">{{ page.text }}</el-button>
-
-              </el-menu-item>
-            </div>
-            <!--            </el-menu-item>-->
-
-
           </el-menu>
         </el-col>
       </el-row>
@@ -88,7 +75,9 @@
                border: 2px rgb(255,255,255) solid;">
           <iframe :src="iframeSrc" title="SUMMER" style="position: absolute; width: 100%; height: 100%; top: 0;">
           </iframe>
+
         </div>
+
       </el-scrollbar>
     </el-main>
   </el-container>
@@ -103,11 +92,12 @@ import { useRoute, useRouter } from "vue-router";
 import editor from '../editor/editor.vue'
 import projectAPI from "@/api/proj";
 import originAPI from "@/api/originDesign";
-import {getProjId} from "@/utils/token";
+import form from "mockjs";
+import {getDesignId, getProjId, getUserId} from "@/utils/token";
 
 const dialogFormVisible = ref(false)
 
-const designId = ref('')
+const designId = ref()
 
 const router = useRouter()
 
@@ -115,32 +105,22 @@ const projectName = ref('')
 
 const formLabelWidth = '140px'
 
-const iframeSrc = computed(() => {
-  return `../../public/dist/index.html?id=${designId.value}`;
-});
+const iframeSrc = ref('../../public/dist')
+
+onMounted(()=>{
+  iframeSrc.value = `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
+})
 
 // const pageId = ref('1')
 
-const pages = reactive([])
-
+// const pages = reactive([])
 const item = {
   date: '2016-05-02',
   name: 'Tom',
   address: 'No. 189, Grove St, Los Angeles',
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
-
-
-// async function addCanvas() {
-//   if(form.name === ''){
-//     dialogFormVisible.value = true
-//   }else {
-//     const result = await projectAPI.addProject(form.name, form.describe, team.value);
-//     dialogFormVisible.value = false
-//     await router.push('/drag')
-//     console.log('addProject成功被调用！')
-//   }
-// }
+const myResult = ref([])
 
 async function addCanvas() {
 
@@ -156,7 +136,11 @@ function jump() {
 onMounted(async ()=>{
 
   const result = await originAPI.getAllDesign(getProjId())
+  // const result = await originAPI.getAllDesign(getProjId())
 
+
+
+  const result1 = await originAPI.getSingle(getProjId(),getDesignId())
 
 
 })
@@ -175,9 +159,9 @@ onMounted(async ()=>{
 }
 
 .layout-container-demo .el-aside {
-  opacity: 0.15;
-  background-image: url('../../assets/2.jpg');
-  background-size: cover;
+  //opacity: 0.15;
+  //background-image: url('../../assets/2.jpg');
+  //background-size: cover;
 }
 
 .layout-container-demo .el-menu {

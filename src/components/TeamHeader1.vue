@@ -6,15 +6,16 @@
   <el-drawer v-model="drawer" title="SUMMER" :with-header="false" direction="ltr" size="15%">
     <div class="drawer-content">
       <div class="summer-heading">
-        <span class="summer-text">团队管理系统</span>
+        <span class="summer-text" :v-model="teamName">团队：{{ teamName }}</span>
       </div>
       <el-divider class="custom-divider" />
     </div>
     <div class="button-container">
 
       <button text v-for="button in buttons" :key="button.id" :type="button.type" :icon="button.icon"
-        @click="jump(button.id)" class="custom-button" :id="button.id"><i :class="button.icon"  style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{
-          button.text }}</button>
+        @click="jump(button.id)" class="custom-button" :id="button.id"><i :class="button.icon"
+          style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{
+            button.text }}</button>
     </div>
   </el-drawer>
 </template>
@@ -23,9 +24,9 @@
 import { reactive, ref } from 'vue'
 import router from "@/router";
 import { useRoute } from 'vue-router';
-import {getTeamId} from "@/utils/token";
+import { getTeamId, getTeamName } from "@/utils/token";
 const drawer = ref(false)
-
+const teamName = ref(getTeamName())
 const buttons = reactive([
   { id: "001", type: 'plain', text: '项目协作', icon: 'el-icon-my-help' },
   { id: "002", type: 'plain', text: '原型设计', icon: 'el-icon-my-platform' },
@@ -36,10 +37,10 @@ const buttons = reactive([
 function jump(buttonId) {
   if (buttonId === '001') {
     drawer.value = !drawer.value
-    router.push('/project')
+    router.push('/document')
   } else if (buttonId === '002') {
     drawer.value = !drawer.value
-    router.push('/')
+    router.push('/project')
   } else if (buttonId === '003') {
     drawer.value = !drawer.value
     router.push('/member')
@@ -79,11 +80,10 @@ function jump(buttonId) {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  
+
 }
 
 .drawer-content {
-  padding: 20px;
   margin: 0px;
   /* 添加一些内边距 */
 }
@@ -96,7 +96,7 @@ function jump(buttonId) {
 }
 
 .summer-text {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: black;
   margin: 0px;
@@ -105,7 +105,7 @@ function jump(buttonId) {
 
 ::v-deep .el-icon-my-help {
   background: url('@/assets/imgs/icons/icon-s-help.svg') no-repeat;
-  font-size: 20px; 
+  font-size: 20px;
   background-size: cover;
 
   /* 替换成你自己的图标路径 */
@@ -204,9 +204,11 @@ function jump(buttonId) {
   margin-right: 8px;
   /* 调整图标和文字之间的右侧间距 */
 }
+
 .custom-button:hover {
   background-color: #e5eaee;
   /* 按钮背景颜色（鼠标悬停时） */
   transform: scale(1.2);
   /* 鼠标悬停时放大按钮 */
-}</style>
+}
+</style>

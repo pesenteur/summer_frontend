@@ -22,8 +22,5 @@ const shouldShowNavi = computed(() => {
 </script>
 
 <style>
-*{
-
-}
 /* Your styles */
 </style>

@@ -257,8 +257,7 @@ section,
 
 .cnt h2 {
     font-size: 50px;
-    font-family: 'modern_no._20regular',
-        serif;
+    font-family: 'modern_no._20regular',serif;
     text-shadow: 1px 0px 0px #323232;
     /* 大写字母 */
     text-transform: uppercase;

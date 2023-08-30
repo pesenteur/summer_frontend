@@ -22,5 +22,8 @@ const shouldShowNavi = computed(() => {
 </script>
 
 <style>
+* {
+  font-family: 'modern_no._20regular', serif;
+}
 /* Your styles */
 </style>

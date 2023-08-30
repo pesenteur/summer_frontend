@@ -15,7 +15,7 @@
 	</vue-advanced-chat>
 	<el-drawer v-model="drawerTable" direction="rtl" size="20%">
 		<span>成员列表</span>
-		<el-dropdown v-if="!isMain">
+		<el-dropdown v-if="isMain">
 			<el-button text>
 				<font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
 			</el-button>
@@ -28,7 +28,7 @@
 				</el-dropdown-menu>
 			</template>
 		</el-dropdown>
-		<div class="member-item" v-for="member in chatMemberTable" :key="member.email">
+		<div class="member-item" v-for="member in chatMemberTable">
 			<img class="avatar" src="@/assets/imgs/doe.png" />
 			<div class="member-info">
 				<div class="member-name">{{ member.name }}</div>

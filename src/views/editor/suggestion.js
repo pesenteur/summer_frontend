@@ -3,16 +3,16 @@ import tippy from 'tippy.js'
 import teamFuction from '@/api/team'
 import MentionList from './MentionList.vue'
 import { getTeamId } from "@/utils/token";
-const res = await teamFuction.queryTeamMember(getTeamId())
+
 export default {
-    items: ({ query }) => {
+    items: async ({query}) => {
+        let res = await teamFuction.queryTeamMember(getTeamId())
         let nameArr = []
         res.data.members.forEach((item) => {
             nameArr.push(item.name)
         })
         return nameArr.filter(item => item.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5)
     },
-
     render: () => {
         let component
         let popup
@@ -24,6 +24,7 @@ export default {
                     // parent: this,
                     // propsData: props,
                     // using vue 3:
+
                     props,
                     editor: props.editor,
                 })

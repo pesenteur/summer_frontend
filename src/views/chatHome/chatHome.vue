@@ -1,45 +1,40 @@
 <template>
-	<vue-advanced-chat :current-user-id="currentUserId"
-	                   :room-info-enabled="true"
-	                   :rooms="JSON.stringify(rooms)"
-	                   :messages="JSON.stringify(messages)"
-	                   :room-actions="JSON.stringify(roomActions)"
-	                   :rooms-loaded="true"
-	                   :height="height"
-	                   :message-actions="JSON.stringify(messageActions)"
-	                   :menu-action-handler="menuActionHandler"
-	                   :messages-loaded="messagesLoaded"
-	                   :load-first-room="false"
-	                   :room-id="room_id"
-	                   @open-user-tag="console.log('usertag')"
-	                   @send-message="sendMessage($event.detail[0])"
-	                   @add-room="dialogFormVisible = true"
-	                   @message-action-handler="handleCustomMessageAction($event.detail[0])"
-	                   @room-action-handler='handleRoomAction($event.detail[0])'
-	                   @fetch-messages="addHistoryMessage(($event.detail[0]))"
-	                   @room-info="handleChatInfo($event.detail[0])"
-	>
+	<vue-advanced-chat :current-user-id="currentUserId" :room-info-enabled="true" :rooms="JSON.stringify(rooms)"
+		:messages="JSON.stringify(messages)" :room-actions="JSON.stringify(roomActions)" :rooms-loaded="true"
+		:height="height" :message-actions="JSON.stringify(messageActions)" :menu-action-handler="menuActionHandler"
+		:messages-loaded="messagesLoaded" :load-first-room="false" :room-id="room_id"
+		@open-user-tag="console.log('usertag')" @send-message="sendMessage($event.detail[0])"
+		@add-room="dialogFormVisible = true" @message-action-handler="handleCustomMessageAction($event.detail[0])"
+		@room-action-handler='handleRoomAction($event.detail[0])' @fetch-messages="addHistoryMessage(($event.detail[0]))"
+		@room-info="handleChatInfo($event.detail[0])">
 		<template #message-content="{ message }">
 			<div :class="'message ' + 'sender-' + message.senderId">
 				{{ message.content }}
 			</div>
 		</template>
 	</vue-advanced-chat>
-	<el-drawer
-		v-model="drawerTable"
-		title="I have a nested table inside!"
-		direction="rtl"
-		size="50%"
-	>
-		<div v-for="member in chatMemberTable">
-			<img src="@/assets/imgs/doe.png" />
-			<div>{{member.name}}</div>
-			<div>{{member.email}}</div>
+	<el-drawer v-model="drawerTable" direction="rtl" size="20%">
+		<span>成员列表</span>
+		<el-dropdown v-if="!isMain">
+			<el-button text>
+				<font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
+			</el-button>
+			<template #dropdown>
+				<el-dropdown-menu>
+					<el-dropdown-item v-if="isAdmin" @click="handleDeleteMember">邀请成员</el-dropdown-item>
+					<el-dropdown-item v-if="isAdmin" @click="handleDeleteMember">删除成员</el-dropdown-item>
+					<el-dropdown-item v-if="!isMain && isAdmin" @click="handleDeleteChat">解散群聊</el-dropdown-item>
+					<el-dropdown-item v-if="!isMain" @click="handleExit">退出群聊</el-dropdown-item>
+				</el-dropdown-menu>
+			</template>
+		</el-dropdown>
+		<div class="member-item" v-for="member in chatMemberTable">
+			<img class="avatar" src="@/assets/imgs/doe.png" />
+			<div class="member-info">
+				<div class="member-name">{{ member.name }}</div>
+				<div class="member-email">{{ member.email }}</div>
+			</div>
 		</div>
-		<button v-if="isAdmin" @click="handleInviteMember">邀请成员</button>
-		<button v-if="isAdmin" @click="handleDeleteMember">删除成员</button>
-		<button v-if="!isMain&&isAdmin" @click="handleDeleteChat">解散群聊</button>
-		<button v-if="!isMain" @click="handleExit">退出群聊</button>
 	</el-drawer>
 	<el-dialog v-model="dialogFormVisible" title="创建群聊">
 		<el-form :model="newTeamName">
@@ -98,7 +93,7 @@
 </template>
 
 <script setup>
-import {register} from 'vue-advanced-chat'
+import { register } from 'vue-advanced-chat'
 import { ElMessage } from 'element-plus'
 import teamFunction from '@/api/team'
 import { onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue"
@@ -176,17 +171,17 @@ async function getTeamMember() {
 	teamAddMemberOption.value = filterRes
 }
 //获得所有没有加入该群聊的成员
-async function getTeamNoMember(roomId){
+async function getTeamNoMember(roomId) {
 	chatMemberAddOption.value = teamAddMemberOption.value
 	let info = await chatFunction.getRoomInfo(roomId)
 	let exist = info.data.members
-	chatMemberAddOption.value = chatMemberAddOption.value.filter(e=>!exist.find(i=>i.id===e.id))
+	chatMemberAddOption.value = chatMemberAddOption.value.filter(e => !exist.find(i => i.id === e.id))
 }
-async function getDeleteChatMember(roomId){
+async function getDeleteChatMember(roomId) {
 	let info = await chatFunction.getRoomInfo(roomId)
-	chatMemmberDeleteOption.value =info.data.members
+	chatMemmberDeleteOption.value = info.data.members
 }
-async function getChatMemberInfo(roomId){
+async function getChatMemberInfo(roomId) {
 	let info = await chatFunction.getRoomInfo(roomId)
 	let adminInfo =info.data.admin
 	if(adminInfo === null){
@@ -226,30 +221,30 @@ async function addRoom() {
 			})
 		})
 		member.push(user_id.value)
-		await createRoom(member,newTeamName.value)
+		await createRoom(member, newTeamName.value)
 	}
 	dialogFormVisible.value = false
 }
-async function addChatMem(){
+async function addChatMem() {
 	let members = []
-	if (newChatMember.value.length === 0){
+	if (newChatMember.value.length === 0) {
 		ElMessage.error('您还未添加任何一名群聊成员')
-	}else{
-		newChatMember.value.forEach((item)=>{
-			chatMemberAddOption.value.forEach((member)=>{
-				if (item === member.name){
+	} else {
+		newChatMember.value.forEach((item) => {
+			chatMemberAddOption.value.forEach((member) => {
+				if (item === member.name) {
 					members.push(member.id)
 				}
 			})
 		})
-		await chatFunction.addTeamMember(operChatId.value,members)
+		await chatFunction.addTeamMember(operChatId.value, members)
 		newChatMember.value = []
 	}
-	chatMemberAddVisible.value =false
+	chatMemberAddVisible.value = false
 }
-async function deleteMem(){
+async function deleteMem() {
 	let members = []
-	if (deleteChatMember.value.length === 0){
+	if (deleteChatMember.value.length === 0) {
 		ElMessage.error('您还未选择任何一名群聊成员')
 	}
 	else {
@@ -273,7 +268,7 @@ async function addData() {
 	result.data.forEach((item) => {
 		console.log('@@@@@@@')
 		console.log(item.admin)
-		if (item.priority === 999){
+		if (item.priority === 999) {
 			mainChatId.value = item.id.toString()
 		}
 		let users = []
@@ -304,9 +299,9 @@ async function addData() {
 	})
 	rooms.value = modifiedRoom
 }
-async function addHistoryMessage({room, options = {}}) {
+async function addHistoryMessage({ room, options = {} }) {
 	let res;
-	
+
 	if (options.reset) {
 		messages.value = []
 		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
@@ -328,7 +323,7 @@ async function addHistoryMessage({room, options = {}}) {
 			date: temp.created_time,
 			timestamp: temp.created_time,
 			avatar: '/doe.png',
-			usersTag:''
+			usersTag: ''
 		}
 		messages.value.unshift(message)
 	})
@@ -374,9 +369,9 @@ function menuActionHandler({ action, }) {
 function fetchMessages({ options = {} }) {
 
 }
-function handleCustomMessageAction({roomId, action, message}) {
+function handleCustomMessageAction({ roomId, action, message }) {
 	let members = []
-	let roomName = 'to '+message.username
+	let roomName = 'to ' + message.username
 	members.push(message.senderId.toString())
 	members.push(user_id.value)
 	switch (action.name) {
@@ -390,17 +385,17 @@ function handleCustomMessageAction({roomId, action, message}) {
 			// 处理删除操作的逻辑
 			break;
 		case 'privateChatAction':
-			createRoom(members,roomName,'single');
+			createRoom(members, roomName, 'single');
 			break;
 		// Add more cases for other custom actions
 	}
 }
 
-function handleInviteMember(){
+function handleInviteMember() {
 	getTeamNoMember(operChatId.value)
 	chatMemberAddVisible.value = true
 }
-function handleDeleteMember(){
+function handleDeleteMember() {
 	getTeamNoMember(operChatId.value)
 	getDeleteChatMember(operChatId.value)
 	chatMemberDeleteVisible.value = true
@@ -418,14 +413,14 @@ function handleExit(){
 function handleDissolveChat(){
 
 }
-function handleRoomAction({roomId, action, message}) {
+function handleRoomAction({ roomId, action, message }) {
 	operChatId.value = roomId
 	getTeamNoMember(roomId)
 	console.log('@@@@@@@@@@')
 	console.log(mainChatId.value)
-	if(roomId.toString() === mainChatId.value.toString()){
+	if (roomId.toString() === mainChatId.value.toString()) {
 		ElMessage.error('您不能对主群进行操作')
-	}else {
+	} else {
 		switch (action.name) {
 			case 'inviteUser':
 				chatMemberAddVisible.value = true
@@ -445,9 +440,9 @@ function handleRoomAction({roomId, action, message}) {
 	}
 }
 
-function handleChatInfo(event){
-	drawerTable.value=true
-	operChatId.value =event.roomId
+function handleChatInfo(event) {
+	drawerTable.value = true
+	operChatId.value = event.roomId
 	getChatMemberInfo(event.roomId)
 }
 
@@ -470,5 +465,47 @@ onMounted(() => {
 	margin-right: 10px;
 }
 
+.drawer-container {
+	padding: 20px;
+}
+
+.member-item {
+	display: flex;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.avatar {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	margin-right: 10px;
+}
+
+.member-info {
+	flex: 1;
+}
+
+.member-name {
+	font-weight: bold;
+}
+
+.drawer-buttons {
+	margin-top: 20px;
+}
+
+button {
+	margin-right: 10px;
+	padding: 8px 15px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+button:last-child {
+	margin-right: 0;
+}
 </style>
 

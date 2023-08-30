@@ -11,13 +11,23 @@ export default {
         });
     },
     createRoom(team,members,name,type=null) {
-        return requests({
-            url: '/chats',
-            method: 'POST',
-            data: {
-                team,members,name,type
-            }
-        });
+        if (type === null) {
+            return requests({
+                url: '/chats',
+                method: 'POST',
+                data: {
+                    team, members, name
+                }
+            });
+        }else{
+            return requests({
+                url: '/chats',
+                method: 'POST',
+                data: {
+                    team, members, name, type
+                }
+            });
+        }
     },
     getRoomInfo(team) {
         return requests({
@@ -52,6 +62,18 @@ export default {
             data: {
                 members
             }
+        });
+    },
+    deleteChatAdmin(chat_id) {
+        return requests({
+            url: `/chat/${chat_id}/admin-leave`,
+            method: 'PATCH',
+        });
+    },
+    deleteChatNormal(chat_id) {
+        return requests({
+            url: `/chat/${chat_id}/leave`,
+            method: 'PATCH',
         });
     }
 

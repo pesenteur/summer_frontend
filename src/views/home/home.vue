@@ -29,19 +29,22 @@
                 <div class="cnt">
                     <h2>让团队梦想成真，从这里开始</h2>
                     <p>
-
+                        jdaskjdas
                     </p>
                     <p>
                         <button @click="" class="btn"> <strong>TRY</strong></button>
                     </p>
                 </div>
                 <div class="image-box">
-                    <img src="@/assets/1.png" alt="Image" />
+                    <img src="@/assets/imgs/background1.png" alt="Image" />
                 </div>
             </div>
         </section>
         <section class="content-two">
             <div class="text-box-detail">
+                <div class="image-box-2">
+                    <img src="@/assets/imgs/background2.png" alt="Image" />
+                </div>
                 <div class="cnt">
                     <h2>创意无限，设计从这里开始</h2>
                     <p>
@@ -50,9 +53,7 @@
                         <button @click="" class="btn"> <strong>TRY</strong></button>
                     </p>
                 </div>
-                <div class="image-box">
-                    <img src="@/assets/1.png" alt="Image" />
-                </div>
+
             </div>
         </section>
         <section class="content-three">
@@ -66,12 +67,12 @@
                     </p>
                 </div>
                 <div class="image-box">
-                    <img src="@/assets/1.png" alt="Image" />
+                    <img src="@/assets/imgs/background3.png" alt="Image" />
                 </div>
             </div>
         </section>
         <section id="img-two" class="img">
-            <h1>THOUGHTS</h1>
+            <h1>免费使用</h1>
         </section>
         <section id="footer">FOOTER</section>
     </div>
@@ -257,7 +258,7 @@ section,
 
 .cnt h2 {
     font-size: 50px;
-    font-family: 'modern_no._20regular',serif;
+    font-family: 'modern_no._20regular', serif;
     text-shadow: 1px 0px 0px #323232;
     /* 大写字母 */
     text-transform: uppercase;
@@ -321,11 +322,21 @@ section,
 }
 
 .image-box img {
-    max-width: 40%;
+    width: 105%;
     /* 图片宽度不超过容器宽度 */
-    height: auto;
     /* 根据宽度自适应高度 */
     margin-left: 80px;
+    border-radius: 10px;
+    /* 其他样式设置 */
+    /* ... */
+}
+.image-box-2 img {
+    width: 100%;
+    margin-right: 100px ;
+    padding: 0px;
+    /* 图片宽度不超过容器宽度 */
+    /* 根据宽度自适应高度 */
+    border-radius: 10px;
     /* 其他样式设置 */
     /* ... */
 }

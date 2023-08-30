@@ -39,7 +39,6 @@
             <el-table-column prop="created_time" label="创建时间" />
             <el-table-column prop="title" label="画布名称" />
             <el-table-column prop="update_time" label="更新时间" />
-            <el-table-column label="更新时间" />
             <el-table-column fixed="right" label="操作" width="120">
               <template #default="scope">
                 <el-button link type="primary" size="small" @click.prevent="intoDesign(scope.row.id)">

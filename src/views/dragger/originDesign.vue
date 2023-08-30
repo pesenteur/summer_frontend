@@ -11,31 +11,31 @@
 <!--                <el-button :icon="Search" text @click="resetName">-->
 <!--                </el-button>-->
 
-                <div>
-                  <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true" :icon="Search" text></el-button>
-                  <el-dialog draggable=true v-model="dialogFormVisible" title="修改项目名称:" center width="30%">
-                    <el-form :model="form">
-                      <el-form-item label="项目名称" :label-width="formLabelWidth">
-                        <el-input v-model="form.name" autocomplete="off" class="element-form"/>
-                      </el-form-item>
+<!--                <div>-->
+<!--                  <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true" :icon="Search" text></el-button>-->
+<!--                  <el-dialog draggable=true v-model="dialogFormVisible" title="修改项目名称:" center width="30%">-->
+<!--                    <el-form :model="form">-->
+<!--                      <el-form-item label="项目名称" :label-width="formLabelWidth">-->
+<!--                        <el-input v-model="form.name" autocomplete="off" class="element-form"/>-->
+<!--                      </el-form-item>-->
 
-                      <el-form-item label="项目描述" :label-width="formLabelWidth">
-                        <el-input v-model="form.describe" autocomplete="off" class="element-form"/>
-                      </el-form-item>
+<!--                      <el-form-item label="项目描述" :label-width="formLabelWidth">-->
+<!--                        <el-input v-model="form.describe" autocomplete="off" class="element-form"/>-->
+<!--                      </el-form-item>-->
 
-                    </el-form>
-                    <template #footer>
-                <span class="dialog-footer">
-                  <el-button @click="dialogFormVisible = false">
-                    取消
-                  </el-button>
-                  <el-button type="primary" @click="renameProject">
-                    确定
-                  </el-button>
-                </span>
-                    </template>
-                  </el-dialog>
-                </div>
+<!--                    </el-form>-->
+<!--                    <template #footer>-->
+<!--                <span class="dialog-footer">-->
+<!--                  <el-button @click="dialogFormVisible = false">-->
+<!--                    取消-->
+<!--                  </el-button>-->
+<!--                  <el-button type="primary" @click="renameProject">-->
+<!--                    确定-->
+<!--                  </el-button>-->
+<!--                </span>-->
+<!--                    </template>-->
+<!--                  </el-dialog>-->
+<!--                </div>-->
 
               </div>
             </el-menu-item>
@@ -154,15 +154,15 @@ function intoDesign(designId){
 
 
 
-async function renameProject() {
-  if(form.name === ''){
-    dialogFormVisible.value = false
-  }else {
-    projName.value = form.name
-    const result = await projAPI.resetProject(form.name,form.describe)
-    dialogFormVisible.value = false
-  }
-}
+// async function renameProject() {
+//   if(form.name === ''){
+//     dialogFormVisible.value = false
+//   }else {
+//     projName.value = form.name
+//     const result = await projAPI.resetProject(form.name,form.describe)
+//     dialogFormVisible.value = false
+//   }
+// }
 
 
 

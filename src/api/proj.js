@@ -10,12 +10,12 @@ export default {
             }
         })
     },
-    resetProject(name,describe){
+    resetProject(name,describe,projectId){
       return requests({
-          url:'/projects',
+          url:`/projects/${projectId}`,
           method: 'PATCH',
           params:{
-              name,describe
+              name,describe,projectId
           }
       })
     },

@@ -65,5 +65,14 @@ export default {
                 team,id
             }
         })
+    },
+    copyProject(team,id){
+        return requests({
+            url:'/project/duplicate',
+            method:'POST',
+            data:{
+                team,id
+            }
+        })
     }
 }

@@ -33,59 +33,58 @@
               @input="queryAllProject(searchName)" />
             <button><i class='bx bx-search'></i></button>
           </form>
-          <div class="toolbar-right">
-            <el-dropdown trigger="click">
-              <el-button type="primary">
-                排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <div class="mb-2 flex items-center text-sm">
-                    <el-radio-group v-model="radio1" class="ml-4">
-                      <el-radio label="1" size="large">名称</el-radio>
-                      <el-radio label="2" size="large">创建时间</el-radio>
-                      <el-radio label="3" size="large">更新时间</el-radio>
-                    </el-radio-group>
-                  </div>
-                  <div class="my-2 flex items-center text-sm">
-                    <el-radio-group v-model="radio2" class="ml-4">
-                      <el-radio label="1">递增</el-radio>
-                      <el-radio label="2">递减</el-radio>
-                    </el-radio-group>
-                  </div>
-                </el-dropdown-menu>
+        </div>
+        <div class="toolbar-right">
+          <el-dropdown trigger="click">
+            <el-button type="primary">
+               排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <div class="mb-2 flex items-center text-sm">
+                  <el-radio-group v-model="radio1" class="ml-4" @change="handleClose">
+                    <el-radio label="1" size="large">名称</el-radio>
+                    <el-radio label="2" size="large">创建时间</el-radio>
+                    <el-radio label="3" size="large">更新时间</el-radio>
+                  </el-radio-group>
+                </div>
+                <div class="my-2 flex items-center text-sm" @change="handleClose">
+                  <el-radio-group v-model="radio2" class="ml-4">
+                    <el-radio label="1">递增</el-radio>
+                    <el-radio label="2">递减</el-radio>
+                  </el-radio-group>
+                </div>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <div>
+            <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true">新建项目</el-button>
+            <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
+              <el-form :model="form">
+                <el-form-item label="项目名称" :label-width="formLabelWidth">
+                  <el-input v-model="form.name" autocomplete="off" class="element-form" />
+                </el-form-item>
+                <el-form-item label="项目描述" :label-width="formLabelWidth">
+                  <el-input v-model="form.describe" autocomplete="off" class="element-form" />
+                </el-form-item>
+              </el-form>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogFormVisible = false">
+                    取消
+                  </el-button>
+                  <el-button type="primary" @click="addProject">
+                    确定
+                  </el-button>
+                </span>
               </template>
-            </el-dropdown>
-            <div>
-              <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true">新建项目</el-button>
-              <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
-                <el-form :model="form">
-                  <el-form-item label="项目名称" :label-width="formLabelWidth">
-                    <el-input v-model="form.name" autocomplete="off" class="element-form" />
-                  </el-form-item>
-                  <el-form-item label="项目描述" :label-width="formLabelWidth">
-                    <el-input v-model="form.describe" autocomplete="off" class="element-form" />
-                  </el-form-item>
-                </el-form>
-                <template #footer>
-                  <span class="dialog-footer">
-                    <el-button @click="dialogFormVisible = false">
-                      取消
-                    </el-button>
-                    <el-button type="primary" @click="addProject">
-                      确定
-                    </el-button>
-                  </span>
-                </template>
-              </el-dialog>
-            </div>
+            </el-dialog>
           </div>
         </div>
       </el-header>
 
       <el-main>
-        <projectMain ref="childFunctions1" :teamId="team" :radio1="radio1" :radio2="radio2"
-          v-show="ifShowTrash === true" />
+        <projectMain ref="childFunctions1" :teamId="team" :ordering="ordering" :radio1="radio1" :radio2="radio2" v-show="ifShowTrash === true" />
         <projectMainRe ref="childFunctions2" :teamId="team" v-show="ifShowTrash === false" />
       </el-main>
     </el-container>
@@ -93,7 +92,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import {computed, reactive, ref, watch} from 'vue'
 import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 import projectMain from './projectMain.vue'
 import projectAPI from '@/api/proj.js'
@@ -117,10 +116,27 @@ const formLabelWidth = '140px'
 const team = ref('')
 team.value = getTeamId()
 
-const radio1 = ref('1')
-const radio2 = ref('1')
+const radio1 = ref('2')
+const radio2 = ref('2')
 
-const ordering = ref()
+const ordering = computed(()=>{
+  if(radio1.value === "1" && radio2.value === "1"){
+    return 'name'
+  }else if(radio1.value === "1" && radio2.value === "2"){
+    return '-name'
+  }else if(radio1.value === "2" && radio2.value === "1"){
+    return 'create_time'
+  }else if(radio1.value === "2" && radio2.value === "2"){
+    return '-create_time'
+  }else if(radio1.value === "3" && radio2.value === "1"){
+    return 'update_time'
+  }else if(radio1.value === "3" && radio2.value === "2"){
+    return '-update_time'
+  }else{
+    return 'wrong'
+  }
+})
+
 
 const form = reactive({
   name: '',
@@ -149,6 +165,14 @@ async function queryAllProject(searchName) {
   childFunctions1.value.getSearch(searchName)
   childFunctions1.value.showProjects1()
 
+
+}
+
+async function handleClose(){
+  // childFunctions1.value.getOrdering()
+  console.log('$ordering')
+  await childFunctions1.value.getData()
+  childFunctions1.value.showProjects1()
 
 }
 
@@ -181,6 +205,10 @@ watch(ifShowTrash, async (newVal) => {
   childFunctions2.value.showProjects()
   await childFunctions1.value.getData()
   childFunctions1.value.showProjects1()
+})
+
+watch(radio1,()=>{
+  console.log('radio1.watch',radio1.value)
 })
 
 </script>

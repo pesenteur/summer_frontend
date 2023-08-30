@@ -15,6 +15,13 @@
                     <CircleCloseFilled />
                   </el-icon>
                 </el-button>
+
+                <el-button @click="copyProject((rowIndex) * 4 + colIndex)">
+                  <el-icon>
+                    <el-icon><DocumentCopy /></el-icon>
+                  </el-icon>
+                </el-button>
+
                 <el-button class="edit" @click="openDialog(rowIndex,colIndex)" text>
                   <font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 </el-button>
@@ -42,8 +49,8 @@ import projectDialog from "./projectDialog.vue";
 import { useRouter } from "vue-router";
 
 import projectAPI from '@/api/proj.js'
-import { CircleCloseFilled } from "@element-plus/icons-vue";
-import {setDesignId, setProjectName, setProjId} from "@/utils/token";
+import {CircleCloseFilled, DocumentCopy} from "@element-plus/icons-vue";
+import {getTeamId, setDesignId, setProjectName, setProjId} from "@/utils/token";
 import originAPI from "@/api/originDesign";
 
 const router = useRouter()
@@ -68,19 +75,30 @@ const dialogFormVisible = ref(false)
 
 const formLabelWidth = '140px'
 
-const props = defineProps(['teamId','radio1','radio2'])
+const props = defineProps(['teamId','ordering','radio1','radio2'])
+
+// const radio1 = computed(()=>{
+//   return props.radio1
+// })
+//
+// const radio2 = computed(()=>{
+//   return props.radio2
+// })
 
 const radio1 = ref()
 const radio2 = ref()
 
-radio1.value = props.radio1.value
-radio2.value = props.radio2.value
+radio1.value = props.radio1
+radio2.value = props.radio2
+
 
 const team = ref('')
 
 team.value = props.teamId
 
-const ordering = ref()
+const ordering = computed(()=>{
+  return props.ordering
+})
 
 const form = reactive({
   name: '',
@@ -92,6 +110,19 @@ function handleExtraCardClick() {
 }
 
 const hoveredProjectIndex = ref(-1);
+
+const contextMenuVisible = ref(false);
+
+async function copyProject(projPos){
+  let projId = myResult.value[projPos].id
+
+  console.log('projPos111', projPos)
+
+  const result = await projectAPI.copyProject(getTeamId(),projId)
+
+  await getData()
+  showProjects1()
+}
 
 async function getSingleProj(projPos) {
   let projId = myResult.value[projPos].id
@@ -173,22 +204,28 @@ const myResult = computed(() =>
 )
 
 function getOrdering(){
-  if(radio1.value === 1 && radio2.value === 1){
+  if(radio1.value === "1" && radio2.value === "1"){
     ordering.value = 'name'
-  }else if(radio1.value === 1 && radio2.value === 2){
+  }else if(radio1.value === "1" && radio2.value === "2"){
     ordering.value = '-name'
-  }else if(radio1.value === 2 && radio2.value === 1){
+  }else if(radio1.value === "2" && radio2.value === "1"){
     ordering.value = 'create_time'
-  }else if(radio1.value === 2 && radio2.value === 2){
-    ordering.value = '-creat_time'
-  }else if(radio1.value === 3 && radio2.value === 1){
+  }else if(radio1.value === "2" && radio2.value === "2"){
+    ordering.value = '-create_time'
+  }else if(radio1.value === "3" && radio2.value === "1"){
     ordering.value = 'update_time'
-  }else if(radio1.value === 3 && radio2.value === 2){
+  }else if(radio1.value === "3" && radio2.value === "2"){
     ordering.value = '-update_time'
+  }else{
+    ordering.value='wrong'
   }
+  console.log('radio1.value',radio1.value)
+  console.log('radio2.value',radio2.value)
+  console.log('ordering.value',ordering.value)
 }
 
 async function getData() {
+  console.log('ordering',ordering)
   const result = await projectAPI.getAllProjects(team.value,ordering.value)
   tempData.value = result.data
 }
@@ -230,11 +267,11 @@ function showProjects1() {
 }
 
 defineExpose({
-  showProjects1,getSearch,getData
+  showProjects1,getSearch,getData,getOrdering
 })
 
 onMounted(async () => {
-  getOrdering()
+  // getOrdering()
   await getData()
   showProjects1()
   console.log('$$$$$$$$$$', totalCards.value)

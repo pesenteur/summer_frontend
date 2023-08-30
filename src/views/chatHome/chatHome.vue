@@ -15,7 +15,7 @@
 	</vue-advanced-chat>
 	<el-drawer v-model="drawerTable" direction="rtl" size="20%">
 		<span>成员列表</span>
-		<el-dropdown v-if="isMain">
+		<el-dropdown v-if="!isMain">
 			<el-button text>
 				<font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
 			</el-button>

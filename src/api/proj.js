@@ -14,17 +14,17 @@ export default {
       return requests({
           url:`/projects/${projectId}`,
           method: 'PATCH',
-          params:{
-              name,describe,projectId
+          data:{
+              name,describe
           }
       })
     },
-    getAllProjects(team){
+    getAllProjects(team,ordering){
         return requests({
             url:'/projects',
             method: 'GET',
             params: {
-                team
+                team,ordering
             }
         })
 
@@ -34,7 +34,7 @@ export default {
             url:`/projects/${projectId}`,
             method:'DELETE',
             data:{
-                team,projectId
+                team
             }
         })
     },
@@ -48,12 +48,12 @@ export default {
         })
 
     },
-    getReProject(team){
+    getReProject(team,ordering){
         return requests({
             url:'/project/deleted',
             method:'GET',
             params:{
-                team
+                team,ordering
             }
         })
     },

@@ -62,7 +62,7 @@
                   <!-- <el-button text class="custom-icon-button">
             <el-icon class="el-icon--right"><arrow-down /></el-icon>
           </el-button> -->
-                  <el-button text class="interval" @click="dialogTableVisible = true">
+                  <el-button v-if="isNormalMember" text class="interval" @click="dialogTableVisible = true">
                     <el-icon class="el-icon--right"></el-icon>
                   </el-button>
                 </div>
@@ -128,9 +128,10 @@ import {
 } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref, computed } from 'vue'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
-
 import teamFunction from '../../api/team.js'
 import { InfoFilled } from '@element-plus/icons-vue'
+import {getUserId} from '../../utils/token.js'
+import {ElMessage} from "element-plus";
 const teamData = ref([]) //侧栏的数据
 const tableData = ref([]) //主表的数据
 const userTableData = ref([]) //搜索表中所有的数据
@@ -142,6 +143,7 @@ const search = ref('') //搜索框用
 const searchUser = ref('')
 const formLabelWidth = '140px'
 const teamId = ref()
+const isNormalMember = ref(true)
 
 const cancelEvent = () => {
   console.log('cancel!')
@@ -159,12 +161,13 @@ async function queryALL() {
   teamData.value = result.data
 }
 async function selectTeam(team_id, teamName) {
-  console.log(team_id)
-  let result = await teamFunction.queryTeamMember(team_id)
-  tableData.value = result.data.members
-  titleName.value = teamName
-  isAdd.value = false
-  teamId.value = team_id
+	console.log(team_id)
+	let result = await teamFunction.queryTeamMember(team_id)
+	tableData.value = result.data.members
+	titleName.value = teamName
+	isAdd.value = false
+	teamId.value = team_id
+	refreshTeamMember()
 }
 async function submitTeam() {
   dialogFormVisible.value = false
@@ -176,12 +179,15 @@ async function deleteTeam(team_id) {
   await queryALL()
 }
 async function handleDelete(userInfo) {
-  await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
-  if (userInfo.role === "普通成员") {
-
-  } else {
-
-  }
+ 
+	if (userInfo.role === "普通成员") {
+		let res =await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
+		if(res.result.toString() === '0'){
+			ElMessage.error('您无权这样做')
+		}
+	} else {
+		ElMessage.error('您无权这样做')
+	}
   await refreshTeamMember()
 }
 async function queryAllUser(search_number) {
@@ -192,21 +198,33 @@ async function queryAllUser(search_number) {
   userTableData.value = result.data.results
 }
 async function refreshTeamMember() {
-  let result = await teamFunction.queryTeamMember(teamId.value)
-  tableData.value = result.data.members
+    let result = await teamFunction.queryTeamMember(teamId.value)
+	result.data.members.forEach((member)=>{
+		if(member.id.toString() === getUserId().toString()){
+			console.log('@@@@')
+			if(member.role.toString() === '普通成员') {
+				isNormalMember.value = false
+			}
+		}
+	})
+    tableData.value = result.data.members
 }
 async function addAdminister(memberId) {
-  console.log("handle")
-  console.log(memberId)
-  await teamFunction.addAdmin(teamId.value, memberId)
-  await refreshTeamMember()
+	let res = await teamFunction.addAdmin(teamId.value, memberId)
+	if(res.result.toString() === '0'){
+		ElMessage.error('您无权这样做')
+	}
+	await refreshTeamMember()
 }
 async function rmvAdminister(memberId) {
-  await teamFunction.deleteAdmin(teamId.value, memberId)
-  await refreshTeamMember()
+    let res = await teamFunction.deleteAdmin(teamId.value, memberId)
+	if(res.result.toString() === '0'){
+		ElMessage.error('您无权这样做')
+	}
+	await refreshTeamMember()
 }
 onMounted(() => {
-  queryALL()
+    queryALL()
 });
 const form = reactive({
   name: '',

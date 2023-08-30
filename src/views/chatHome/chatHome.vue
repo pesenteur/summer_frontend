@@ -15,17 +15,16 @@
 	</vue-advanced-chat>
 	<el-drawer v-model="drawerTable" direction="rtl" size="20%">
 		<span>成员列表</span>
-		<el-dropdown>
-
+		<el-dropdown v-if="!isMain">
 			<el-button text>
 				<font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
 			</el-button>
 			<template #dropdown>
 				<el-dropdown-menu>
-					<el-dropdown-item @click="handleDeleteMember">邀请成员</el-dropdown-item>
-					<el-dropdown-item @click="handleDeleteMember">删除成员</el-dropdown-item>
-					<el-dropdown-item @click="handleDisbandGroup">解散群聊</el-dropdown-item>
-					<el-dropdown-item @click="handleLeaveGroup">退出群聊</el-dropdown-item>
+					<el-dropdown-item v-if="isAdmin" @click="handleDeleteMember">邀请成员</el-dropdown-item>
+					<el-dropdown-item v-if="isAdmin" @click="handleDeleteMember">删除成员</el-dropdown-item>
+					<el-dropdown-item v-if="!isMain && isAdmin" @click="handleDeleteChat">解散群聊</el-dropdown-item>
+					<el-dropdown-item v-if="!isMain" @click="handleExit">退出群聊</el-dropdown-item>
 				</el-dropdown-menu>
 			</template>
 		</el-dropdown>
@@ -35,8 +34,6 @@
 				<div class="member-name">{{ member.name }}</div>
 				<div class="member-email">{{ member.email }}</div>
 			</div>
-		</div>
-		<div class="drawer-buttons" v-if="isAdmin">
 		</div>
 	</el-drawer>
 	<el-dialog v-model="dialogFormVisible" title="创建群聊">
@@ -123,6 +120,7 @@ const formLabelWidth = '140px'
 const chatMemberTable = ref([])
 const drawerTable = ref(false)
 const isAdmin = ref(true)
+const isMain = ref(true)
 
 const newTeamName = ref()
 const newTeamMember = ref([])
@@ -185,13 +183,27 @@ async function getDeleteChatMember(roomId) {
 }
 async function getChatMemberInfo(roomId) {
 	let info = await chatFunction.getRoomInfo(roomId)
-	console.log('######')
-	console.log(info.data.members)
+	let adminInfo =info.data.admin
+	if(adminInfo === null){
+		isAdmin.value = false
+		isMain.value = true
+	}else if(adminInfo.toString()!==user_id.value){
+		isAdmin.value = false
+		isMain.value = false
+	}
+	else{
+		isAdmin.value = true
+		isMain.value = false
+	}
 	chatMemberTable.value = info.data.members
 }
 //创建一个新的聊天室(包括私聊和群聊)
-async function createRoom(member, name, type = null) {
-	await chatFunction.createRoom(team_id.value, member, name, type)
+async function createRoom(member,name,type=null){
+	await chatFunction.createRoom(team_id.value, member, name,type)
+	console.log('@@@@@@')
+	console.log(team_id.value)
+	console.log(member)
+	console.log(name)
 	await addData()
 }
 //根据newTeamMember创建群聊
@@ -388,7 +400,17 @@ function handleDeleteMember() {
 	getDeleteChatMember(operChatId.value)
 	chatMemberDeleteVisible.value = true
 }
-function handleDissolveChat() {
+function handleDeleteChat(){
+	
+}
+function handleExit(){
+	if(isAdmin.value === true){
+		chatFunction.deleteChatAdmin(operChatId.value)
+	}else{
+		chatFunction.deleteChatNormal(operChatId.value)
+	}
+}
+function handleDissolveChat(){
 
 }
 function handleRoomAction({ roomId, action, message }) {

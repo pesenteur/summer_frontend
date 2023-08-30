@@ -10,15 +10,22 @@ export default {
             }
         });
     },
-    createRoom(team,members,name) {
+    createRoom(team,members,name,type=null) {
         return requests({
             url: '/chats',
             method: 'POST',
             data: {
-                team,members,name
+                team,members,name,type
             }
         });
     },
+    getRoomInfo(team) {
+        return requests({
+            url: `/chat/${team}`,
+            method: 'GET',
+        });
+    },
+
     queryMessage(chat_id, message_id=null, count=20) {
         return requests({
             url: `/chat/${chat_id}/message`,
@@ -28,5 +35,24 @@ export default {
             }
         });
     },
+
+    addTeamMember(chat_id,members) {
+        return requests({
+            url: `/chat/${chat_id}/add-member`,
+            method: 'PATCH',
+            data: {
+                members
+            }
+        });
+    },
+    deleteTeamMember(chat_id,members) {
+        return requests({
+            url: `/chat/${chat_id}/remove-member`,
+            method: 'PATCH',
+            data: {
+                members
+            }
+        });
+    }
 
 }

@@ -1,57 +1,45 @@
+
 <template>
   <el-container class="layout-container-demo" style="height: 700px">
-    <el-aside width="200px" >
+    <el-aside width="200px">
       <el-row class="tac">
         <el-col :span="24">
-          <el-menu
-              default-active="2"
-              class="element-back"
-          >
-            <el-menu-item index="1">
-              <el-icon><icon-menu /></el-icon>
-              <span  class="element-deracote">工作项 </span>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <el-icon><icon-menu /></el-icon>
-              <span class="element-deracote">项目</span>
-            </el-menu-item>
-            <el-divider/>
-            <el-menu-item index="3">
-              <el-icon><icon-menu /></el-icon>
-              <span class="element-deracote">项目视图</span>
-            </el-menu-item>
-
-            <el-menu-item index="4">
-
-              <span class="element-deracote2" @click="showStage">全部项目</span>
-            </el-menu-item>
-
-            <el-menu-item index="5">
-
-              <span class="element-deracote2" @click="showTrash">回收站</span>
-            </el-menu-item>
-
+          <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
+            <el-sub-menu index="1">
+              <template #title>
+                <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />
+                <span>项目视图</span>
+              </template>
+              <el-menu-item-group title="Group One">
+                <el-menu-item @click="showStage" index="1-1">
+                  <font-awesome-icon class="icon" :icon="['fas', 'border-all']" />
+                  <span class="all_project">全部项目</span>
+                </el-menu-item>
+                <el-menu-item @click="showTrash" index="1-2">
+                  <font-awesome-icon class="icon" :icon="['fas', 'recycle']" />
+                  <span class="">回收站</span>
+                </el-menu-item>
+              </el-menu-item-group>
+            </el-sub-menu>
           </el-menu>
         </el-col>
       </el-row>
     </el-aside>
-    <el-container>
+  <el-container>
       <el-header style="text-align: right; font-size: 12px">
         <div class="toolbar">
-              <div>
-                <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true" >新建项目</el-button>
-                <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
-                  <el-form :model="form">
-                    <el-form-item label="项目名称" :label-width="formLabelWidth">
-                      <el-input v-model="form.name" autocomplete="off" class="element-form"/>
-                    </el-form-item>
-
-                    <el-form-item label="项目描述" :label-width="formLabelWidth">
-                      <el-input v-model="form.describe" autocomplete="off" class="element-form"/>
-                    </el-form-item>
-
-                  </el-form>
-                  <template #footer>
+          <div>
+            <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true">新建项目</el-button>
+            <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
+              <el-form :model="form">
+                <el-form-item label="项目名称" :label-width="formLabelWidth">
+                  <el-input v-model="form.name" autocomplete="off" class="element-form" />
+                </el-form-item>
+                <el-form-item label="项目描述" :label-width="formLabelWidth">
+                  <el-input v-model="form.describe" autocomplete="off" class="element-form" />
+                </el-form-item>
+              </el-form>
+              <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="dialogFormVisible = false">
                     取消
@@ -60,14 +48,14 @@
                     确定
                   </el-button>
                 </span>
-                  </template>
-                </el-dialog>
-              </div>
+              </template>
+            </el-dialog>
+          </div>
         </div>
       </el-header>
 
       <el-main>
-        <projectMain ref="showProjects1" :teamId="team" v-show="ifShowTrash === true"/>
+        <projectMain ref="showProjects1" :teamId="team" v-show="ifShowTrash === true" />
         <projectMainRe ref="showProjects" :teamId="team" v-show="ifShowTrash === false" />
       </el-main>
     </el-container>
@@ -140,27 +128,24 @@ const showProjects1 = ref(null)
 </script>
 
 <style scoped>
-.element-back{
-  background-color: rgba(177,184,191,0.25);
- /* //background-image: url('../../assets/2.jpg'); */
-  /* //background-size: cover; */
+.icon {
+  margin-right: 5px;
 }
 .layout-container-demo .el-header {
   position: relative;
   background-color: white;
   color: var(--el-text-color-primary);
 }
-.layout-container-demo .el-aside {
-  background-color: rgba(177,184,191,0.25);
-  /* //background-image: url('../../assets/2.jpg');
-  //background-size: cover; */
-}
+
+
 .layout-container-demo .el-menu {
   border-right: none;
 }
+
 .layout-container-demo .el-main {
   padding: 0;
 }
+
 .layout-container-demo .toolbar {
   display: inline-flex;
   align-items: center;
@@ -169,9 +154,8 @@ const showProjects1 = ref(null)
   right: 20px;
 }
 
-.element-form{
-  width:auto;
-  height:auto;
+.element-form {
+  width: auto;
+  height: auto;
 }
-
 </style>

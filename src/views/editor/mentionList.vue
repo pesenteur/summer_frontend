@@ -1,7 +1,3 @@
-index.vue
-MentionList.vue
-suggestion.js
-Inspect
 <template>
   <div class="items">
     <template v-if="items.length">

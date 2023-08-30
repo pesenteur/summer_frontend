@@ -1,11 +1,22 @@
 <template>
-	<vue-advanced-chat :current-user-id="currentUserId" :room-info-enabled="true" :rooms="JSON.stringify(rooms)"
-		:messages="JSON.stringify(messages)" @open-user-tag="console.log" :room-actions="JSON.stringify(roomActions)"
-		:rooms-loaded="true" @send-message="sendMessage($event.detail[0])" :height="height"
-		@add-room="dialogFormVisible = true" :menu-action-handler="menuActionHandler"
-		:message-actions="JSON.stringify(messageActions)"
-		@message-action-handler="handleCustomMessageAction($event.detail[0])" :messages-loaded="messagesLoaded"
-		:load-first-room="false" :room-id="room_id" @fetch-messages="addHistoryMessage(($event.detail[0]))">
+	<vue-advanced-chat :current-user-id="currentUserId"
+	                   :room-info-enabled="true"
+	                   :rooms="JSON.stringify(rooms)"
+	                   :messages="JSON.stringify(messages)"
+	                   :room-actions="JSON.stringify(roomActions)"
+	                   :rooms-loaded="true"
+	                   :height="height"
+	                   :message-actions="JSON.stringify(messageActions)"
+	                   :menu-action-handler="menuActionHandler"
+	                   :messages-loaded="messagesLoaded"
+	                   :load-first-room="false"
+	                   :room-id="room_id"
+	                   @open-user-tag="console.log('usertag')"
+		               @send-message="sendMessage($event.detail[0])"
+		               @add-room="dialogFormVisible = true"
+		               @message-action-handler="handleCustomMessageAction($event.detail[0])"
+	                   @room-action-handler = 'handleRoomAction($event.detail[0])'
+                       @fetch-messages="addHistoryMessage(($event.detail[0]))">
 		<template #message-content="{ message }">
 			<div :class="'message ' + 'sender-' + message.senderId">
 				{{ message.content }}
@@ -19,14 +30,48 @@
 			</el-form-item>
 			<el-form-item label="群聊成员" :label-width="formLabelWidth">
 				<el-select v-model="newTeamMember" multiple placeholder="Select">
-					<el-option v-for="opt in teamOption" :key="opt.id" :label="opt.name" :value="opt.name" />
+					<el-option v-for="opt in teamAddMemberOption" :key="opt.id" :label="opt.name" :value="opt.name" />
 				</el-select>
 			</el-form-item>
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
 				<el-button @click="dialogFormVisible = false">Cancel</el-button>
-				<el-button type="primary" @click="createNewRoom">
+				<el-button type="primary" @click="addRoom">
+					Confirm
+				</el-button>
+			</span>
+		</template>
+	</el-dialog>
+	<el-dialog v-model="chatMemberAddVisible" title="添加成员">
+		<el-form :model="newTeamName">
+			<el-form-item label="群聊成员" :label-width="formLabelWidth">
+				<el-select v-model="newChatMember" multiple placeholder="Select">
+					<el-option v-for="opt in chatMemberAddOption" :key="opt.id" :label="opt.name" :value="opt.name" />
+				</el-select>
+			</el-form-item>
+		</el-form>
+		<template #footer>
+			<span class="dialog-footer">
+				<el-button @click="chatMemberAddVisible = false">Cancel</el-button>
+				<el-button type="primary" @click="addChatMem">
+					Confirm
+				</el-button>
+			</span>
+		</template>
+	</el-dialog>
+	<el-dialog v-model="chatMemberDeleteVisible" title="删除成员">
+		<el-form :model="newTeamName">
+			<el-form-item label="群聊成员" :label-width="formLabelWidth">
+				<el-select v-model="deleteChatMember" multiple placeholder="Select">
+					<el-option v-for="opt in chatMemmberDeleteOption" :key="opt.id" :label="opt.name" :value="opt.name" />
+				</el-select>
+			</el-form-item>
+		</el-form>
+		<template #footer>
+			<span class="dialog-footer">
+				<el-button @click="chatMemberDeleteVisible = false">Cancel</el-button>
+				<el-button type="primary" @click="deleteMem">
 					Confirm
 				</el-button>
 			</span>
@@ -35,8 +80,6 @@
 </template>
 
 <script setup>
-// import {VueAdvancedChat} from "vue-advanced-chat";
-
 import {register} from 'vue-advanced-chat'
 import { ElMessage } from 'element-plus'
 import teamFunction from '@/api/team'
@@ -46,7 +89,7 @@ import { getUserId } from "@/utils/token";
 import chatFunction from "@/api/chat.js";
 
 register()
-
+const mainChatId = ref()
 const route = useRoute();
 const router = useRouter();
 const socket = ref() //websocket
@@ -58,10 +101,17 @@ const currentUserId = ref()
 const height = ref('800px')
 const content = ref("")
 const dialogFormVisible = ref(false)
+const chatMemberAddVisible = ref(false)
+const chatMemberDeleteVisible = ref(false)
 const formLabelWidth = '140px'
+
 const newTeamName = ref()
 const newTeamMember = ref([])
-const teamOption = ref([])
+const newChatMember = ref([])
+const deleteChatMember = ref([])
+const teamAddMemberOption = ref([])
+const chatMemberAddOption = ref([])
+const chatMemmberDeleteOption = ref([])
 const messageActions = reactive([
 	{
 		name: 'replyAction',
@@ -88,50 +138,104 @@ const roomActions = reactive([
 	{ name: 'deleteRoom', title: 'Delete Room' }
 ])
 const room_id = ref()
+const operChatId = ref()
 const messagesLoaded = ref(false)
 const messagesPerPage = 20
 
 async function getTeamMember() {
 	let res = await teamFunction.queryTeamMember(team_id.value)
-	console.log(res.data.members)
 	let filterRes = []
 	res.data.members.forEach((member)=>{
 		if (member.id != user_id.value){
 			filterRes.push(member)
 		}
 	})
-	teamOption.value = filterRes
-	console.log(filterRes)
+	teamAddMemberOption.value = filterRes
 }
-
-async function createNewRoom() {
+//获得所有没有加入该群聊的成员
+async function getTeamNoMember(roomId){
+	chatMemberAddOption.value = teamAddMemberOption.value
+	let info = await chatFunction.getRoomInfo(roomId)
+	let exist = info.data.members
+	chatMemberAddOption.value = chatMemberAddOption.value.filter(e=>!exist.find(i=>i.id===e.id))
+}
+async function getChatMember(roomId){
+	let info = await chatFunction.getRoomInfo(roomId)
+	chatMemmberDeleteOption.value =info.data.members
+}
+async function createRoom(member,name,type=null){
+	console.log('#######')
+	console.log(member)
+	await chatFunction.createRoom(team_id.value, member, name,type)
+	await addData()
+}
+async function addRoom() {
 	let member = []
 	if (newTeamMember.value.length === 0){
 		ElMessage.error('您还未添加任何一名群聊成员')
 	}
 	else {
 		newTeamMember.value.forEach((item) => {
-			teamOption.value.forEach((team) => {
+			teamAddMemberOption.value.forEach((team) => {
 				if (item === team.name) {
 					member.push(team.id)
 				}
 			})
 		})
 		member.push(user_id.value)
-		dialogFormVisible.value = false
-		await chatFunction.createRoom(team_id.value, member, newTeamName.value)
+		await createRoom(member,newTeamName.value)
+
+	}
+	dialogFormVisible.value = false
+}
+async function addChatMem(){
+	let members = []
+	if (newChatMember.value.length === 0){
+		ElMessage.error('您还未添加任何一名群聊成员')
+	}else{
+		newChatMember.value.forEach((item)=>{
+			chatMemberAddOption.value.forEach((member)=>{
+				if (item === member.name){
+					members.push(member.id)
+				}
+			})
+		})
+		await chatFunction.addTeamMember(operChatId.value,members)
+		newChatMember.value = []
+	}
+	chatMemberAddVisible.value =false
+}
+async function deleteMem(){
+	let members = []
+	if (deleteChatMember.value.length === 0){
+		ElMessage.error('您还未选择任何一名群聊成员')
+	}
+	else {
+		deleteChatMember.value.forEach((item) => {
+			chatMemmberDeleteOption.value.forEach((member) => {
+				if (item === member.name) {
+					members.push(member.id)
+				}
+			})
+		})
+		await chatFunction.deleteTeamMember(operChatId.value, members)
+		deleteChatMember.value = []
 		await addData()
 	}
+	chatMemberDeleteVisible.value = false
 }
-
 async function addData() {
 	let result = await chatFunction.queryAllRoom(team_id.value)
 	const modifiedRoom = []
 	result.data.forEach((item) => {
+		if (item.priority === 999){
+			console.log('############')
+			mainChatId.value = item.id.toString()
+		}
 		let users = []
 		item.members.forEach((member) => {
 			let user = {
-				_id: member.id,
+				_id: member.id.toString(),
 				username: member.name,
 				timestamp: member.update_time,
 				avatar: '',
@@ -156,9 +260,9 @@ async function addData() {
 	})
 	rooms.value = modifiedRoom
 }
-
 async function addHistoryMessage({room, options = {}}) {
 	let res;
+	
 	if (options.reset) {
 		messages.value = []
 		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
@@ -171,7 +275,6 @@ async function addHistoryMessage({room, options = {}}) {
 			messagesLoaded.value = true
 		}, 0)
 	}
-
 	res.data.forEach((temp) => {
 		let message = {
 			_id: temp.id,
@@ -181,19 +284,21 @@ async function addHistoryMessage({room, options = {}}) {
 			date: temp.created_time,
 			timestamp: temp.created_time,
 			avatar: '/doe.png',
+			usersTag:''
 		}
 		messages.value.unshift(message)
 	})
 	
 }
-
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
+	console.log('@@@@@@')
+	console.log(temp)
 	let message = {
 		_id: temp.id,
 		content: temp.content,
 		senderId: user_id.value.toString(),
-		username: 'John Doe',
+		username: temp.name,
 		date: temp.created_time,
 		timestamp: temp.created_time,
 		avatar: '/doe.png',
@@ -205,7 +310,6 @@ function menuActionHandler({action,}) {
 	console.log(action)
 	switch (action.name) {
 		case 'inviteUser':
-			console.log("invite")
 		// call a method to invite a user to the room
 		case 'removeUser':
 		// call a method to remove a user from the room
@@ -214,7 +318,8 @@ function menuActionHandler({action,}) {
 	}
 }
 
-function sendMessage(message) {
+async function sendMessage(message) {
+	console.log(message.usersTag)
 	let formatMessage = {
 		"team": team_id.value,
 		"receiver": "",
@@ -241,21 +346,15 @@ function sendMessage(message) {
 
 function fetchMessages({options = {}}) {
 
-	// setTimeout(() => {
-	//   if (options.reset) {
-	//     this.messages = this.addMessages(true)
-	//   } else {
-	//     this.messages = [...this.addMessages(), ...this.messages]
-	//     this.messagesLoaded = true
-	//   }
-	//   // this.addNewMessage()
-	// })
 }
 
 function handleCustomMessageAction({roomId, action, message}) {
+	let members = []
+	let roomName = 'to '+message.username
+	members.push(message.senderId.toString())
+	members.push(user_id.value)
 	switch (action.name) {
 		case 'replyAction':
-			console.log(action.name)
 			// 处理回复操作的逻辑
 			break;
 		case 'editAction':
@@ -265,9 +364,36 @@ function handleCustomMessageAction({roomId, action, message}) {
 			// 处理删除操作的逻辑
 			break;
 		case 'privateChatAction':
-			// 处理私聊操作的逻辑
+			createRoom(members,roomName,'single');
 			break;
 		// Add more cases for other custom actions
+	}
+}
+
+function handleRoomAction({roomId, action, message}) {
+	operChatId.value = roomId
+	getTeamNoMember(roomId)
+	console.log('@@@@@@@@@@')
+	console.log(mainChatId.value)
+	if(roomId.toString() === mainChatId.value.toString()){
+		ElMessage.error('您不能对主群进行操作')
+	}else {
+		switch (action.name) {
+			case 'inviteUser':
+				chatMemberAddVisible.value = true
+				break;
+			case 'removeUser':
+				getChatMember(roomId)
+				chatMemberDeleteVisible.value = true
+				break;
+			case 'deleteAction':
+				// 处理删除操作的逻辑
+				break;
+			case 'privateChatAction':
+				// 处理私聊操作的逻辑
+				break;
+			// Add more cases for other custom actions
+		}
 	}
 }
 

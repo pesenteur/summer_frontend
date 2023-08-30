@@ -10,21 +10,7 @@
           </div>
         </el-card>
       </el-col>
-
-
-<!--      <el-col :span="4" class="card-col" v-if="rowIndex === rows.length - 1">-->
-<!--        <el-card shadow="hover" :body-style="{ padding: '0px' }" class="small-card" @click="handleExtraCardClick">-->
-<!--          <img src="https://pic1.zhimg.com/v2-48232582b70ecd9c53a3026ffb21e078_r.jpg?source=1940ef5c" class="image" />-->
-<!--          <div style="padding: 10px">-->
-
-<!--            <projectDialog :teamId="team"/>-->
-
-<!--          </div>-->
-<!--        </el-card>-->
-<!--      </el-col>-->
-
     </el-row>
-
   </div>
 </template>
 
@@ -70,40 +56,26 @@ function handleExtraCardClick(){
   console.log('成功被调用！')
 }
 
-
-// async function getSingleProject() {
-//     const result = await projectAPI.getSingleProject(form.name, form.describe, team.value);
-//
-//     dialogFormVisible.value = false
-//     projectName.value = result.data.name
-//     await router.push('/drag')
-//     console.log('getSingleProject成功被调用！')
-// }
-
-// async function deleteCard(projPos) {
-//   let projId = myResult.value[projPos].id
-//   console.log('projPos',projPos)
-//   totalCards.value--
-//
-//   const result = await projectAPI.deleteProject(team.value,projId)
-//   await showProjects()
-//
-// }
-async function showProjects(){
-  rows.value = []
+async function getData(){
   const result = await projectAPI.getReProject(team.value)
   myResult.value = result.data
+}
+
+function showProjects(){
+  rows.value = []
+
+  // const result = await projectAPI.getReProject(team.value)
+  // myResult.value = result.data
   // projectName.value = result.data.name
-  console.log('result111',result)
+  console.log('myResult',myResult)
   let projNames = []
-  for(const proj of result.data){
+  for(const proj of myResult.value){
     projNames.push(proj.name)
   }
   projectName.value = projNames
   totalCards.value = projNames.length
   console.log('numRows',numRows.value)
   for (let i = 0; i < numRows.value; i++) {
-
     let row = []
     for (let j = 0; j < cardsPerRow; j++) {
       let cardIndex = i * cardsPerRow + j
@@ -111,7 +83,6 @@ async function showProjects(){
         row.push(cardIndex)
       }
     }
-
     rows.value.push(row)
     console.log("rows",rows)
   }
@@ -127,15 +98,17 @@ async function restore(projPos){
   console.log('projId',projId)
   totalCards.value--
   const result = await projectAPI.restoreProject(team.value,projId)
-  await showProjects()
+  await getData()
+  showProjects()
 }
 
 defineExpose({
-  showProjects
+  showProjects,getData
 })
 
 onMounted(async() => {
-  await showProjects()
+  await getData()
+  showProjects()
   console.log('$$$$$$$$$$',totalCards.value)
 })
 

@@ -15,14 +15,14 @@
                     <CircleCloseFilled />
                   </el-icon>
                 </el-button>
-                <el-button class="edit" @click="openDialog((rowIndex) * 4 + colIndex)" text>
+                <el-button class="edit" @click="openDialog(rowIndex,colIndex)" text>
                   <font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 </el-button>
-                <el-dialog :modal="false" v-model="dialogVisible" title="修改项目名称" class="project-dialog">
+                <el-dialog  v-model="dialogVisible" title="修改项目名称" class="project-dialog">
                   <el-input v-model="newName" placeholder="新项目名称" class="input-field">
                   </el-input>
                   <span class="dialog-footer">
-                    <el-button type="primary" @click="changeProjectName(projIndex, newName); closeDialog()"
+                    <el-button type="primary" @click="changeProjectName(); closeDialog()"
                       class="confirm-button">确认</el-button>
                     <el-button @click="closeDialog" class="cancel-button">取消</el-button>
                   </span>
@@ -37,13 +37,13 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import {ref, reactive, onMounted, computed, watch} from 'vue'
 import projectDialog from "./projectDialog.vue";
 import { useRouter } from "vue-router";
 
 import projectAPI from '@/api/proj.js'
 import { CircleCloseFilled } from "@element-plus/icons-vue";
-import { setDesignId, setProjId } from "@/utils/token";
+import {setDesignId, setProjectName, setProjId} from "@/utils/token";
 import originAPI from "@/api/originDesign";
 
 const router = useRouter()
@@ -54,7 +54,8 @@ const projectName = ref([])
 const projectDescription = ref([])
 const totalCards = ref()
 
-const myResult = ref([])
+const reRow = ref()
+const reCol = ref()
 
 const cardsPerRow = 4
 const rows = ref([])
@@ -67,11 +68,19 @@ const dialogFormVisible = ref(false)
 
 const formLabelWidth = '140px'
 
-const props = defineProps(['teamId'])
+const props = defineProps(['teamId','radio1','radio2'])
+
+const radio1 = ref()
+const radio2 = ref()
+
+radio1.value = props.radio1.value
+radio2.value = props.radio2.value
 
 const team = ref('')
 
 team.value = props.teamId
+
+const ordering = ref()
 
 const form = reactive({
   name: '',
@@ -93,34 +102,16 @@ async function getSingleProj(projPos) {
 
   setProjId(projId)
 
-  // let title = '画布'
-  // for(let i=0;i<result.data.length;i++){
-  //   if(result.data !== []){
-  //     let id = result.data[0].id
-  //     const result = await getSaveData.getSingleDesign(projId,id)
-  //     console.log("result drag",result)
-  //     this.comData = result.data.content
-  //     this.canData = result.data.style
-  //     break;
-  //   }
-  // }
-
-
-  // const result = await originAPI.getAllDesign(projId)
-  // if (result.data){
-  //   console.log('data0',result.data[0])
-  //   let id = result.data[0].id
-  //   setDesignId(id)
-  // }
-  // const result = await originAPI.addOrigin(title,projId)
-  // console.log('this is a result:',result)
-  // setDesignId(result.data.id)
-
   dialogFormVisible.value = false
   await router.push('/drag')
   console.log('getSingleProject成功被调用！')
 }
-function openDialog(projIndex) {
+function openDialog(rowIndex,colIndex) {
+  console.log('rowIndex,colIndex',rowIndex,colIndex)
+
+  reRow.value = rowIndex
+  reCol.value = colIndex
+
   newName.value = ''; // 清空输入框
   dialogVisible.value = true; // 打开对话框
 }
@@ -146,24 +137,73 @@ async function deleteCard(projPos) {
   totalCards.value--
 
   const result = await projectAPI.deleteProject(team.value, projId)
-  await showProjects1()
+  await getData()
+  showProjects1()
 
 }
-async function changeProjectName(projPos, newName) {
+async function changeProjectName() {
+  let projPos = reRow.value*4+reCol.value
   let projId = myResult.value[projPos].id;
-  myResult.value[projPos].name = newName;
-  console.log('adsprojName', newName)
-  await showProjects1()
+  myResult.value[projPos].name = newName.value;
+  console.log('myResult',myResult.value)
+  console.log('row',reRow.value)
+  console.log('col',reCol.value)
+  console.log('projPos##########',projPos)
+  console.log('adsprojName', newName.value)
+  setProjectName(newName.value)
+  console.log('projId',projId)
+  console.log('describe',myResult.value[projPos].describe)
+  const result = await projectAPI.resetProject(newName.value,myResult.value[projPos].describe,projId)
+  showProjects1()
 }
-async function showProjects1() {
+
+const tempData = ref([])
+
+const search = ref()
+
+watch(search,()=>{
+  showProjects1()
+})
+
+const myResult = computed(() =>
+    tempData.value.filter(
+        (data) =>
+            !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
+    )
+)
+
+function getOrdering(){
+  if(radio1.value === 1 && radio2.value === 1){
+    ordering.value = 'name'
+  }else if(radio1.value === 1 && radio2.value === 2){
+    ordering.value = '-name'
+  }else if(radio1.value === 2 && radio2.value === 1){
+    ordering.value = 'create_time'
+  }else if(radio1.value === 2 && radio2.value === 2){
+    ordering.value = '-creat_time'
+  }else if(radio1.value === 3 && radio2.value === 1){
+    ordering.value = 'update_time'
+  }else if(radio1.value === 3 && radio2.value === 2){
+    ordering.value = '-update_time'
+  }
+}
+
+async function getData() {
+  const result = await projectAPI.getAllProjects(team.value,ordering.value)
+  tempData.value = result.data
+}
+
+function getSearch(searchName) {
+  search.value=searchName
+}
+
+function showProjects1() {
   rows.value = []
-  const result = await projectAPI.getAllProjects(team.value)
-  myResult.value = result.data
-  // projectName.value = result.data.name
-  console.log('result', result)
+
+  console.log('myResult', myResult.value)
   let projNames = []
   let projectDescriptions = []
-  for (const proj of result.data) {
+  for (const proj of myResult.value) {
     projNames.push(proj.name)
     projectDescriptions.push(proj.describe)
   }
@@ -172,7 +212,6 @@ async function showProjects1() {
   totalCards.value = projNames.length
   console.log('numRows', numRows.value)
   for (let i = 0; i < numRows.value; i++) {
-    console.log('mco;rejwvc')
     let row = []
     for (let j = 0; j < cardsPerRow; j++) {
       let cardIndex = i * cardsPerRow + j
@@ -191,13 +230,16 @@ async function showProjects1() {
 }
 
 defineExpose({
-  showProjects1
+  showProjects1,getSearch,getData
 })
 
 onMounted(async () => {
-  await showProjects1()
+  getOrdering()
+  await getData()
+  showProjects1()
   console.log('$$$$$$$$$$', totalCards.value)
 })
+
 
 </script>
 

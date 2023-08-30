@@ -27,7 +27,40 @@
     </el-aside>
   <el-container>
       <el-header style="text-align: right; font-size: 12px">
+
         <div class="toolbar">
+
+          <form class="search-bar" @submit.prevent>
+            <input v-model="searchName" size="small" placeholder="Type to search"
+                   @input="queryAllProject(searchName)" />
+            <el-button>Search</el-button>
+          </form>
+        </div>
+
+        <div class="toolbar">
+          <el-dropdown trigger="click">
+            <el-button type="primary">
+               排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <div class="mb-2 flex items-center text-sm">
+                  <el-radio-group v-model="radio1" class="ml-4">
+                    <el-radio label="1" size="large">名称</el-radio>
+                    <el-radio label="2" size="large">创建时间</el-radio>
+                    <el-radio label="3" size="large">更新时间</el-radio>
+                  </el-radio-group>
+                </div>
+                <div class="my-2 flex items-center text-sm">
+                  <el-radio-group v-model="radio2" class="ml-4">
+                    <el-radio label="1">递增</el-radio>
+                    <el-radio label="2">递减</el-radio>
+                  </el-radio-group>
+                </div>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
           <div>
             <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true">新建项目</el-button>
             <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
@@ -55,8 +88,8 @@
       </el-header>
 
       <el-main>
-        <projectMain ref="showProjects1" :teamId="team" v-show="ifShowTrash === true" />
-        <projectMainRe ref="showProjects" :teamId="team" v-show="ifShowTrash === false" />
+        <projectMain ref="childFunctions1" :teamId="team" :radio1="radio1" :radio2="radio2" v-show="ifShowTrash === true" />
+        <projectMainRe ref="childFunctions2" :teamId="team" v-show="ifShowTrash === false" />
       </el-main>
     </el-container>
   </el-container>
@@ -70,6 +103,11 @@ import projectAPI from '@/api/proj.js'
 import router from "@/router";
 import projectMainRe from './projectMainRe.vue';
 import {getTeamId, setProjectName, setProjId} from "@/utils/token";
+import teamFunction from "@/api/team";
+
+const childFunctions1 = ref(null)
+
+const childFunctions2 = ref(null)
 
 const ifShowTrash  = ref(true)
 
@@ -81,6 +119,11 @@ const formLabelWidth = '140px'
 
 const team = ref('')
 team.value = getTeamId()
+
+const radio1 = ref('1')
+const radio2 = ref('1')
+
+const ordering = ref()
 
 const form = reactive({
   name: '',
@@ -96,6 +139,22 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 
 const showProjects = ref(null)
 const showProjects1 = ref(null)
+
+const searchName = ref()
+
+async function queryAllProject(searchName) {
+  let ordering = 'create_time'
+  const result = await projectAPI.getAllProjects(getTeamId(),ordering)
+
+  console.log('***********Projectsresult***********')
+  console.log(result.data)
+  console.log('***********result***********')
+  childFunctions1.value.getSearch(searchName)
+  childFunctions1.value.showProjects1()
+
+
+}
+
 
   async function addProject() {
     if(form.name === ''){
@@ -120,9 +179,11 @@ const showProjects1 = ref(null)
     console.log('isShowTrash22222',ifShowTrash.value)
   }
 
-  watch(ifShowTrash, (newVal) => {
-    showProjects.value.showProjects()
-    showProjects1.value.showProjects1()
+  watch(ifShowTrash, async (newVal) => {
+    await childFunctions2.value.getData()
+    childFunctions2.value.showProjects()
+    await childFunctions1.value.getData()
+    childFunctions1.value.showProjects1()
   })
 
 </script>
@@ -158,4 +219,9 @@ const showProjects1 = ref(null)
   width: auto;
   height: auto;
 }
+
+.search-bar button i {
+  font-size: 22px;
+}
+
 </style>

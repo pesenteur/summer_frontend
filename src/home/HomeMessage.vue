@@ -35,6 +35,7 @@ async function addData(){
 	
 }
 
+
 </script>
 <style scoped>
 .card-header {

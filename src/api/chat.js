@@ -75,6 +75,36 @@ export default {
             url: `/chat/${chat_id}/leave`,
             method: 'PATCH',
         });
+    },
+    deleteChat(chat_id) {
+        return requests({
+            url: `/chat/${chat_id}/delete`,
+            method: 'DELETE',
+        });
+    },
+    readAllMessage(chat_id) {
+        return requests({
+            url: `/chat/${chat_id}/read`,
+            method: 'PATCH',
+        });
+    },
+    sendDivide(chat_id,messages,to) {
+        return requests({
+            url: `/chat/${chat_id}/forward`,
+            method: 'POST',
+            data:{
+                messages,to
+            }
+        });
+    },
+    sendHole(chat_id,messages,to) {
+        return requests({
+            url: `/chat/${chat_id}/forward-together`,
+            method: 'POST',
+            data:{
+                messages,to
+            }
+        });
     }
 
 }

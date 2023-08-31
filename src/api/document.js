@@ -18,5 +18,14 @@ export default {
                 document, content
             }
         });
+    },
+    updatedocument(title, project, documentId) {
+        return requests({
+            url:`documents/${documentId}`,
+            method: 'PATCH',
+            data: {
+                title, project
+            }
+        });
     }
 }

@@ -4,8 +4,11 @@
       <el-header>
         <div class="editor__header">
           <div>
-            <span class="title" >title</span> 
-            <button class="changeName" @click="exportWord"><font-awesome-icon :icon="['fas', 'pen-to-square']" /></button>
+            <span class="title" v-if="!isEditingTitle">{{ title }}</span>
+            <input v-else v-model="newTitle" class="edit-title-input" />
+            <button class="changeName" @click="toggleEditTitle">
+              <font-awesome-icon :icon="['fas', isEditingTitle ? 'save' : 'pen-to-square']" />
+            </button>
           </div>
           <div :class="`editor__status editor__status--${status}`">
             <template v-if="status === 'connected'">
@@ -16,6 +19,7 @@
             <template v-else>
               offline
             </template>
+            {{ currentUser.name }}
           </div>
           <div class="optionButton">
             <button @click="saveDocument">Save</button>
@@ -313,7 +317,8 @@ import TurndownService from 'turndown'
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { saveAs } from 'file-saver';
-
+import { ElMessage } from 'element-plus';
+import { getProjId } from "@/utils/token";
 const route = useRoute();
 
 const colors = [
@@ -340,6 +345,20 @@ const status = ref('connecting');
 const documentId = ref(route.params.documentId || '123');
 const editorRef = ref()
 const title = ref('测试文件');
+const newTitle = ref(title.value);
+const isEditingTitle = ref(false);
+const toggleEditTitle = () => {
+  if (isEditingTitle.value) {
+    changeDocumentName()
+    // 保存标题修改
+    title.value = newTitle.value;
+  } else {
+    // 进入编辑模式时，将原始标题备份到newTitle
+    newTitle.value = title.value;
+  }
+  isEditingTitle.value = !isEditingTitle.value;
+};
+
 const wordCss = `
 .title {
   height: 64px;
@@ -361,14 +380,12 @@ const wordCss = `
 
 onMounted(() => {
   const ydoc = new Y.Doc();
-
   provider.value = new HocuspocusProvider({
     url: 'ws://127.0.0.1:1234',
     name: documentId.value,
     document: ydoc,
     forceSyncInterval: 200
   });
-
   provider.value.on('status', event => {
     status.value = event.status;
   });
@@ -406,7 +423,22 @@ onBeforeUnmount(() => {
   editor.value.destroy();
   provider.value.destroy();
 });
-
+async function changeDocumentName() {
+  try {
+    console.log(documentId.value, newTitle.value, getProjId())
+    await documentRequest.changeDocumentName(newTitle.value, getProjId(), documentId.value)
+    ElMessage({
+      message: '保存成功',
+      type: 'success'
+    })
+  }
+  catch (error) {
+    ElMessage({
+      message: '修改失败',
+      type: 'error'
+    })
+  }
+}
 async function saveDocument() {
   try {
     const content = editor.value.getHTML();
@@ -550,17 +582,16 @@ function exportWord() {
   &__header {
     color: #0D0D0D;
     align-items: center;
-    margin-top: 10px;
     justify-content: space-between;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
     display: flex;
     flex: 0 0 auto;
     flex-wrap: wrap;
-    padding: 0.25rem;
+
     button {
       margin-right: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       padding: 5px 10px;
       background-color: #007bff;
       color: white;
@@ -573,6 +604,7 @@ function exportWord() {
       background-color: #0056b3;
     }
   }
+
   &__content {
     flex: 1 1 auto;
     overflow-x: hidden;
@@ -780,15 +812,62 @@ function exportWord() {
   user-select: none;
   white-space: nowrap;
 }
+
 .title {
   margin-right: 5px;
-  font-size: 32px; /* Adjust the font size as needed */
+  font-size: 20px;
+  /* Adjust the font size as needed */
   /* other styling properties if necessary */
 }
+
 .editor {
   overflow: auto;
 }
-.changeName{
-  background-color: #FFF;
+
+.edit-title-input {
+  font-size: 20px;
 }
-</style>
+
+.editor__header {
+  position: fixed;
+  height: 50px;
+  width: 98%;
+  background-color: #fff;
+  /* 你的背景颜色 */
+  z-index: 1000;
+  /* 使工具栏在最顶层 */
+}
+
+/* 固定侧栏 */
+.el-aside {
+  position: fixed;
+  background-color: #f0f0f0;
+  /* 你的背景颜色 */
+  z-index: 900;
+  /* 使侧栏在工具栏之下 */
+}
+
+.el-main {
+  margin-top: 64px;
+  /* 顶部工具栏的高度 */
+  margin-left: 200px;
+  /* 侧栏的宽度 */
+  padding: 20px;
+  /* 根据需要添加内边距 */
+}
+
+.button-container {
+  position: fixed;
+  top: 100px;
+  padding-top: 60px;
+  /* 考虑标题栏的高度 */
+  width: 100%;
+  background-color: white;
+  z-index: 1000;
+  /* 可能需要调整 z-index，以确保在页面上其他元素之上 */
+  /* 其他样式 */
+}
+
+.changeName {
+  background-color: #FFF;
+}</style>

@@ -86,7 +86,6 @@ async function readNoti(NotId) {
 }
 async function getAllNoti() {
   let res = await notiFunction.queryAllNoti()
-  console.log(res.data)
   let filtermessages = []
   res.data.forEach((item) => {
     const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
@@ -97,7 +96,6 @@ async function getAllNoti() {
     }
     filtermessages.push(noti)
   })
-  console.log(filtermessages)
   messages.value = filtermessages
 }
 </script>

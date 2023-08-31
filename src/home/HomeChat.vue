@@ -7,31 +7,22 @@
       </div>
     </template>
     <el-table :data="tableData" height="150" style="width: 100%">
-      <el-table-column prop="time" label="时间" width="220" />
-      <el-table-column prop="content" label="内容" width="220" />
-      <el-table-column prop="isread" label="是否已读" width="220" />
+		<el-table-column prop="name" label="群聊名称" width="220" />
+		<el-table-column prop="unread_count" label="未读的消息数" width="220" />
+	    <el-table-column prop="last_message.update_time" label="最新消息发送时间" width="220" />
     </el-table>
   </el-card>
 </template>
 <script setup>
-import {reactive} from "vue";
-const tableData = reactive([
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-])
+import {ref} from "vue";
+import chatFunction from "@/api/chat";
+import {getTeamId} from '@/utils/token'
+const tableData = ref([])
+addData()
+async function addData(){
+	let result = await chatFunction.queryAllRoom(getTeamId())
+	tableData.value =result.data
+}
 </script>
 
 <style scoped>

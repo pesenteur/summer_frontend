@@ -178,7 +178,7 @@ function jump(buttonId) {
   cursor: pointer;
   position: relative;
   transition: color 0.4s linear;
-  width: 60%;
+  width: 100%;
   /* 调整按钮宽度 */
   margin: 15px 0;
   /* 调整按钮之间的垂直间距 */

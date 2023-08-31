@@ -4,11 +4,14 @@
       <el-header>
         <div class="editor__footer">
           <button @click="saveDocument">Save</button>
+          <button @click="exportMarkdown">导出为Markdown</button>
+          <button @click="exportPDF">导出为PDF</button>
           <h1>项目协作</h1>
           <div :class="`editor__status editor__status--${status}`">
             <template v-if="status === 'connected'">
               {{ editor.storage.collaborationCursor.users.length }} user{{
-                editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
+                editor.storage.collaborationCursor.users.length === 1 ? '' : 's'
+              }} online in {{ documentId }}
             </template>
             <template v-else>
               offline
@@ -266,13 +269,13 @@
             </div>
           </div>
           <div class="editor" v-if="editor">
-            <editor-content :editor="editor" />
+            <editor-content :editor="editor" id="editor"/>
           </div>
           <div class="editor__footer">
             <div class="editor__name">
-              <button @click="setName">
+              <div>
                 {{ currentUser.name }}
-              </button>
+              </div>
             </div>
           </div>
         </el-main>
@@ -281,7 +284,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import CharacterCount from '@tiptap/extension-character-count'
 import Collaboration from '@tiptap/extension-collaboration'
@@ -291,142 +294,170 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
-import { Editor, EditorContent } from '@tiptap/vue-3'
+import {Editor, EditorContent, useEditor} from '@tiptap/vue-3'
 import suggestion from './suggestion.js'
 import asideNav from './asideNav.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import * as Y from 'yjs'
-// import buttonGroup from './buttonGroup.vue'
+import {onBeforeUnmount, onMounted, ref} from "vue";
+import {useRoute} from "vue-router";
+import documentRequest from '@/api/document';
+import {Location} from "@element-plus/icons-vue";
+import TurndownService from 'turndown'
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
+const route = useRoute();
 
-const getRandomElement = list => {
-  return list[Math.floor(Math.random() * list.length)]
+const colors = [
+  '#958DF1',
+  '#F98181',
+  '#FBBC88',
+  '#FAF594',
+  '#70CFF8',
+  '#94FADB',
+  '#B9F18D',
+];
+function getRandomColor() {
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const getRandomRoom = () => {
-  const roomNumbers = [10, 11, 12]
+const currentUser = ref({
+  // TODO 获取用户姓名
+  name: route.params.documentId || '123',
+  color: getRandomColor()
+});
+const provider = ref();
+const editor = ref();
+const status = ref('connecting');
+const documentId = ref(route.params.documentId || '123');
+const editorRef = ref()
 
-  return getRandomElement(roomNumbers.map(number => `rooms.${number}`))
+onMounted(()=>{
+  const ydoc = new Y.Doc();
+
+  provider.value = new HocuspocusProvider({
+    url: 'ws://127.0.0.1:1234',
+    name: documentId.value,
+    document: ydoc,
+    forceSyncInterval: 200
+  });
+
+  provider.value.on('status', event => {
+    status.value = event.status;
+  });
+
+  editor.value = new Editor({
+    extensions: [
+      StarterKit.configure({
+        history: false
+      }),
+      Highlight,
+      TaskList,
+      TaskItem,
+      Collaboration.configure({
+        document: ydoc
+      }),
+      CollaborationCursor.configure({
+        provider: provider.value,
+        user: currentUser.value
+      }),
+      CharacterCount.configure({
+        limit: 100000,
+      }),
+      StarterKit,
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'mention',
+        },
+        suggestion
+      })
+    ]
+  });
+});
+
+onBeforeUnmount(()=> {
+  editor.value.destroy();
+  provider.value.destroy();
+});
+
+async function saveDocument() {
+  try {
+    const content = editor.value.getHTML();
+    await documentRequest.saveDocument(documentId.value, content);
+    ElMessage({
+      message: '保存成功',
+      type: 'success'
+    });
+  } catch (error) {
+    ElMessage({
+      message: '保存失败',
+      type: 'error'
+    });
+  }
 }
 
-export default {
-  components: {
-    EditorContent,
-  },
+function exportMarkdown() {
+  const turndownService = new TurndownService({
+    headingStyle: 'atx',
+    hr: '---',
+    bulletListMarker: '-',
+    codeBlockStyle: 'fenced',
+    emDelimiter: '*'
+  });
+  const markdown = turndownService.turndown(editor.value.getHTML());
+  const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
 
-  data() {
-    return {
-      currentUser: JSON.parse(localStorage.getItem('currentUser')) || {
-        name: this.getRandomName(),
-        color: this.getRandomColor(),
-      },
-      provider: null,
-      editor: null,
-      status: 'connecting',
-      room: getRandomRoom(),
-    }
-  },
+  const downloadLink = document.createElement('a');
+  downloadLink.href = URL.createObjectURL(blob);
+  // TODO 文档名
+  downloadLink.download = 'filename.txt';
+  downloadLink.click();
+  URL.revokeObjectURL(downloadLink.href);
+}
 
-  mounted() {
-    const ydoc = new Y.Doc()
+function exportPDF() {
+  const pdf = new jsPDF();
 
-    this.provider = new HocuspocusProvider({
-      url: 'ws://azure.bienboy.store/hocuspocus',
-      document: ydoc,
-    })
+  pdf.setDocumentProperties({
+    title: 'HTML to PDF',
+    // subject: 'Generated PDF file using jsPDF library',
+    author: 'SE2023',
+    // keywords: 'html, pdf, javascript',
+    creator: 'SE2023'
+  });
+  const editor_dom = document.querySelector('#editor');
+  // 使用 html2canvas 库将 HTML 页面转换为 canvas 元素
+  html2canvas(editor_dom, {
+    scale: 2
+  }).then(canvas => {
+    // 将 canvas 元素转换为图像数据
+    const imageData = canvas.toDataURL('image/png', 1.0);
+    const imgProps = pdf.getImageProperties(imageData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-    this.provider.on('status', event => {
-      this.status = event.status
-    })
+    // 设置边距
+    const marginX = 20; // 左右边距
+    const marginY = 20; // 上下边距
+    const contentWidth = pdfWidth - 2 * marginX;
+    const contentHeight = pdfHeight - 2 * marginY;
 
-    this.editor = new Editor({
-      extensions: [
-        StarterKit.configure({
-          history: false,
-        }),
-        Highlight,
-        TaskList,
-        TaskItem,
-        Collaboration.configure({
-          document: ydoc,
-        }),
-        CollaborationCursor.configure({
-          provider: this.provider,
-          user: this.currentUser,
-        }),
-        CharacterCount.configure({
-          limit: 10000,
-        }),
-        StarterKit,
-        Mention.configure({
-          HTMLAttributes: {
-            class: 'mention',
-          },
-          suggestion,
-        }),
-      ],
-    })
-    localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-  },
-
-  methods: {
-    setName() {
-      const name = (window.prompt('Name') || '')
-        .trim()
-        .substring(0, 32)
-
-      if (name) {
-        return this.updateCurrentUser({
-          name,
-        })
-      }
-    },
-    async saveDocument() {
-      try {
-        const content = this.editor.getHTML(); // Get the editor content
-        // Send the content to a server using Axios (replace with your actual endpoint)
-        console.log(content)
-        await axios.post('/save', { content });
-
-        console.log('Document saved successfully');
-      } catch (error) {
-        console.error('Error saving document:', error);
-      }
-    },
-    updateCurrentUser(attributes) {
-      this.currentUser = { ...this.currentUser, ...attributes }
-      this.editor.chain().focus().updateUser(this.currentUser).run()
-
-      localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-    },
-
-    getRandomColor() {
-      return getRandomElement([
-        '#958DF1',
-        '#F98181',
-        '#FBBC88',
-        '#FAF594',
-        '#70CFF8',
-        '#94FADB',
-        '#B9F18D',
-      ])
-    },
-
-    getRandomName() {
-      return getRandomElement([
-        'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry', 'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman', 'Lisa Bonet',
-      ])
-    },
-  },
-
-  beforeUnmount() {
-    this.editor.destroy()
-    this.provider.destroy()
-  },
+    pdf.addImage(
+        imageData,
+        'PNG',
+        marginX,
+        marginY,
+        contentWidth,
+        contentHeight
+    );
+    // 下载 PDF 文件
+    pdf.save('filename.pdf');
+  });
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .el-col-12 {
   /* max-width: 50%; */
   flex: 0 0 100% !important;
@@ -609,8 +640,8 @@ export default {
     code {
       background: none;
       color: inherit;
-      font-size: 0.8rem;
       padding: 0;
+      font-size: 1.2em;
     }
   }
 
@@ -658,9 +689,7 @@ export default {
     }
   }
 }
-</style>
 
-<style>
 .ProseMirror:focus {
   outline: none !important;
 }

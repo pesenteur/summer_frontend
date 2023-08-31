@@ -7,33 +7,33 @@
       </div>
     </template>
     <el-table :data="tableData" height="250" style="width: 100%">
-      <el-table-column prop="time" label="时间" width="220" />
-      <el-table-column prop="content" label="内容" width="220" />
-      <el-table-column prop="isread" label="是否已读" width="220" />
+      <el-table-column prop="content" label="消息内容" width="320" />
+      <el-table-column prop="isread" label="是否已读" width="320" />
     </el-table>
   </el-card>
 </template>
 
 <script setup>
-import {reactive} from "vue";
+import {ref} from "vue";
 import router from "@/router";
-const tableData = reactive([
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-  {
-    time: '2023-06-19',
-    content: '被BUAA——SE群聊@l',
-    isread: '未读',
-  },
-])
+import notiFunction from "@/api/notification";
+const tableData = ref([])
+addData()
+async function addData(){
+	let res = await notiFunction.queryAllNoti()
+	let filtermessages = []
+	res.data.forEach((item) => {
+		const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
+		let noti = {
+			content: messagePart,
+			isread: item.is_read === true ? 'read' : 'unread',
+			notId: item.id
+		}
+		filtermessages.push(noti)
+	})
+	tableData.value = filtermessages
+	
+}
 
 </script>
 <style scoped>

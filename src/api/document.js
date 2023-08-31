@@ -8,8 +8,15 @@ export default {
             data: {
                 team, title, project
             }
-        })
+        });
     },
-
-
+    saveDocument(document, content) {
+        return requests({
+            url: '/documents/save',
+            method: 'POST',
+            data: {
+                document, content
+            }
+        });
+    }
 }

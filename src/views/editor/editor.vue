@@ -4,7 +4,8 @@
       <el-header>
         <div class="editor__header">
           <div>
-            <h1>项目协作</h1>
+            <span class="title" >title</span> 
+            <button class="changeName" @click="exportWord"><font-awesome-icon :icon="['fas', 'pen-to-square']" /></button>
           </div>
           <div :class="`editor__status editor__status--${status}`">
             <template v-if="status === 'connected'">
@@ -15,13 +16,12 @@
             <template v-else>
               offline
             </template>
-            {{ currentUser.name }}
           </div>
           <div class="optionButton">
             <button @click="saveDocument">Save</button>
             <button @click="exportMarkdown">导出为Markdown</button>
             <button @click="exportPDF">导出为PDF</button>
-                        <button @click="exportWord">导出为Word</button>
+            <button @click="exportWord">导出为Word</button>
           </div>
         </div>
       </el-header>
@@ -483,7 +483,7 @@ function exportPDF() {
 }
 
 function getModelHtml(mhtml) {
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
                 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
                   xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
                   xmlns="http://www.w3.org/TR/REC-html40">
@@ -504,10 +504,10 @@ function getModelHtml(mhtml) {
 }
 
 function exportWord() {
-    const html = getModelHtml(editor.value.getHTML())
-    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' })
-    //调用file-saver插件的saveAs方法导出
-    saveAs(blob, title.value + '.doc')
+  const html = getModelHtml(editor.value.getHTML())
+  const blob = new Blob([html], { type: 'application/msword;charset=utf-8' })
+  //调用file-saver插件的saveAs方法导出
+  saveAs(blob, title.value + '.doc')
 }
 </script>
 
@@ -550,6 +550,7 @@ function exportWord() {
   &__header {
     color: #0D0D0D;
     align-items: center;
+    margin-top: 10px;
     justify-content: space-between;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
@@ -557,8 +558,21 @@ function exportWord() {
     flex: 0 0 auto;
     flex-wrap: wrap;
     padding: 0.25rem;
-  }
+    button {
+      margin-right: 10px;
+      margin-bottom: 20px;
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
+    button:hover {
+      background-color: #0056b3;
+    }
+  }
   &__content {
     flex: 1 1 auto;
     overflow-x: hidden;
@@ -766,8 +780,15 @@ function exportWord() {
   user-select: none;
   white-space: nowrap;
 }
-
+.title {
+  margin-right: 5px;
+  font-size: 32px; /* Adjust the font size as needed */
+  /* other styling properties if necessary */
+}
 .editor {
   overflow: auto;
+}
+.changeName{
+  background-color: #FFF;
 }
 </style>

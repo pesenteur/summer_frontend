@@ -6,7 +6,6 @@
           <div>
             <h1>项目协作</h1>
           </div>
-          <div> </div>
           <div :class="`editor__status editor__status--${status}`">
             <template v-if="status === 'connected'">
               {{ editor.storage.collaborationCursor.users.length }} user{{
@@ -22,6 +21,7 @@
             <button @click="saveDocument">Save</button>
             <button @click="exportMarkdown">导出为Markdown</button>
             <button @click="exportPDF">导出为PDF</button>
+                        <button @click="exportWord">导出为Word</button>
           </div>
         </div>
       </el-header>
@@ -312,6 +312,7 @@ import { Location } from "@element-plus/icons-vue";
 import TurndownService from 'turndown'
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import { saveAs } from 'file-saver';
 
 const route = useRoute();
 
@@ -338,6 +339,25 @@ const editor = ref();
 const status = ref('connecting');
 const documentId = ref(route.params.documentId || '123');
 const editorRef = ref()
+const title = ref('测试文件');
+const wordCss = `
+.title {
+  height: 64px;
+  width: 800px;
+  text-align: center;
+  line-height: 64px;
+  font-size: 20px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 500;
+  color: rgba(0, 11, 46, 0.85);
+}
+.all-box {
+  position: relative;
+}
+.all-topic {
+  padding: 24px;
+}
+`
 
 onMounted(() => {
   const ydoc = new Y.Doc();
@@ -461,19 +481,40 @@ function exportPDF() {
     pdf.save('filename.pdf');
   });
 }
+
+function getModelHtml(mhtml) {
+    return `<!DOCTYPE html>
+                <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
+                  xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+                  xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                  <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:TrackMoves>false</w:TrackMoves><w:TrackFormatting/><w:ValidateAgainstSchemas/><w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid><w:IgnoreMixedContent>false</w:IgnoreMixedContent><w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText><w:DoNotPromoteQF/><w:LidThemeOther>EN-US</w:LidThemeOther><w:LidThemeAsian>ZH-CN</w:LidThemeAsian><w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript><w:Compatibility><w:BreakWrappedTables/><w:SnapToGridInCell/><w:WrapTextWithPunct/><w:UseAsianBreakRules/><w:DontGrowAutofit/><w:SplitPgBreakAndParaMark/><w:DontVertAlignCellWithSp/><w:DontBreakConstrainedForcedTables/><w:DontVertAlignInTxbx/><w:Word11KerningPairs/><w:CachedColBalance/><w:UseFELayout/></w:Compatibility><w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel><m:mathPr><m:mathFont m:val="Cambria Math"/><m:brkBin m:val="before"/><m:brkBinSub m:val="--"/><m:smallFrac m:val="off"/><m:dispDef/><m:lMargin m:val="0"/> <m:rMargin m:val="0"/><m:defJc m:val="centerGroup"/><m:wrapIndent m:val="1440"/><m:intLim m:val="subSup"/><m:naryLim m:val="undOvr"/></m:mathPr></w:WordDocument></xml><![endif]-->
+
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+                    <title>{{title}}</title>
+                    <style>${wordCss}</style>
+                </head>
+                <body>
+                    <div style="display: flex;justify-content: center;">
+                      ${mhtml}
+                    </div>
+                </body>
+                </html>`
+}
+
+function exportWord() {
+    const html = getModelHtml(editor.value.getHTML())
+    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' })
+    //调用file-saver插件的saveAs方法导出
+    saveAs(blob, title.value + '.doc')
+}
 </script>
 
 <style lang="scss">
 .el-col-12 {
   /* max-width: 50%; */
   flex: 0 0 100% !important;
-}
-
-@font-face {
-  font-family: 'element-icons';
-  src: url('path/to/element-icons.woff') format('woff'),
-    url('path/to/element-icons.ttf') format('truetype');
-  /* 其他样式 */
 }
 
 .button-container {

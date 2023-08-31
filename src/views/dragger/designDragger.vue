@@ -1,5 +1,11 @@
 <template>
 
+  <div>
+    <el-button @click="addDesign">
+      新建画布
+    </el-button>
+  </div>
+
   <el-tabs
       v-model="editableTabsValue"
       type="card"
@@ -41,7 +47,9 @@ const editableTabsValue = ref(0)
 const editableTabs = ref([])
 const chosen_tab = ref()
 
-
+// await function addDesign(){
+//
+// }
 
 async function get_all_design() {
   const result = await originAPI.getAllDesign(getProjId())

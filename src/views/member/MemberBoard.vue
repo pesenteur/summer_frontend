@@ -6,7 +6,7 @@
           <h2>团队管理</h2>
         </el-header>
       </div>
-      <el-container>
+      <el-container class="container">
         <el-aside width="250px">
           <div class="leftbox">
             <el-row class="tac" id="container1">
@@ -14,7 +14,7 @@
                 <div class="btton">
                   <div class="avatar"><el-icon class="custom-icon-button"></el-icon></div>
                   <div class="manage">
-                    <button class="btn" text @click="dialogFormVisible = true">创建新的团队
+                    <button class="btn" @click="dialogFormVisible = true">创建新的团队
                     </button>
                   </div>
                   <el-dialog v-model="dialogFormVisible" title="欢迎来到寄了网站，请创建团队" center width="35%">
@@ -114,10 +114,10 @@
             </el-main>
           </el-container>
         </div>
+        <div class="rightbox" v-else style="width:100%;">
+          <el-empty description="请选择团队" style="height:100%;"/>
+        </div>
       </el-container>
-      <div class="back">
-        <el-header height="300px"></el-header>
-      </div>
     </div>
   </div>
 </template>
@@ -421,9 +421,13 @@ h2 {
 
 .common-layout {
   background-color: white;
-  width: 100%;
+  width: 80%;
   height: 120%;
-  margin-left: 20%;
+  margin: 0 auto;
+}
+
+.container {
+  margin-bottom: 80px;
 }
 
 .dialog-footer button:first-child {
@@ -447,8 +451,9 @@ h2 {
   border-style: ridge;
   border-color: #e8e8e8;
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease
+  transition: box-shadow 0.3s ease;
     /* Adjust border properties as needed */
+  height: 500px;
 }
 
 .leftbox:hover {
@@ -460,8 +465,10 @@ h2 {
   border-style: ridge;
   border-color: #e8e8e8;
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease
+  transition: box-shadow 0.3s ease;
     /* Adjust border properties as needed */
+  height: 500px;
+  overflow: auto;
 }
 
 .rightbox:hover {

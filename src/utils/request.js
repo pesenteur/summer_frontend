@@ -10,11 +10,24 @@ const requests = axios.create({
     timeout: 5000
 });
 
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
+
 // 2. 请求拦截器
 requests.interceptors.request.use(config => {
     const accountStore = useAccountStore();
+    console.log(config)
+    console.log(config.url === '/messages')
     if (accountStore.token) {
         config.headers.Authorization = accountStore.token;
+    }else {
+        if (config.url === '/messages') {
+            config.cancelToken = source.token;
+            source.cancel();
+            router.push({
+                path: '/login',
+            }).then(() => {});
+        }
     }
     return config;
 });
@@ -25,20 +38,36 @@ requests.interceptors.response.use(response => {
     return response
 }, error => {
     console.log(error)
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.data.detail) {
         const accountStore = useAccountStore();
         accountStore.logout();
         router.push({
             path: '/login',
-            query: {
-                'redirect': router.currentRoute.value.fullPath
-            }
         }).then(() => { });
         ElMessage({
-            message: 'token失效，请重新登录',
+            message: error.response.data.detail,
             type: 'error'
         });
-    } else if (!error.response?.data.result) {
+    }
+    else if(error.response && error.response.status === 403) {
+        ElMessage({
+            message: '您没有权限进行该操作',
+            type: 'error'
+        });
+    }
+    else if(error.response && error.response.status === 404) {
+        ElMessage({
+            message: '该资源不存在',
+            type: 'error'
+        });
+    }
+    else if(error.response && error.response.status === 500) {
+        ElMessage({
+            message: '服务器内部错误',
+            type: 'error'
+        });
+    }
+    else if (!error.response?.data.result) {
         error.response = {
             data: {
                 result: '0',

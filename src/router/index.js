@@ -8,7 +8,10 @@ const router = createRouter({
 
     }, {
         path: '/login',
-        component: () => import('@/views/account/LoginComponent.vue')
+        component: () => import('@/views/account/LoginComponent.vue'),
+        meta: {
+            'hiddenHeader': true
+        }
     }, {
         path: '/buttonGroup',
         component: () => import('@/views/editor/buttonGroup.vue')
@@ -52,7 +55,15 @@ const router = createRouter({
 
 });
 
-router.beforeEach((to, from, next) => {
-    next();
+router.beforeEach((to, from) => {
+    const token = localStorage.getItem('TOKEN');
+    if (!token && to.path !== '/login') {
+        return {
+            path: '/login'
+        };
+    }
+    if (token && to.path === '/login') {
+        return from;
+    }
 });
 export default router

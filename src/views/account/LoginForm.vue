@@ -83,13 +83,8 @@ async function loginWithPassword() {
             type: 'success'
         });
         setTimeout(() => {
-            if (route.query.redirect) {
-                router.push(route.query.redirect);
-            } else {
-                router.push('/switch');
-            }
-        }, 50);
-        
+            router.push('/switch');
+        }, 1000);
     } catch (error) {
         ElMessage({
             message: error,

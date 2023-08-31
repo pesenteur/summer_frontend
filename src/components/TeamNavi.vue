@@ -7,7 +7,6 @@
       @select="handleSelect"
   >
 	  <TeamHeader1/>
-	  
     <div class="flex-grow" />
 	  <button @click="jumpToHome" class="home-button" />
 	  <TeamMessage></TeamMessage>

@@ -12,8 +12,8 @@
 			</div>
 		</template>
 	</vue-advanced-chat>
-	<el-drawer v-model="drawerTable" direction="rtl" size="20%">
-		<span>成员列表</span>
+	<el-drawer v-model="drawerTable" direction="rtl" size="15%">
+		<span class="team_list">成员列表</span>
 		<el-dropdown v-if="!isMain">
 			<el-button text>
 				<font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
@@ -48,9 +48,9 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">Cancel</el-button>
+				<el-button @click="dialogFormVisible = false">取消</el-button>
 				<el-button type="primary" @click="addRoom">
-					Confirm
+					确认
 				</el-button>
 			</span>
 		</template>
@@ -65,9 +65,9 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="chatMemberAddVisible = false">Cancel</el-button>
+				<el-button @click="chatMemberAddVisible = false">取消</el-button>
 				<el-button type="primary" @click="addChatMem">
-					Confirm
+					确认
 				</el-button>
 			</span>
 		</template>
@@ -82,9 +82,9 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="chatMemberDeleteVisible = false">Cancel</el-button>
+				<el-button @click="chatMemberDeleteVisible = false">取消</el-button>
 				<el-button type="primary" @click="deleteMem">
-					Confirm
+					确认
 				</el-button>
 			</span>
 		</template>
@@ -544,6 +544,17 @@ button {
 
 button:last-child {
 	margin-right: 0;
+}
+.team_list{
+	padding-right: 120px;
+}
+.el-drawer__header {
+    align-items: center;
+    color: #72767b;
+    display: flex;
+	margin-bottom: 40px;
+    padding: var(--el-drawer-padding-primary);
+    padding-bottom: 0;
 }
 </style>
 

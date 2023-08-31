@@ -8,35 +8,6 @@
               <div class="menu-item-container">
                 <img src="@/assets/imgs/emoji/smiling-face-with-horns.png" alt="!!!" class="image">
                 <span class="element-title">{{ projName }}</span>
-                <!--                <el-button :icon="Search" text @click="resetName">-->
-                <!--                </el-button>-->
-
-<!--                <div>-->
-<!--                  <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true" :icon="Search" text></el-button>-->
-<!--                  <el-dialog draggable=true v-model="dialogFormVisible" title="修改项目名称:" center width="30%">-->
-<!--                    <el-form :model="form">-->
-<!--                      <el-form-item label="项目名称" :label-width="formLabelWidth">-->
-<!--                        <el-input v-model="form.name" autocomplete="off" class="element-form"/>-->
-<!--                      </el-form-item>-->
-
-<!--                      <el-form-item label="项目描述" :label-width="formLabelWidth">-->
-<!--                        <el-input v-model="form.describe" autocomplete="off" class="element-form"/>-->
-<!--                      </el-form-item>-->
-
-<!--                    </el-form>-->
-<!--                    <template #footer>-->
-<!--                <span class="dialog-footer">-->
-<!--                  <el-button @click="dialogFormVisible = false">-->
-<!--                    取消-->
-<!--                  </el-button>-->
-<!--                  <el-button type="primary" @click="renameProject">-->
-<!--                    确定-->
-<!--                  </el-button>-->
-<!--                </span>-->
-<!--                    </template>-->
-<!--                  </el-dialog>-->
-<!--                </div>-->
-
               </div>
             </el-menu-item>
             <el-divider />
@@ -68,7 +39,6 @@
             <el-table-column prop="created_time" label="创建时间" />
             <el-table-column prop="title" label="画布名称" />
             <el-table-column prop="update_time" label="更新时间" />
-            <el-table-column label="更新时间" />
             <el-table-column fixed="right" label="操作" width="120">
               <template #default="scope">
                 <el-button link type="primary" size="small" @click.prevent="intoDesign(scope.row.id)">
@@ -147,20 +117,6 @@ function intoDesign(designId) {
   router.push('/drag')
   console.log('11111111')
 }
-
-
-
-// async function renameProject() {
-//   if(form.name === ''){
-//     dialogFormVisible.value = false
-//   }else {
-//     projName.value = form.name
-//     const result = await projAPI.resetProject(form.name,form.describe)
-//     dialogFormVisible.value = false
-//   }
-// }
-
-
 
 async function addDesign() {
   if (designName.value === '') {

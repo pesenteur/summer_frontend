@@ -10,13 +10,23 @@
       </div>
       <el-divider class="custom-divider" />
     </div>
+    <div class="team-heading">团队</div> <!-- 添加的小标题 -->
     <div class="button-container">
-
       <button text v-for="button in buttons" :key="button.id" :type="button.type" :icon="button.icon"
         @click="jump(button.id)" class="custom-button" :id="button.id"><i :class="button.icon"
           style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{
-            button.text }}</button>
+            button.text }}
+      </button>
     </div>
+    <el-divider></el-divider>
+    <div class="team-heading">个人</div> <!-- 添加的小标题 -->
+    <div class="button-container">
+      <button text class="custom-button">
+        <font-awesome-icon :icon="['fas', 'user']" style="margin-right: 15px; min-width: 25px; height: 25px;" />
+        个人信息
+      </button>
+    </div>
+    <el-divider></el-divider>
   </el-drawer>
 </template>
 
@@ -178,7 +188,7 @@ function jump(buttonId) {
   cursor: pointer;
   position: relative;
   transition: color 0.4s linear;
-  width: 60%;
+  width: 100%;
   /* 调整按钮宽度 */
   margin: 15px 0;
   /* 调整按钮之间的垂直间距 */
@@ -210,5 +220,12 @@ function jump(buttonId) {
   /* 按钮背景颜色（鼠标悬停时） */
   transform: scale(1.2);
   /* 鼠标悬停时放大按钮 */
+}
+
+.team-heading {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 8px;
+  margin-left: 10px;
 }
 </style>

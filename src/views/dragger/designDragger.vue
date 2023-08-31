@@ -1,5 +1,11 @@
 <template>
 
+  <div>
+    <el-button @click="addDesign">
+      新建画布
+    </el-button>
+  </div>
+
   <el-tabs
       v-model="editableTabsValue"
       type="card"
@@ -11,6 +17,7 @@
         v-for="(item,index) in editableTabs"
         :label="item.label"
         :name="index"
+
     >
       <div style="position: relative; width: 100%;
                padding-top: calc(100% * 720 / 1280);
@@ -28,7 +35,7 @@
 
 <script setup>
 
-import {onMounted, ref} from "vue";
+import {onBeforeMount, onMounted, ref} from "vue";
 import {getDesignId, getProjId} from "@/utils/token";
 import originAPI from '@/api/originDesign'
 
@@ -36,21 +43,29 @@ const iframeSrc = ref('../../public/dist')
 
 const myResult = ref([])
 
-onMounted(async ()=>{
+const editableTabsValue = ref(0)
+const editableTabs = ref([])
+const chosen_tab = ref()
 
+// await function addDesign(){
+//
+// }
+
+async function get_all_design() {
   const result = await originAPI.getAllDesign(getProjId())
   myResult.value = result.data
+  const temp = []
   for(let i = 0;i<result.data.length;i++){
-    console.log('loop:result.data.title',result.data[i].title)
-    editableTabs.value.push({label:result.data[i].title,id:result.data[i].id})
+    temp.push({label:result.data[i].title,id:result.data[i].id})
   }
-  console.log(editableTabs)
-  iframeSrc.value = `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
-  console.log('11111111111111111111111111111111111111111getDesignId',getDesignId())
-})
+  editableTabs.value = temp
+}
 
-const editableTabsValue = ref('0')
-const editableTabs = ref([])
+onMounted(async ()=>{
+  await get_all_design()
+  iframeSrc.value = `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
+
+})
 
 
 function changeDesign(designPosition){

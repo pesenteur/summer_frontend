@@ -2,17 +2,26 @@
   <div class="common-layout">
     <el-container>
       <el-header>
-        <div class="editor__footer">
-          <button @click="saveDocument">Save</button>
-          <h1>项目协作</h1>
+        <div class="editor__header">
+          <div>
+            <span class="title" >title</span> 
+            <button class="changeName" @click="exportWord"><font-awesome-icon :icon="['fas', 'pen-to-square']" /></button>
+          </div>
           <div :class="`editor__status editor__status--${status}`">
             <template v-if="status === 'connected'">
               {{ editor.storage.collaborationCursor.users.length }} user{{
-                editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
+                editor.storage.collaborationCursor.users.length === 1 ? '' : 's'
+              }} online in {{ documentId }}
             </template>
             <template v-else>
               offline
             </template>
+          </div>
+          <div class="optionButton">
+            <button @click="saveDocument">Save</button>
+            <button @click="exportMarkdown">导出为Markdown</button>
+            <button @click="exportPDF">导出为PDF</button>
+            <button @click="exportWord">导出为Word</button>
           </div>
         </div>
       </el-header>
@@ -266,13 +275,13 @@
             </div>
           </div>
           <div class="editor" v-if="editor">
-            <editor-content :editor="editor" />
+            <editor-content :editor="editor" id="editor" />
           </div>
           <div class="editor__footer">
             <div class="editor__name">
-              <button @click="setName">
+              <div>
                 {{ currentUser.name }}
-              </button>
+              </div>
             </div>
           </div>
         </el-main>
@@ -281,7 +290,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import CharacterCount from '@tiptap/extension-character-count'
 import Collaboration from '@tiptap/extension-collaboration'
@@ -291,152 +300,221 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
-import { Editor, EditorContent } from '@tiptap/vue-3'
+import { Editor, EditorContent, useEditor } from '@tiptap/vue-3'
 import suggestion from './suggestion.js'
 import asideNav from './asideNav.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import * as Y from 'yjs'
-// import buttonGroup from './buttonGroup.vue'
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import documentRequest from '@/api/document';
+import { Location } from "@element-plus/icons-vue";
+import TurndownService from 'turndown'
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
+import { saveAs } from 'file-saver';
 
+const route = useRoute();
 
-const getRandomElement = list => {
-  return list[Math.floor(Math.random() * list.length)]
+const colors = [
+  '#958DF1',
+  '#F98181',
+  '#FBBC88',
+  '#FAF594',
+  '#70CFF8',
+  '#94FADB',
+  '#B9F18D',
+];
+function getRandomColor() {
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const getRandomRoom = () => {
-  const roomNumbers = [10, 11, 12]
+const currentUser = ref({
+  // TODO 获取用户姓名
+  name: route.params.documentId || '123',
+  color: getRandomColor()
+});
+const provider = ref();
+const editor = ref();
+const status = ref('connecting');
+const documentId = ref(route.params.documentId || '123');
+const editorRef = ref()
+const title = ref('测试文件');
+const wordCss = `
+.title {
+  height: 64px;
+  width: 800px;
+  text-align: center;
+  line-height: 64px;
+  font-size: 20px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 500;
+  color: rgba(0, 11, 46, 0.85);
+}
+.all-box {
+  position: relative;
+}
+.all-topic {
+  padding: 24px;
+}
+`
 
-  return getRandomElement(roomNumbers.map(number => `rooms.${number}`))
+onMounted(() => {
+  const ydoc = new Y.Doc();
+
+  provider.value = new HocuspocusProvider({
+    url: 'ws://127.0.0.1:1234',
+    name: documentId.value,
+    document: ydoc,
+    forceSyncInterval: 200
+  });
+
+  provider.value.on('status', event => {
+    status.value = event.status;
+  });
+
+  editor.value = new Editor({
+    extensions: [
+      StarterKit.configure({
+        history: false
+      }),
+      Highlight,
+      TaskList,
+      TaskItem,
+      Collaboration.configure({
+        document: ydoc
+      }),
+      CollaborationCursor.configure({
+        provider: provider.value,
+        user: currentUser.value
+      }),
+      CharacterCount.configure({
+        limit: 100000,
+      }),
+      StarterKit,
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'mention',
+        },
+        suggestion
+      })
+    ]
+  });
+});
+
+onBeforeUnmount(() => {
+  editor.value.destroy();
+  provider.value.destroy();
+});
+
+async function saveDocument() {
+  try {
+    const content = editor.value.getHTML();
+    await documentRequest.saveDocument(documentId.value, content);
+    ElMessage({
+      message: '保存成功',
+      type: 'success'
+    });
+  } catch (error) {
+    ElMessage({
+      message: '保存失败',
+      type: 'error'
+    });
+  }
 }
 
-export default {
-  components: {
-    EditorContent,
-  },
+function exportMarkdown() {
+  const turndownService = new TurndownService({
+    headingStyle: 'atx',
+    hr: '---',
+    bulletListMarker: '-',
+    codeBlockStyle: 'fenced',
+    emDelimiter: '*'
+  });
+  const markdown = turndownService.turndown(editor.value.getHTML());
+  const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
 
-  data() {
-    return {
-      currentUser: JSON.parse(localStorage.getItem('currentUser')) || {
-        name: this.getRandomName(),
-        color: this.getRandomColor(),
-      },
-      provider: null,
-      editor: null,
-      status: 'connecting',
-      room: getRandomRoom(),
-    }
-  },
+  const downloadLink = document.createElement('a');
+  downloadLink.href = URL.createObjectURL(blob);
+  // TODO 文档名
+  downloadLink.download = 'filename.txt';
+  downloadLink.click();
+  URL.revokeObjectURL(downloadLink.href);
+}
 
-  mounted() {
-    const ydoc = new Y.Doc()
+function exportPDF() {
+  const pdf = new jsPDF();
 
-    this.provider = new HocuspocusProvider({
-      url: 'ws://azure.bienboy.store/hocuspocus',
-      document: ydoc,
-    })
+  pdf.setDocumentProperties({
+    title: 'HTML to PDF',
+    // subject: 'Generated PDF file using jsPDF library',
+    author: 'SE2023',
+    // keywords: 'html, pdf, javascript',
+    creator: 'SE2023'
+  });
+  const editor_dom = document.querySelector('#editor');
+  // 使用 html2canvas 库将 HTML 页面转换为 canvas 元素
+  html2canvas(editor_dom, {
+    scale: 2
+  }).then(canvas => {
+    // 将 canvas 元素转换为图像数据
+    const imageData = canvas.toDataURL('image/png', 1.0);
+    const imgProps = pdf.getImageProperties(imageData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-    this.provider.on('status', event => {
-      this.status = event.status
-    })
+    // 设置边距
+    const marginX = 20; // 左右边距
+    const marginY = 20; // 上下边距
+    const contentWidth = pdfWidth - 2 * marginX;
+    const contentHeight = pdfHeight - 2 * marginY;
 
-    this.editor = new Editor({
-      extensions: [
-        StarterKit.configure({
-          history: false,
-        }),
-        Highlight,
-        TaskList,
-        TaskItem,
-        Collaboration.configure({
-          document: ydoc,
-        }),
-        CollaborationCursor.configure({
-          provider: this.provider,
-          user: this.currentUser,
-        }),
-        CharacterCount.configure({
-          limit: 10000,
-        }),
-        StarterKit,
-        Mention.configure({
-          HTMLAttributes: {
-            class: 'mention',
-          },
-          suggestion,
-        }),
-      ],
-    })
-    localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-  },
+    pdf.addImage(
+      imageData,
+      'PNG',
+      marginX,
+      marginY,
+      contentWidth,
+      contentHeight
+    );
+    // 下载 PDF 文件
+    pdf.save('filename.pdf');
+  });
+}
 
-  methods: {
-    setName() {
-      const name = (window.prompt('Name') || '')
-        .trim()
-        .substring(0, 32)
+function getModelHtml(mhtml) {
+  return `<!DOCTYPE html>
+                <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
+                  xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+                  xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                  <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:TrackMoves>false</w:TrackMoves><w:TrackFormatting/><w:ValidateAgainstSchemas/><w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid><w:IgnoreMixedContent>false</w:IgnoreMixedContent><w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText><w:DoNotPromoteQF/><w:LidThemeOther>EN-US</w:LidThemeOther><w:LidThemeAsian>ZH-CN</w:LidThemeAsian><w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript><w:Compatibility><w:BreakWrappedTables/><w:SnapToGridInCell/><w:WrapTextWithPunct/><w:UseAsianBreakRules/><w:DontGrowAutofit/><w:SplitPgBreakAndParaMark/><w:DontVertAlignCellWithSp/><w:DontBreakConstrainedForcedTables/><w:DontVertAlignInTxbx/><w:Word11KerningPairs/><w:CachedColBalance/><w:UseFELayout/></w:Compatibility><w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel><m:mathPr><m:mathFont m:val="Cambria Math"/><m:brkBin m:val="before"/><m:brkBinSub m:val="--"/><m:smallFrac m:val="off"/><m:dispDef/><m:lMargin m:val="0"/> <m:rMargin m:val="0"/><m:defJc m:val="centerGroup"/><m:wrapIndent m:val="1440"/><m:intLim m:val="subSup"/><m:naryLim m:val="undOvr"/></m:mathPr></w:WordDocument></xml><![endif]-->
 
-      if (name) {
-        return this.updateCurrentUser({
-          name,
-        })
-      }
-    },
-    async saveDocument() {
-      try {
-        const content = this.editor.getHTML(); // Get the editor content
-        // Send the content to a server using Axios (replace with your actual endpoint)
-        console.log(content)
-        await axios.post('/save', { content });
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+                    <title>{{title}}</title>
+                    <style>${wordCss}</style>
+                </head>
+                <body>
+                    <div style="display: flex;justify-content: center;">
+                      ${mhtml}
+                    </div>
+                </body>
+                </html>`
+}
 
-        console.log('Document saved successfully');
-      } catch (error) {
-        console.error('Error saving document:', error);
-      }
-    },
-    updateCurrentUser(attributes) {
-      this.currentUser = { ...this.currentUser, ...attributes }
-      this.editor.chain().focus().updateUser(this.currentUser).run()
-
-      localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-    },
-
-    getRandomColor() {
-      return getRandomElement([
-        '#958DF1',
-        '#F98181',
-        '#FBBC88',
-        '#FAF594',
-        '#70CFF8',
-        '#94FADB',
-        '#B9F18D',
-      ])
-    },
-
-    getRandomName() {
-      return getRandomElement([
-        'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry', 'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman', 'Lisa Bonet',
-      ])
-    },
-  },
-
-  beforeUnmount() {
-    this.editor.destroy()
-    this.provider.destroy()
-  },
+function exportWord() {
+  const html = getModelHtml(editor.value.getHTML())
+  const blob = new Blob([html], { type: 'application/msword;charset=utf-8' })
+  //调用file-saver插件的saveAs方法导出
+  saveAs(blob, title.value + '.doc')
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .el-col-12 {
   /* max-width: 50%; */
   flex: 0 0 100% !important;
-}
-
-@font-face {
-  font-family: 'element-icons';
-  src: url('path/to/element-icons.woff') format('woff'),
-    url('path/to/element-icons.ttf') format('truetype');
-  /* 其他样式 */
 }
 
 .button-container {
@@ -472,15 +550,29 @@ export default {
   &__header {
     color: #0D0D0D;
     align-items: center;
-    background: #0d0d0d;
+    margin-top: 10px;
+    justify-content: space-between;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
     display: flex;
     flex: 0 0 auto;
     flex-wrap: wrap;
     padding: 0.25rem;
-  }
+    button {
+      margin-right: 10px;
+      margin-bottom: 20px;
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
+    button:hover {
+      background-color: #0056b3;
+    }
+  }
   &__content {
     flex: 1 1 auto;
     overflow-x: hidden;
@@ -609,8 +701,8 @@ export default {
     code {
       background: none;
       color: inherit;
-      font-size: 0.8rem;
       padding: 0;
+      font-size: 1.2em;
     }
   }
 
@@ -658,9 +750,7 @@ export default {
     }
   }
 }
-</style>
 
-<style>
 .ProseMirror:focus {
   outline: none !important;
 }
@@ -690,8 +780,15 @@ export default {
   user-select: none;
   white-space: nowrap;
 }
-
+.title {
+  margin-right: 5px;
+  font-size: 32px; /* Adjust the font size as needed */
+  /* other styling properties if necessary */
+}
 .editor {
   overflow: auto;
+}
+.changeName{
+  background-color: #FFF;
 }
 </style>

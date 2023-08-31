@@ -2,11 +2,11 @@
   <div class="common-layout">
     <el-container>
       <el-header>
-        <div class="editor__footer">
-          <button @click="saveDocument">Save</button>
-          <button @click="exportMarkdown">导出为Markdown</button>
-          <button @click="exportPDF">导出为PDF</button>
-          <h1>项目协作</h1>
+        <div class="editor__header">
+          <div>
+            <h1>项目协作</h1>
+          </div>
+          <div> </div>
           <div :class="`editor__status editor__status--${status}`">
             <template v-if="status === 'connected'">
               {{ editor.storage.collaborationCursor.users.length }} user{{
@@ -16,6 +16,12 @@
             <template v-else>
               offline
             </template>
+            {{ currentUser.name }}
+          </div>
+          <div class="optionButton">
+            <button @click="saveDocument">Save</button>
+            <button @click="exportMarkdown">导出为Markdown</button>
+            <button @click="exportPDF">导出为PDF</button>
           </div>
         </div>
       </el-header>
@@ -269,7 +275,7 @@
             </div>
           </div>
           <div class="editor" v-if="editor">
-            <editor-content :editor="editor" id="editor"/>
+            <editor-content :editor="editor" id="editor" />
           </div>
           <div class="editor__footer">
             <div class="editor__name">
@@ -294,15 +300,15 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
-import {Editor, EditorContent, useEditor} from '@tiptap/vue-3'
+import { Editor, EditorContent, useEditor } from '@tiptap/vue-3'
 import suggestion from './suggestion.js'
 import asideNav from './asideNav.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import * as Y from 'yjs'
-import {onBeforeUnmount, onMounted, ref} from "vue";
-import {useRoute} from "vue-router";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import documentRequest from '@/api/document';
-import {Location} from "@element-plus/icons-vue";
+import { Location } from "@element-plus/icons-vue";
 import TurndownService from 'turndown'
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
@@ -333,7 +339,7 @@ const status = ref('connecting');
 const documentId = ref(route.params.documentId || '123');
 const editorRef = ref()
 
-onMounted(()=>{
+onMounted(() => {
   const ydoc = new Y.Doc();
 
   provider.value = new HocuspocusProvider({
@@ -376,7 +382,7 @@ onMounted(()=>{
   });
 });
 
-onBeforeUnmount(()=> {
+onBeforeUnmount(() => {
   editor.value.destroy();
   provider.value.destroy();
 });
@@ -444,12 +450,12 @@ function exportPDF() {
     const contentHeight = pdfHeight - 2 * marginY;
 
     pdf.addImage(
-        imageData,
-        'PNG',
-        marginX,
-        marginY,
-        contentWidth,
-        contentHeight
+      imageData,
+      'PNG',
+      marginX,
+      marginY,
+      contentWidth,
+      contentHeight
     );
     // 下载 PDF 文件
     pdf.save('filename.pdf');
@@ -503,7 +509,7 @@ function exportPDF() {
   &__header {
     color: #0D0D0D;
     align-items: center;
-    background: #0d0d0d;
+    justify-content: space-between;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
     display: flex;

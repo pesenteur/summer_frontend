@@ -1,4 +1,3 @@
-
 <template>
   <el-container class="layout-container-demo" style="height: 700px">
     <el-aside width="200px">
@@ -28,63 +27,65 @@
     <el-container>
       <el-header style="text-align: right; font-size: 12px">
         <div class="toolbar">
-          <form class="search-bar" @submit.prevent>
-            <input v-model="searchName" size="small" placeholder="Project Name...."
-              @input="queryAllProject(searchName)" />
-            <button><i class='bx bx-search'></i></button>
-          </form>
-        </div>
-        <div class="toolbar-right">
-          <el-dropdown trigger="click">
-            <el-button type="primary">
-               排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <div class="mb-2 flex items-center text-sm">
-                  <el-radio-group v-model="radio1" class="ml-4" @change="handleClose">
-                    <el-radio label="1" size="large">名称</el-radio>
-                    <el-radio label="2" size="large">创建时间</el-radio>
-                    <el-radio label="3" size="large">更新时间</el-radio>
-                  </el-radio-group>
-                </div>
-                <div class="my-2 flex items-center text-sm" @change="handleClose">
-                  <el-radio-group v-model="radio2" class="ml-4">
-                    <el-radio label="1">递增</el-radio>
-                    <el-radio label="2">递减</el-radio>
-                  </el-radio-group>
-                </div>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <div>
-            <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true">新建项目</el-button>
-            <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
-              <el-form :model="form">
-                <el-form-item label="项目名称" :label-width="formLabelWidth">
-                  <el-input v-model="form.name" autocomplete="off" class="element-form" />
-                </el-form-item>
-                <el-form-item label="项目描述" :label-width="formLabelWidth">
-                  <el-input v-model="form.describe" autocomplete="off" class="element-form" />
-                </el-form-item>
-              </el-form>
-              <template #footer>
-                <span class="dialog-footer">
-                  <el-button @click="dialogFormVisible = false">
-                    取消
-                  </el-button>
-                  <el-button type="primary" @click="addProject">
-                    确定
-                  </el-button>
-                </span>
+          <div class="toolbar-left">
+            <form class="search-bar" @submit.prevent>
+              <input v-model="searchName" size="small" placeholder="Project Name...."
+                @input="queryAllProject(searchName)" />
+              <button><i class='bx bx-search'></i></button>
+            </form>
+          </div>
+          <div class="toolbar-right">
+            <el-dropdown trigger="click">
+              <el-button type="primary">
+                排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <div class="mb-2 flex items-center text-sm">
+                    <el-radio-group v-model="radio1" class="ml-4" @change="handleClose">
+                      <el-radio label="1" size="large">名称</el-radio>
+                      <el-radio label="2" size="large">创建时间</el-radio>
+                      <el-radio label="3" size="large">更新时间</el-radio>
+                    </el-radio-group>
+                  </div>
+                  <div class="my-2 flex items-center text-sm" @change="handleClose">
+                    <el-radio-group v-model="radio2" class="ml-4">
+                      <el-radio label="1">递增</el-radio>
+                      <el-radio label="2">递减</el-radio>
+                    </el-radio-group>
+                  </div>
+                </el-dropdown-menu>
               </template>
-            </el-dialog>
+            </el-dropdown>
+            <div>
+              <el-button style="margin-right: 8px; margin-top: 0px" @click="dialogFormVisible = true">新建项目</el-button>
+              <el-dialog draggable=true v-model="dialogFormVisible" title="创建一个新的项目:" center width="30%">
+                <el-form :model="form">
+                  <el-form-item label="项目名称" :label-width="formLabelWidth">
+                    <el-input v-model="form.name" autocomplete="off" class="element-form" />
+                  </el-form-item>
+                  <el-form-item label="项目描述" :label-width="formLabelWidth">
+                    <el-input v-model="form.describe" autocomplete="off" class="element-form" />
+                  </el-form-item>
+                </el-form>
+                <template #footer>
+                  <span class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">
+                      取消
+                    </el-button>
+                    <el-button type="primary" @click="addProject">
+                      确定
+                    </el-button>
+                  </span>
+                </template>
+              </el-dialog>
+            </div>
           </div>
         </div>
       </el-header>
-
       <el-main>
-        <projectMain ref="childFunctions1" :teamId="team" :ordering="ordering" :radio1="radio1" :radio2="radio2" v-show="ifShowTrash === true" />
+        <projectMain ref="childFunctions1" :teamId="team" :ordering="ordering" :radio1="radio1" :radio2="radio2"
+          v-show="ifShowTrash === true" />
         <projectMainRe ref="childFunctions2" :teamId="team" v-show="ifShowTrash === false" />
       </el-main>
     </el-container>
@@ -92,7 +93,7 @@
 </template>
 
 <script setup>
-import {computed, reactive, ref, watch} from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 import projectMain from './projectMain.vue'
 import projectAPI from '@/api/proj.js'
@@ -119,20 +120,20 @@ team.value = getTeamId()
 const radio1 = ref('2')
 const radio2 = ref('2')
 
-const ordering = computed(()=>{
-  if(radio1.value === "1" && radio2.value === "1"){
+const ordering = computed(() => {
+  if (radio1.value === "1" && radio2.value === "1") {
     return 'name'
-  }else if(radio1.value === "1" && radio2.value === "2"){
+  } else if (radio1.value === "1" && radio2.value === "2") {
     return '-name'
-  }else if(radio1.value === "2" && radio2.value === "1"){
+  } else if (radio1.value === "2" && radio2.value === "1") {
     return 'create_time'
-  }else if(radio1.value === "2" && radio2.value === "2"){
+  } else if (radio1.value === "2" && radio2.value === "2") {
     return '-create_time'
-  }else if(radio1.value === "3" && radio2.value === "1"){
+  } else if (radio1.value === "3" && radio2.value === "1") {
     return 'update_time'
-  }else if(radio1.value === "3" && radio2.value === "2"){
+  } else if (radio1.value === "3" && radio2.value === "2") {
     return '-update_time'
-  }else{
+  } else {
     return 'wrong'
   }
 })
@@ -168,7 +169,7 @@ async function queryAllProject(searchName) {
 
 }
 
-async function handleClose(){
+async function handleClose() {
   // childFunctions1.value.getOrdering()
   console.log('$ordering')
   await childFunctions1.value.getData()
@@ -207,8 +208,8 @@ watch(ifShowTrash, async (newVal) => {
   childFunctions1.value.showProjects1()
 })
 
-watch(radio1,()=>{
-  console.log('radio1.watch',radio1.value)
+watch(radio1, () => {
+  console.log('radio1.watch', radio1.value)
 })
 
 </script>
@@ -282,7 +283,7 @@ watch(radio1,()=>{
 }
 
 .search-bar button i {
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .toolbar-right {

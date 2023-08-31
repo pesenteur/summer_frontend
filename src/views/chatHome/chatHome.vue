@@ -3,6 +3,7 @@
 		:messages="JSON.stringify(messages)" :rooms-loaded="true"
 		:height="height" :message-actions="JSON.stringify(messageActions)" :menu-action-handler="menuActionHandler"
 		:messages-loaded="messagesLoaded" :load-first-room="false" :room-id="room_id" :message-selection-actions="JSON.stringify(selectActions)"
+	 
 		@open-user-tag="console.log('')" @send-message="sendMessage($event.detail[0])"
 		@add-room="dialogFormVisible = true" @message-action-handler="handleCustomMessageAction($event.detail[0])" @fetch-messages="addHistoryMessage(($event.detail[0]))"
 		@room-info="handleChatInfo($event.detail[0])" @message-selection-action-handler="messageSelectionActionHandler($event.detail[0])">
@@ -154,16 +155,6 @@ const messageActions = reactive([
 	{
 		name: 'selectMessages',
 		title: 'Select'
-	},
-	{
-		name: 'editAction',
-		title: '编辑',
-		onlyMe: true
-	},
-	{
-		name: 'deleteAction',
-		title: '删除',
-		onlyMe: true
 	},
 	{
 		name: 'privateChatAction',
@@ -430,19 +421,11 @@ function handleCustomMessageAction({ roomId, action, message }) {
 		case 'replyAction':
 			// 处理回复操作的逻辑
 			break;
-		case 'editAction':
-			// 处理编辑操作的逻辑
-			break;
-		case 'deleteAction':
-			// 处理删除操作的逻辑
-			break;
 		case 'privateChatAction':
 			createRoom(members, roomName, 'single');
 			break;
-		// Add more cases for other custom actions
 	}
 }
-
 function handleInviteMember() {
 	getTeamNoMember(operChatId.value)
 	chatMemberAddVisible.value = true
@@ -491,7 +474,7 @@ onMounted(() => {
 	currentUserId.value = user_id.value
 	addData()
 	getTeamMember()
-	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
+	socket.value = new WebSocket(`ws://localhost:8000/ws/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
 
 })

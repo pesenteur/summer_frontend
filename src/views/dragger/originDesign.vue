@@ -6,22 +6,22 @@
           <el-menu default-active="2" class="element-back">
             <el-menu-item index="1">
               <div class="menu-item-container">
-                <img src="@/assets/imgs/emoji/smiling-face-with-horns.png" alt="!!!" class="image">
-                <span class="element-title">{{ projName }}</span>
+                <img src="@/assets/imgs/emoji/smiling-face-with-horns.png" alt="!!!" class="images">
+                <span class="element-title">项目名称：{{ projName }}</span>
               </div>
             </el-menu-item>
             <el-divider />
 
             <el-menu-item index="2">
               <div class="menu-item-container">
-                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="image">
+                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="images">
                 <span class="element-title">项目文档</span>
               </div>
             </el-menu-item>
             <el-divider />
 
             <el-menu-item index="4">
-              <img src="@/assets/imgs/emoji/rainbow.png" alt="!!!" class="image">
+              <img src="@/assets/imgs/emoji/rainbow.png" alt="!!!" class="images">
               <span class="element-title">页面视图</span>
             </el-menu-item>
 
@@ -78,8 +78,8 @@
   </el-container>
 </template>
 
-<script lang="ts" setup>
-import { onMounted, onUpdated, ref } from 'vue'
+<script setup>
+import { onMounted, onUpdated, ref} from 'vue'
 import { Menu as IconMenu, Message, Search, Setting } from '@element-plus/icons-vue'
 import { reactive } from "vue";
 import { getProjectName, getProjId, setDesignId } from '@/utils/token'
@@ -107,9 +107,9 @@ const tableData = ref([])
 
 const designName = ref()
 
-const deleteRow = (index: number) => {
-  tableData.value.splice(index, 1)
-}
+// const deleteRow = (index: number) => {
+//   tableData.value.splice(index, 1)
+// }
 
 function intoDesign(designId) {
   setDesignId(designId)
@@ -141,6 +141,7 @@ onMounted(async () => {
   console.log('result.data.data', result.data.data)
   console.log('onMounted')
 })
+
 
 </script>
 
@@ -177,7 +178,7 @@ onMounted(async () => {
   align-items: center;
 }
 
-.image {
+.images {
   width: 24px;
   /* 调整图片宽度 */
   height: 24px;

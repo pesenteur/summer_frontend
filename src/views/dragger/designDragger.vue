@@ -21,8 +21,8 @@
 
             </el-sub-menu>
             <el-menu-item index="2">
-              <el-icon><icon-menu /></el-icon>
-              <span class="mt-4" style=" margin-top: 0px; width:100%" @click="dialogFormVisible2 = true">新建画布</span>
+<!--              <el-icon><icon-menu /></el-icon>-->
+              <span style="margin:auto" @click="dialogFormVisible2 = true">新建画布</span>
               <el-dialog draggable=true v-model="dialogFormVisible2" title="新建画布:" center width="30%">
                 <el-form :model="form">
                   <el-form-item label="画布名称" :label-width="formLabelWidth">
@@ -43,9 +43,26 @@
 
             </el-menu-item>
 
-            <el-menu-item index="3" @click="gePreview">
+            <el-menu-item index="3" @click="goPreview">
                 <span style="margin:auto">生成预览</span>
             </el-menu-item>
+
+            <el-menu-item index="4" @click="closePreview">
+              <span style="margin:auto">删除预览</span>
+            </el-menu-item>
+
+            <el-dialog v-model="dialogVisible" title="预览地址" width="30%" draggable>
+
+              <router-link :to="previewPath">{{previewSrc}}</router-link>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogVisible = false">取消</el-button>
+                  <el-button type="primary" @click="dialogVisible = false">
+                    确定
+                  </el-button>
+                </span>
+              </template>
+            </el-dialog>
 
           </el-menu>
         </el-col>
@@ -90,8 +107,14 @@
 import {onBeforeMount, onMounted, ref} from "vue";
 import {getDesignId, getProjId} from "@/utils/token";
 import originAPI from '@/api/originDesign';
+import previewAPI from '@/api/preview'
 import {Location} from "@element-plus/icons-vue";
 import form from "mockjs";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
+
+const previewSrc = ref('')
 
 const iframeSrc = ref('../../public/dist')
 
@@ -105,6 +128,8 @@ const designName = ref()
 const dialogFormVisible2 = ref(false)
 
 const formLabelWidth = '140px'
+
+const dialogVisible = ref(false)
 
 function openDesign(designId){
   console.log('designId',designId)
@@ -155,12 +180,22 @@ async function addDesign() {
 async function get_all_design() {
   const result = await originAPI.getAllDesign(getProjId())
   myResult.value = result.data
-  // const temp = []
-  // for(let i = 0;i<result.data.length;i++){
-  //   temp.push({label:result.data[i].title,id:result.data[i].id})
-  // }
-  // editableTabs.value = temp
 }
+
+const previewPath = ref();
+async function goPreview(){
+  const result = await previewAPI.startPreview(getProjId())
+  previewSrc.value = 'http://localhost:5173/preview?project='+getProjId()
+  previewPath.value = '/preview?project='+getProjId();
+  dialogVisible.value = true
+}
+
+async function closePreview(){
+  const result = await previewAPI.cancelPreview(getProjId())
+  window.alert('预览已关闭，链接失效')
+
+}
+
 
 onMounted(async ()=>{
   editableTabs.value = []

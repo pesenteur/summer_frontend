@@ -363,7 +363,6 @@ async function addData() {
 	rooms.value = modifiedRoom
 }
 async function addHistoryMessage({ room, options = {} }) {
-	
 	let res, goto;
 	operChatId.value = room.roomId
 	messagesLoaded.value = false
@@ -380,7 +379,7 @@ async function addHistoryMessage({ room, options = {} }) {
 		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
 	}
 	await chatFunction.readAllMessage(room.roomId)
-	if ((!res.data || res.data.length === 0 || res.data.length < messagesPerPage) && !options.reset) {
+	if ((!res.data || res.data.length === 0 || res.data.length < messagesPerPage) && !goto) {
 		setTimeout(() => {
 			messagesLoaded.value = true
 		}, 0)

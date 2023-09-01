@@ -63,7 +63,7 @@
 import { computed, onMounted, onUpdated, ref, watch } from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
-import { getUserId } from "@/utils/token";
+import { getTeamId, getUserId } from "@/utils/token";
 
 const table = ref(false)
 // TODO: improvement typing when refactor table
@@ -129,9 +129,8 @@ async function getAllNoti() {
   }
   let filtermessages = []
   res.data.forEach((item) => {
-    const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
     let noti = {
-      content: messagePart,
+      content: item.content,
       isread: item.is_read === true ? 'read' : 'unread',
       notId: item.id,
       link: generate_link(item)

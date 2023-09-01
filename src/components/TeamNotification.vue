@@ -45,7 +45,7 @@
 									{{ msg.content }}
 								</span>
 								<el-popover placement="bottom-start" :width="10" trigger="hover" content="删除消息"
-								            @click="deleteSingleNoti(msg.notId)">
+								            >
 									<template #reference>
 										<button @click="deleteSingleNoti(msg.notId)" class="inside-action-button">
 											<font-awesome-icon
@@ -58,7 +58,6 @@
 					</div>
 				</div>
 			</div>
-			
 		</el-col>
 	</el-drawer>
 </template>

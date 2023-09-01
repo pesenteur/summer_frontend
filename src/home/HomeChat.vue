@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header">
         <span class="title">我的群聊</span>
-        <el-button class="button" text>查看详情</el-button>
+        <el-button class="button" @click="handleSearch" text>查看详情</el-button>
       </div>
     </template>
     <el-table :data="tableData" height="150" style="width: 100%">
@@ -17,12 +17,21 @@
 import {ref} from "vue";
 import chatFunction from "@/api/chat";
 import {getTeamId} from '@/utils/token'
+import { useRoute, useRouter } from "vue-router";
+const router = useRouter();
 const tableData = ref([])
 addData()
 async function addData(){
 	let result = await chatFunction.queryAllRoom(getTeamId())
 	tableData.value =result.data
 }
+
+function handleSearch(){
+	router.push({
+		path: `/team/${getTeamId()}/chatHome`,
+	})
+}
+
 </script>
 
 <style scoped>

@@ -33,5 +33,11 @@ export default {
             url:`/design/${id}`,
             method: 'DELETE'
         })
+    },
+    attainTemplate(){
+        return requests({
+            url:'/design/templates',
+            method:'GET',
+        })
     }
 }

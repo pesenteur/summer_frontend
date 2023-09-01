@@ -62,11 +62,15 @@ const router = createRouter({
         meta: {
             no_login: true
         }
-    },{
-        path:'/origin/template',
-        component:()=>import('@/views/dragger/originTemplate.vue')
+    }, {
+        path: '/restore/',
+        component: () => import('@/views/editor/restore.vue')
+    },
+    {
+        path: '/origin/template',
+        component: () => import('@/views/dragger/originTemplate.vue')
 
-    },]
+    }]
 
 });
 

@@ -9,9 +9,9 @@ export default {
         let res = await teamFuction.queryTeamMember(getTeamId())
         let nameArr = []
         res.data.members.forEach((item) => {
-            nameArr.push(item.name)
+            nameArr.push(item)
         })
-        return nameArr.filter(item => item.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5)
+        return nameArr.filter(item => item.name.toLowerCase().startsWith(query.toLowerCase()))
     },
     render: () => {
         let component

@@ -75,7 +75,7 @@ export default {
             }
         });
     },
-    createShareLink(document,editable){
+    createShareLink(document, editable) {
         return requests({
             url: '/documents/authorize',
             method: 'PATCH',
@@ -83,5 +83,15 @@ export default {
                 document, editable
             }
         });
+    },
+    processAt(document, receiver) {
+        return requests({
+            url: '/documents/mention',
+            method: 'POST',
+            data: {
+                document, receiver
+            }
+        });
     }
+
 }

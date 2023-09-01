@@ -1,8 +1,5 @@
 <template>
   <img src="@/assets/imgs/icons/menu.svg" @click="drawer = true" class="img-decorate">
-  <!--  <el-button type="plain" style="margin-left: 16px;margin-top: 12px" @click="drawer = true" >-->
-  <!--    <i class="el-icon-custom expand-icon"></i>-->
-  <!--  </el-button>-->
   <el-drawer v-model="drawer" title="SUMMER" :with-header="false" direction="ltr" size="15%">
     <div class="drawer-content">
       <div class="summer-heading">
@@ -66,6 +63,13 @@ function jump(buttonId) {
   }
 
 }
+
+function setDrawer(data){
+	drawer.value = data
+}
+defineExpose({setDrawer})
+
+
 
 </script>
 

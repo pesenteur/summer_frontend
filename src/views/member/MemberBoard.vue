@@ -62,7 +62,7 @@
                   <!-- <el-button text class="custom-icon-button">
             <el-icon class="el-icon--right"><arrow-down /></el-icon>
           </el-button> -->
-                  <el-button text class="interval" @click="dialogTableVisible = true">
+                  <el-button v-if="!isNormal" text class="interval" @click="dialogTableVisible = true">
                     <el-icon class="el-icon--right"></el-icon>
                   </el-button>
                 </div>
@@ -132,6 +132,7 @@ import type { TableColumnCtx, TableInstance } from 'element-plus'
 import teamFunction from '../../api/team.js'
 import { InfoFilled } from '@element-plus/icons-vue'
 import {ElMessage} from "element-plus";
+import {getUserId} from '../../utils/token.js'
 const teamData = ref([]) //侧栏的数据
 const tableData = ref([]) //主表的数据
 const userTableData = ref([]) //搜索表中所有的数据
@@ -142,9 +143,24 @@ const search = ref('') //搜索框用
 const searchUser = ref('')
 const formLabelWidth = '140px'
 const teamId = ref()
+const isNormal = ref(false)
 
 const cancelEvent = () => {
   console.log('cancel!')
+}
+
+function judgeIsNormal(){
+	tableData.value.forEach((item)=>{
+		if(item.role === '团队创建者'&& item.id.toString() === getUserId()){
+			isNormal.value = false
+		}
+		if(item.role === '团队管理员' && item.id.toString() === getUserId()){
+			isNormal.value = false
+		}
+		if(item.role === '普通成员' && item.id.toString() === getUserId()){
+			isNormal.value = true
+		}
+	})
 }
 async function handleAdd(userInfo) {
 	let res = await teamFunction.inviteTeamMember(teamId.value, userInfo.id)
@@ -156,6 +172,7 @@ async function handleAdd(userInfo) {
 async function queryALL() {
 	let result = await teamFunction.queryAllTeams();
 	teamData.value = result.data
+	judgeIsNormal()
 }
 async function selectTeam(team_id, teamName) {
 	try {
@@ -171,6 +188,7 @@ async function selectTeam(team_id, teamName) {
 		console.log(tableData.value)
 		titleName.value = teamName
 		teamId.value = team_id
+		judgeIsNormal()
 	}catch (e) {
 		ElMessage.error(e.message)
 	}
@@ -248,14 +266,6 @@ const filterTableData = computed(() =>
       !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
   )
 )
-
-// const filterUserTableData = computed(() =>
-//   userTableData.value.filter(
-//     (data) =>
-//       !search.value ||
-//       data.name.toLowerCase().includes(search.value.toLowerCase())
-//   )
-// )
 
 
 const handleEdit = (index, userInfo) => {
@@ -477,6 +487,6 @@ h2 {
 }
 
 .rightbox:hover {
-  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.2);
+  ƒ: 15px 15px 15px rgba(0, 0, 0, 0.2);
   /* Adjust border properties as needed */
 }</style>

@@ -13,7 +13,9 @@ export const setTeamId = (team_id) => {
 export const setTeamName = (team_name) => {
     localStorage.setItem('TEAM_NAME', team_name);
 }
-
+export const setIsOld = (users) => {
+    localStorage.setItem('OldArr', users);
+}
 export const setProjId = (proj_id) => {
     localStorage.setItem('PROJID', proj_id);
 }
@@ -34,6 +36,7 @@ export const getDocumentId = () => localStorage.getItem('DOCUMENTID')
 export const getDesignId = () => localStorage.getItem('DESID')
 
 export const getProjId = () => localStorage.getItem('PROJID')
+export const getOldArr = () => localStorage.getItem('OldArr')
 
 export const getTeamId = () => localStorage.getItem('TEAM');
 export const getTeamName = () => localStorage.getItem('TEAM_NAME')

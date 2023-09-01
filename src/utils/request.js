@@ -20,14 +20,6 @@ requests.interceptors.request.use(config => {
     console.log(config.url === '/messages')
     if (accountStore.token) {
         config.headers.Authorization = accountStore.token;
-    }else {
-        if (config.url === '/messages') {
-            config.cancelToken = source.token;
-            source.cancel();
-            router.push({
-                path: '/login',
-            }).then(() => {});
-        }
     }
     return config;
 });

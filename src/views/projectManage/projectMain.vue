@@ -194,8 +194,7 @@ watch(search,()=>{
 
 const myResult = computed(() =>
     tempData.value.filter(
-        (data) =>
-            !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
+        (data) => !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
     )
 )
 
@@ -232,7 +231,6 @@ function getSearch(searchName) {
 
 function showProjects1() {
   rows.value = []
-
   console.log('myResult', myResult.value)
   let projNames = []
   let projectDescriptions = []

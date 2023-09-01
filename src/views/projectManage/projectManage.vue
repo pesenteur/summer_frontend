@@ -165,8 +165,6 @@ async function queryAllProject(searchName) {
   console.log('***********result***********')
   childFunctions1.value.getSearch(searchName)
   childFunctions1.value.showProjects1()
-
-
 }
 
 async function handleClose() {

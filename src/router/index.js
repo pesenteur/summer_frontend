@@ -48,6 +48,9 @@ const router = createRouter({
     },{
         path: '/home',
         component: ()=> import('@/views/home/home.vue')
+    },{
+        path: '/shared/:sharedId',
+        component: () => import('@/views/editor/share.vue')
     }]
 
 });

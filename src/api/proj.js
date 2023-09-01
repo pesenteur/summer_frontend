@@ -38,12 +38,12 @@ export default {
             }
         })
     },
-    getSingleProject(){
+    getSingleProject(project){
         return requests({
-            url:'/projects',
+            url:`/projects/${project}`,
             method:'GET',
             params:{
-
+                project
             }
         })
 

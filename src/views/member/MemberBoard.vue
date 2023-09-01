@@ -68,9 +68,9 @@
                 </div>
                 <el-dialog v-model="dialogTableVisible" title="用户列表">
                   <el-table :data="userTableData" style="width: 100%">
-                    <el-table-column prop="name" label="Name" />
-                    <el-table-column prop="username" label="Username" />
-                    <el-table-column prop="email" label="Email" />
+                    <el-table-column prop="name" label="Name" sortable/>
+                    <el-table-column prop="username" label="Username" sortable/>
+                    <el-table-column prop="email" label="Email" sortable/>
                     <el-table-column align="right" width="200">
                       <template #header>
                         <form class="search-bar" @submit.prevent>
@@ -90,10 +90,10 @@
 
             <el-main>
               <el-table :data="filterTableData" style="width: 800px">
-                <el-table-column prop="name" label="Name" />
-                <el-table-column prop="username" label="Username" />
-                <el-table-column prop="email" label="Email" />
-                <el-table-column prop="role" label="Role" />
+                <el-table-column prop="name" label="Name" sortable/>
+                <el-table-column prop="username" label="Username" sortable/>
+                <el-table-column prop="email" label="Email" sortable/>
+                <el-table-column prop="role" label="Role" sortable/>
                 <el-table-column align="right" width="200">
                   <template #header>
                     <form class="search-bar" @submit.prevent>
@@ -136,7 +136,6 @@ const tableData = ref([]) //主表的数据
 const userTableData = ref([]) //搜索表中所有的数据
 const dialogFormVisible = ref(false) //弹出的对话框的属性值
 const dialogTableVisible = ref(false)
-const isAdd = ref(true)
 const titleName = ref('') //主表的标题
 const search = ref('') //搜索框用
 const searchUser = ref('')
@@ -147,33 +146,39 @@ const cancelEvent = () => {
   console.log('cancel!')
 }
 async function handleAdd(userInfo) {
-  let res = await teamFunction.inviteTeamMember(teamId.value, userInfo.id)
-  console.log('*********InviteId*******')
-  console.log(res.data)
-  //todo 以后记得删
-  await teamFunction.acceptInvitation(res.data.id, true)
-  await refreshTeamMember()
+	let res = await teamFunction.inviteTeamMember(teamId.value, userInfo.id)
+	console.log('*********InviteId*******')
+	console.log(res.data)
+	//todo 以后记得删
+	await teamFunction.acceptInvitation(res.data.id, true)
+	await refreshTeamMember()
 }
 async function queryALL() {
-  let result = await teamFunction.queryAllTeams();
-  teamData.value = result.data
+	let result = await teamFunction.queryAllTeams();
+	teamData.value = result.data
 }
 async function selectTeam(team_id, teamName) {
-  console.log(team_id)
-  let result = await teamFunction.queryTeamMember(team_id)
-  tableData.value = result.data.members
-  titleName.value = teamName
-  isAdd.value = false
-  teamId.value = team_id
+	const result = await teamFunction.queryTeamMember(team_id)
+	tableData.value = result.data.members.sort((a,b)=>{
+		const temp = {
+			'团队创建者': 1,
+			'团队管理员': 2,
+			'普通成员': 3
+		}
+		return temp[a.role] - temp[b.role]
+	})
+	console.log(tableData.value)
+	titleName.value = teamName
+	teamId.value = team_id
 }
 async function submitTeam() {
-  dialogFormVisible.value = false
-  await teamFunction.addTeam(form.name);
-  await queryALL()
+	dialogFormVisible.value = false
+	await teamFunction.addTeam(form.name);
+	await queryALL()
 }
 async function deleteTeam(team_id) {
-  await teamFunction.deleteTeam(team_id)
-  await queryALL()
+	await teamFunction.deleteTeam(team_id)
+	await queryALL()
 }
 async function handleDelete(userInfo) {
   await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
@@ -192,8 +197,15 @@ async function queryAllUser(search_number) {
   userTableData.value = result.data.results
 }
 async function refreshTeamMember() {
-  let result = await teamFunction.queryTeamMember(teamId.value)
-  tableData.value = result.data.members
+	let result = await teamFunction.queryTeamMember(teamId.value)
+	tableData.value = result.data.members.sort((a,b)=>{
+		const temp = {
+			'团队创建者': 1,
+			'团队管理员': 2,
+			'普通成员': 3
+		}
+		return temp[a.role] - temp[b.role]
+	})
 }
 async function addAdminister(memberId) {
   console.log("handle")

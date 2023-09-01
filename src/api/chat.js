@@ -105,6 +105,31 @@ export default {
                 messages,to
             }
         });
+    },
+    sendFile(chat_id,type,extension,file) {
+        return requests({
+            url: `/chat/${chat_id}/upload`,
+            method: 'POST',
+            params:{
+                type,extension
+            },
+            data:{
+                file
+            },
+            headers: {
+                "content-type": "multipart/form-data"
+            }
+
+        });
+    },
+    searchHistory(chat_id,search) {
+        return requests({
+            url: `/chat/${chat_id}/message`,
+            method: 'GET',
+            params:{
+                search
+            },
+        });
     }
 
 }

@@ -34,7 +34,6 @@ requests.interceptors.request.use(config => {
 
 // 3. 响应拦截器
 requests.interceptors.response.use(response => {
-    console.log(response)
     return response
 }, error => {
     console.log(error)

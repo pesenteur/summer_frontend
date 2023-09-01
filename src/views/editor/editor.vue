@@ -14,7 +14,7 @@
             <template v-if="status === 'connected'">
               {{ editor.storage.collaborationCursor.users.length }} user{{
                 editor.storage.collaborationCursor.users.length === 1 ? '' : 's'
-              }} online in {{ documentId }}
+              }} online in
             </template>
             <template v-else>
               offline
@@ -26,6 +26,18 @@
             <button @click="exportMarkdown">导出为Markdown</button>
             <button @click="exportPDF">导出为PDF</button>
             <button @click="exportWord">导出为Word</button>
+            <button @click="openDialog">共享</button>
+            <div v-if="isDialogVisible" class="dialog">
+              <h2>生成共享链接</h2>
+              <label for="editable">是否可编辑：</label>
+              <input type="checkbox" id="editable" v-model="isEditable">
+              <button @click="generateLink">生成链接</button>
+              <button @click="closeDialog">关闭</button>
+              <p v-if="sharedLink">
+                生成的链接：<a :href="sharedLink" target="_blank">{{ sharedLink }}</a>
+                <button @click="copyToClipboard">复制链接</button>
+              </p>
+            </div>
           </div>
         </div>
       </el-header>
@@ -376,7 +388,9 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { saveAs } from 'file-saver';
 import { ElMessage } from 'element-plus';
-import { getProjId, setDocumentId, getDocumentId, getProjectName } from "@/utils/token";
+import { getProjId, setDocumentId, getProjectName } from "@/utils/token";
+import Clipboard from 'clipboard';
+import router from '../../router';
 const route = useRoute();
 
 const colors = [
@@ -391,6 +405,27 @@ const colors = [
 function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
+const isDialogVisible = ref(false);
+const isEditable = ref(false);
+const sharedLink = ref('');
+const openDialog = () => {
+  isDialogVisible.value = true;
+};
+
+const copyToClipboard = () => {
+  navigator.clipboard.writeText(sharedLink.value).then(
+    () => {
+      console.log('Link copied to clipboard');
+      ElMessage({
+        message: '复制成功',
+        type: 'success'
+      })
+    },
+    (error) => {
+      console.error('Failed to copy link', error);
+    }
+  );
+};
 const addFolderDialogVisible = ref(false);
 const addDocumentDialogVisible = ref(false);
 const newFolderName = ref('');
@@ -404,7 +439,6 @@ const editor = ref();
 const status = ref('connecting');
 const folderId = ref('')
 const documentId = ref(route.params.documentId || '123');
-const editorRef = ref()
 const title = ref('');
 const isEditingTitle = ref(false);
 const folders = ref([]);
@@ -431,9 +465,14 @@ const showAddDocumentDialog = (folder) => {
 };
 
 const closeDialog = () => {
+  isDialogVisible.value = false;
   addFolderDialogVisible.value = false;
   addDocumentDialogVisible.value = false;
 };
+
+const share = () => {
+
+}
 
 const currentUser = ref({
   // TODO 获取用户姓名
@@ -520,7 +559,7 @@ onBeforeUnmount(() => {
 });
 async function changeDocumentName() {
   try {
-    await documentRequest.updateDocument(newTitle.value, getProjId(), getDocumentId())
+    await documentRequest.updateDocument(newTitle.value, getProjId(), documentId)
     currentDocumentName.value = newTitle.value
     getAllDocuments()
     ElMessage({
@@ -557,12 +596,19 @@ const processDocuments = (data) => {
   });
 
 };
+async function generateLink() {
+  // 在这里生成共享链接，可以根据 isEditable 的值来决定是否允许编辑
+  const baseUrl = 'http://localhost:5173/shared/';
+  console.log(documentId.value, isEditable.value)
+  await documentRequest.createShareLink(documentId.value, isEditable.value)
+  sharedLink.value = baseUrl + documentId.value;
+};
 async function saveDocument() {
   try {
     const content = editor.value.getHTML();
     console.log(content)
-    console.log(getDocumentId())
-    await documentRequest.saveDocument(getDocumentId(), content);
+    console.log(documentId)
+    await documentRequest.saveDocument(documentId.value, content);
     ElMessage({
       message: '保存成功',
       type: 'success'
@@ -628,8 +674,8 @@ async function addFolder() {
 };
 async function getDocumentContent(document, documentName) {
   try {
-    console.log(editor.value.editable)
-    setDocumentId(document)
+    router.push(`/document/${document}`)
+    documentId.value = document
     currentDocumentName.value = documentName
     const response = await documentRequest.getDocumentContent(document)
     console.log("content:", response.data.content)
@@ -1082,5 +1128,17 @@ function exportWord() {
 
 .dialog-footer button:first-child {
   margin-right: 10px;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 </style>

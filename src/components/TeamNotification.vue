@@ -63,22 +63,29 @@
 </template>
 
 <script lang="js" setup>
-import {ref, computed, onMounted} from 'vue';
-import {ElDrawer, ElMessageBox} from 'element-plus'
+import {computed, onMounted, onUpdated, ref, watch} from 'vue';
+import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
-import {getTeamId} from "@/utils/token";
+import {getUserId} from "@/utils/token";
 
 const table = ref(false)
 // TODO: improvement typing when refactor table
 const messages = ref([])
+const socket = ref()
+const user_id = ref()
 
-const unreadCount = () => {
-	console.log(messages.filter(msg => msg.isread === 'unread').length);
-	return messages.filter(msg => msg.isread === 'unread').length;
-};
+const unreadCount = computed(() => {
+  console.log(messages.value.filter(msg => msg.isread === 'unread').length);
+  return messages.value.filter(msg => msg.isread === 'unread').length;
+});
 
-onMounted(async () => {
-	await getAllNoti()
+onMounted(() => {
+    getAllNoti()
+    user_id.value = getUserId()
+    socket.value = new WebSocket(`ws://localhost:8000/ws/message/${user_id.value}`)
+    socket.value.addEventListener('message', ()=>{
+        getAllNoti()
+    })
 })
 
 async function clickButton() {

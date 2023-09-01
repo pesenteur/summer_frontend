@@ -74,5 +74,14 @@ export default {
                 document
             }
         });
+    },
+    createShareLink(document,editable){
+        return requests({
+            url: '/documents/authorize',
+            method: 'PATCH',
+            data: {
+                document, editable
+            }
+        });
     }
 }

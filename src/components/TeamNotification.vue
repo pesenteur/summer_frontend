@@ -50,7 +50,7 @@
 </template>
 
 <script lang="js" setup>
-import { ref, computed } from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
 
@@ -62,30 +62,37 @@ const unreadCount = () => {
   console.log(messages.filter(msg => msg.isread === 'unread').length);
   return messages.filter(msg => msg.isread === 'unread').length;
 };
-getAllNoti()
+
+onMounted(async () => {
+  await getAllNoti()
+})
 
 async function clickButton() {
   table.value = true
-  getAllNoti()
+  await getAllNoti()
 }
 async function deleteAllRead() {
   await notiFunction.deleteReadNoti()
-  getAllNoti()
+  await getAllNoti()
 }
 async function deleteSingleNoti(NotId) {
   await notiFunction.deleteSingleNoti(NotId)
-  getAllNoti()
+  await getAllNoti()
 }
 async function readAllNoti() {
   await notiFunction.readAllNoti()
-  getAllNoti()
+  await getAllNoti()
 }
 async function readNoti(NotId) {
   await notiFunction.readSingleNoti(NotId)
-  getAllNoti()
+  await getAllNoti()
 }
 async function getAllNoti() {
   let res = await notiFunction.queryAllNoti()
+  console.log(res.data)
+    if (!res.data){
+        return
+    }
   let filtermessages = []
   res.data.forEach((item) => {
     const messagePart = item.content.match(/(.+?)：/)?.[1] || "";

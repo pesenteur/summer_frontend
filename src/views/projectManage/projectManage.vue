@@ -36,7 +36,7 @@
           </div>
           <div class="toolbar-right">
             <el-dropdown trigger="click">
-              <el-button type="primary">
+              <el-button type="primary" style="margin-right: 8px;">
                 排序<el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
               <template #dropdown>
@@ -165,8 +165,6 @@ async function queryAllProject(searchName) {
   console.log('***********result***********')
   childFunctions1.value.getSearch(searchName)
   childFunctions1.value.showProjects1()
-
-
 }
 
 async function handleClose() {
@@ -283,10 +281,11 @@ watch(radio1, () => {
 }
 
 .search-bar button i {
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .toolbar-right {
+  padding: 10px;
   display: flex;
   align-items: center;
 }

@@ -9,7 +9,7 @@
                 <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />
                 <span>项目视图</span>
               </template>
-              <el-menu-item-group title="Group One">
+              <el-menu-item-group title="操作">
                 <el-menu-item @click="showStage" index="1-1">
                   <font-awesome-icon class="icon" :icon="['fas', 'border-all']" />
                   <span class="all_project">全部项目</span>

@@ -131,6 +131,7 @@ import type { TableColumnCtx, TableInstance } from 'element-plus'
 
 import teamFunction from '../../api/team.js'
 import { InfoFilled } from '@element-plus/icons-vue'
+import {ElMessage} from "element-plus";
 const teamData = ref([]) //侧栏的数据
 const tableData = ref([]) //主表的数据
 const userTableData = ref([]) //搜索表中所有的数据
@@ -147,29 +148,33 @@ const cancelEvent = () => {
 }
 async function handleAdd(userInfo) {
 	let res = await teamFunction.inviteTeamMember(teamId.value, userInfo.id)
-	console.log('*********InviteId*******')
-	console.log(res.data)
 	//todo 以后记得删
-	await teamFunction.acceptInvitation(res.data.id, true)
+	// await teamFunction.acceptInvitation(res.data.id, true)
 	await refreshTeamMember()
+	dialogTableVisible.value=false
 }
 async function queryALL() {
 	let result = await teamFunction.queryAllTeams();
 	teamData.value = result.data
 }
 async function selectTeam(team_id, teamName) {
-	const result = await teamFunction.queryTeamMember(team_id)
-	tableData.value = result.data.members.sort((a,b)=>{
-		const temp = {
-			'团队创建者': 1,
-			'团队管理员': 2,
-			'普通成员': 3
-		}
-		return temp[a.role] - temp[b.role]
-	})
-	console.log(tableData.value)
-	titleName.value = teamName
-	teamId.value = team_id
+	try {
+		const result = await teamFunction.queryTeamMember(team_id)
+		tableData.value = result.data.members.sort((a,b)=>{
+			const temp = {
+				'团队创建者': 1,
+				'团队管理员': 2,
+				'普通成员': 3
+			}
+			return temp[a.role] - temp[b.role]
+		})
+		console.log(tableData.value)
+		titleName.value = teamName
+		teamId.value = team_id
+	}catch (e) {
+		ElMessage.error(e.message)
+	}
+
 }
 async function submitTeam() {
 	dialogFormVisible.value = false
@@ -181,13 +186,19 @@ async function deleteTeam(team_id) {
 	await queryALL()
 }
 async function handleDelete(userInfo) {
-  await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
-  if (userInfo.role === "普通成员") {
-
-  } else {
-
-  }
-  await refreshTeamMember()
+	try {
+		await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
+		await refreshTeamMember()
+	}catch (e){
+		console.log(e.message)
+	}
+  
+  // if (userInfo.role === "普通成员") {
+  //
+  // } else {
+  //
+  // }
+  
 }
 async function queryAllUser(search_number) {
   let result = await teamFunction.queryAllUser(search_number)

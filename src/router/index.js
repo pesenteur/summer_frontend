@@ -4,8 +4,10 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [{
         path: '/',
-        component: () => import('@/home/HomeBoard.vue')
-
+        component: () => import('@/views/home/home.vue'),
+        meta: {
+            no_login: true
+        }
     }, {
         path: '/login',
         component: () => import('@/views/account/LoginComponent.vue'),
@@ -35,7 +37,7 @@ const router = createRouter({
         component: () => import('@/views/dragger/designDragger.vue')
     }, {
         path: '/design',
-        component: ()=> import('@/views/dragger/originDesign.vue')
+        component: () => import('@/views/dragger/originDesign.vue')
     }, {
         path: '/chatHome',
         component: () => import('@/views/chatHome/chatHome.vue')
@@ -46,33 +48,39 @@ const router = createRouter({
             'hiddenHeader': true
         }
     }, {
-        path: '/document',
+        path: '/document/:documentId',
         component: () => import('@/views/editor/editor.vue')
-    },{
+    }, {
         path: '/home',
-        component: ()=> import('@/views/home/home.vue')
+        component: () => import('@/home/HomeBoard.vue'),
     }, {
         path: '/preview',
-        component: ()=> import('@/views/dragger/preview.vue')
-    },{
+        component: () => import('@/views/dragger/preview.vue')
+    }, {
         path: '/shared/:sharedId',
-        component: () => import('@/views/editor/share.vue')
+        component: () => import('@/views/editor/share.vue'),
+        meta: {
+            no_login: true
+        }
     },{
         path:'/origin/template',
         component:()=>import('@/views/dragger/originTemplate.vue')
-    }]
+
+    },]
 
 });
 
 router.beforeEach((to, from) => {
     const token = localStorage.getItem('TOKEN');
-    if (!token && to.path !== '/login') {
-        return {
-            path: '/login'
-        };
+    if (!to.meta.no_login && !token && to.path !== '/login') {
+        // 如果没有登录且访问的不是 /login 路由或设置了 no_login 标记的路由，重定向到 /login
+        return '/login';
+    } else if (token && to.path === '/login' && from.path === '/') {
+        return '/home'
     }
-    if (token && to.path === '/login') {
-        return from;
+    else if (token && to.path === '/login') {
+        // 如果已登录但访问的是 /login 路由，重定向到上一个页面
+        return false;
     }
 });
 export default router

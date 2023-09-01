@@ -62,7 +62,7 @@ function jump(buttonId) {
       path: `/team/${getTeamId()}/chatHome`,
     })
   } else {
-    router.push('/')
+    router.push('/home')
   }
 
 }

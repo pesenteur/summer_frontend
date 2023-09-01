@@ -4,6 +4,7 @@
 		:height="height" :message-actions="JSON.stringify(messageActions)" :menu-action-handler="menuActionHandler"
 		:messages-loaded="messagesLoaded" :load-first-room="false" :room-id="room_id" :message-selection-actions="JSON.stringify(selectActions)"
 		@open-user-tag="console.log('')" @send-message="sendMessage($event.detail[0])"
+		               @open-file="openFile($event.detail[0])"
 		@add-room="addChatInterVis = true" @message-action-handler="handleCustomMessageAction($event.detail[0])" @fetch-messages="addHistoryMessage(($event.detail[0]))"
 		@room-info="handleChatInfo($event.detail[0])" @message-selection-action-handler="messageSelectionActionHandler($event.detail[0])">
 		<template #message-content="{ message }">
@@ -12,7 +13,7 @@
 			</div>
 		</template>
 	</vue-advanced-chat>
-	<el-drawer v-model="drawerInterVis" direction="rtl" size="15%">
+	<el-drawer v-model="drawerInterVis" direction="rtl" size="30%">
 		<span class="team_list">成员列表</span>
 		<el-dropdown v-if="!isMain">
 			<el-button text>
@@ -36,10 +37,14 @@
 		</div>
 		<input v-model="searchMessage" size="small" placeholder="Type to search"
 		       @change="queryAllMessages" />
-		<el-table :data="messagesTableData" style="width: 100%">
-			<el-table-column prop="sender_name" label="发送者姓名" sortable/>
-			<el-table-column prop="content" label="发送内容" sortable/>
-			<el-table-column prop="update_time" label="发送时间" sortable/>
+		<el-table :data="messagesTableData" style="width: 100%" @row-click="handleRowClick">
+			<el-table-column prop="sender_name" label="发送者姓名" width="100px"/>
+			<el-table-column prop="content" label="发送内容" width="310px">
+			<template v-slot="{ row }">
+				<div class="content-cell" v-html="row.content"></div>
+			</template>
+			</el-table-column>
+			<el-table-column prop="update_time" label="发送时间" />
 		</el-table>
 	</el-drawer>
 	<el-dialog v-model="addChatInterVis" title="创建群聊">
@@ -123,7 +128,7 @@ import { onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref } fro
 import { onBeforeRouteUpdate, useRoute} from "vue-router";
 import { getUserId } from "@/utils/token";
 import chatFunction from "@/api/chat.js";
-import axios from "axios";
+
 
 register()
 const route = useRoute();
@@ -161,6 +166,7 @@ const chatMemberTable = ref([])
 const searchMessage = ref([])
 const messagesTableData = ref([])
 const room_id = ref()
+const target_message = ref()
 const operChatId = ref()
 const messagesLoaded = ref(false)
 const sendMessages = ref([])
@@ -357,17 +363,23 @@ async function addData() {
 	rooms.value = modifiedRoom
 }
 async function addHistoryMessage({ room, options = {} }) {
-	let res;
+	let res, goto;
 	operChatId.value = room.roomId
 	messagesLoaded.value = false
 	if (options.reset) {
 		messages.value = []
-		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
+		if (target_message.value) {
+			res = await chatFunction.queryMessage(room.roomId, target_message.value, messagesPerPage, true);
+			goto = target_message.value;
+			target_message.value = null;
+		} else {
+			res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
+		}
 	} else {
 		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
 	}
 	await chatFunction.readAllMessage(room.roomId)
-	if (!res.data || res.data.length === 0 || res.data.length < messagesPerPage) {
+	if ((!res.data || res.data.length === 0 || res.data.length < messagesPerPage) && !goto) {
 		setTimeout(() => {
 			messagesLoaded.value = true
 		}, 0)
@@ -409,7 +421,11 @@ async function addHistoryMessage({ room, options = {} }) {
 			messages.value.unshift(message)
 		}
 	})
-	addData()
+	await addData();
+	setTimeout(() => {
+		scrollToMessage(goto);
+	}, 100)
+	
 }
 
 async function sendMessage(message) {
@@ -433,6 +449,10 @@ async function sendMessage(message) {
 		}
 		socket.value.send(JSON.stringify(formatMessage))
 	}
+}
+
+function openFile({ file }) {
+	window.open(file.file.url, '_blank')
 }
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
@@ -461,8 +481,7 @@ function upMessage(event) {
 			files: [
 				{
 					name: '基本项',
-					url: 'http://127.0.0.1:8000/media/chat/9b1c01bfaa084dfcc3e06ff0371ffd65.md',
-					preview: 'data:text/markdown/md',
+					url: temp.content,
 					type: temp.content.split('.')[temp.content.split('.').length-1],
 				}
 			],
@@ -536,13 +555,27 @@ function messageSelectionActionHandler(event) {
 			break;
 	}
 }
+function scrollToMessage(messageId){
+	const parent = window.document.getElementsByTagName('vue-advanced-chat')[0]
+	const shadow = parent.shadowRoot;
+	const target = shadow.getElementById(messageId)
+	target.scrollIntoView()
+}
+
+function handleRowClick(row){
+	scrollToMessage(row.id);
+	drawerInterVis.value = false
+}
 
 onMounted(() => {
 	//刚进入聊天页面时获得用户的Id和所在团队的Id
 	team_id.value = route.params.team_id
 	user_id.value = getUserId()
 	currentUserId.value = user_id.value
-	addData()
+	addData().then(()=>{
+		room_id.value = route.query.room;
+		target_message.value = route.query.message;
+	})
 	getTeamMember()
 	socket.value = new WebSocket(`ws://localhost:8000/ws/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
@@ -607,6 +640,12 @@ button:last-child {
 	margin-bottom: 40px;
     padding: var(--el-drawer-padding-primary);
     padding-bottom: 0;
+}
+.content-cell {
+	max-height: 75px; /* 设置最大高度 */
+	//overflow: hidden; /* 隐藏溢出内容 */
+	//text-overflow: ellipsis; /* 使用省略号表示溢出内容 */
+	white-space: nowrap; /* 防止换行 */
 }
 </style>
 

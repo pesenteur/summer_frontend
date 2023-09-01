@@ -15,13 +15,9 @@
                     <CircleCloseFilled />
                   </el-icon>
                 </el-button>
-
-                <el-button @click="copyProject((rowIndex) * 4 + colIndex)">
-                  <el-icon>
+                <el-button @click="copyProject((rowIndex) * 4 + colIndex)" text>
                     <el-icon><DocumentCopy /></el-icon>
-                  </el-icon>
                 </el-button>
-
                 <el-button class="edit" @click="openDialog(rowIndex,colIndex)" text>
                   <font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 </el-button>
@@ -198,8 +194,7 @@ watch(search,()=>{
 
 const myResult = computed(() =>
     tempData.value.filter(
-        (data) =>
-            !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
+        (data) => !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
     )
 )
 
@@ -236,7 +231,6 @@ function getSearch(searchName) {
 
 function showProjects1() {
   rows.value = []
-
   console.log('myResult', myResult.value)
   let projNames = []
   let projectDescriptions = []
@@ -396,4 +390,11 @@ onMounted(async () => {
   background-color: #909399;
   color: white;
   border-color: #909399;
-}</style>
+}
+.project-actions .el-button{
+   padding:0px;
+}
+.project-actions{
+  margin-right: 10px;
+}
+</style>

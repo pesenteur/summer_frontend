@@ -46,19 +46,19 @@ requests.interceptors.response.use(response => {
             type: 'error'
         });
     }
-    else if(error.response && error.response.status === 403) {
+    else if (error.response && error.response.status === 403) {
         ElMessage({
             message: '您没有权限进行该操作',
             type: 'error'
         });
     }
-    else if(error.response && error.response.status === 404) {
+    else if (error.response && error.response.status === 404) {
         ElMessage({
             message: '该资源不存在',
             type: 'error'
         });
     }
-    else if(error.response && error.response.status === 500) {
+    else if (error.response && error.response.status === 500) {
         ElMessage({
             message: '服务器内部错误',
             type: 'error'

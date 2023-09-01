@@ -14,12 +14,11 @@
             <template v-if="status === 'connected'">
               {{ editor.storage.collaborationCursor.users.length }} user{{
                 editor.storage.collaborationCursor.users.length === 1 ? '' : 's'
-              }} online in
+              }} online in {{ currentUser.name }}
             </template>
             <template v-else>
               offline
             </template>
-            {{ currentUser.name }}
           </div>
           <div class="optionButton">
             <button @click="saveDocument">Save</button>
@@ -85,7 +84,7 @@
                         </el-sub-menu>
                       </div>
                       <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id"
-                        @click="getDocumentContent(document.id, document.title)">
+                        @click="changeDocument(document.id, document.title)">
                         <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ document.title }}</span>
                         <button class="transparent-button-2"
                           @click.stop="showDeleteDocumentDialog(document.id)"><font-awesome-icon
@@ -388,7 +387,7 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { saveAs } from 'file-saver';
 import { ElMessage } from 'element-plus';
-import { getProjId, setDocumentId, getProjectName } from "@/utils/token";
+import { getProjId, getName, setDocumentId, getProjectName } from "@/utils/token";
 import Clipboard from 'clipboard';
 import router from '../../router';
 const route = useRoute();
@@ -438,7 +437,7 @@ const provider = ref();
 const editor = ref();
 const status = ref('connecting');
 const folderId = ref('')
-const documentId = ref(route.params.documentId || '123');
+const documentId = ref(route.params.documentId);
 const title = ref('');
 const isEditingTitle = ref(false);
 const folders = ref([]);
@@ -475,8 +474,7 @@ const share = () => {
 }
 
 const currentUser = ref({
-  // TODO 获取用户姓名
-  name: route.params.documentId || '123',
+  name: getName(),
   color: getRandomColor()
 });
 const toggleEditTitle = () => {
@@ -598,7 +596,7 @@ const processDocuments = (data) => {
 };
 async function generateLink() {
   // 在这里生成共享链接，可以根据 isEditable 的值来决定是否允许编辑
-  const baseUrl = 'http://localhost:5173/shared/';
+  const baseUrl = window.location.host + 'shared/';
   console.log(documentId.value, isEditable.value)
   await documentRequest.createShareLink(documentId.value, isEditable.value)
   sharedLink.value = baseUrl + documentId.value;
@@ -672,27 +670,27 @@ async function addFolder() {
   // Implement logic to add a new folder using newFolderName.value
   closeDialog();
 };
-async function getDocumentContent(document, documentName) {
+async function changeDocument(document, documentName) {
   try {
     router.push(`/document/${document}`)
     documentId.value = document
     currentDocumentName.value = documentName
-    const response = await documentRequest.getDocumentContent(document)
-    console.log("content:", response.data.content)
-    if (response.data.detail === "已授权阅读") {
-      editor.value.commands.setContent(response.data.content)
-      if (response.data.editable === false) {
-        editor.value.setEditable(false)
-      }
-      else {
-        editor.value.setEditable(true)
-      }
-    } else {
-      ElMessage({
-        message: '你没有权限阅读',
-        type: 'error'
-      })
-    }
+    // const response = await documentRequest.getDocumentContent(document)
+    // console.log("content:", response.data.content)
+    // if (response.data.detail === "已授权阅读") {
+    //   editor.value.commands.setContent(response.data.content)
+    //   if (response.data.editable === false) {
+    //     editor.value.setEditable(false)
+    //   }
+    //   else {
+    //     editor.value.setEditable(true)
+    //   }
+    // } else {
+    //   ElMessage({
+    //     message: '你没有权限阅读',
+    //     type: 'error'
+    //   })
+    // }
   }
   catch (error) {
     ElMessage({
@@ -732,8 +730,7 @@ function exportMarkdown() {
 
   const downloadLink = document.createElement('a');
   downloadLink.href = URL.createObjectURL(blob);
-  // TODO 文档名
-  downloadLink.download = 'filename.txt';
+  downloadLink.download = currentDocumentName.value + '.md';
   downloadLink.click();
   URL.revokeObjectURL(downloadLink.href);
 }
@@ -774,7 +771,7 @@ function exportPDF() {
       contentHeight
     );
     // 下载 PDF 文件
-    pdf.save('filename.pdf');
+    pdf.save(currentDocumentName.value + '.pdf');
   });
 }
 
@@ -803,7 +800,7 @@ function exportWord() {
   const html = getModelHtml(editor.value.getHTML())
   const blob = new Blob([html], { type: 'application/msword;charset=utf-8' })
   //调用file-saver插件的saveAs方法导出
-  saveAs(blob, title.value + '.doc')
+  saveAs(blob, currentDocumentName.value + '.docx')
 }
 </script>
 

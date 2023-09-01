@@ -8,7 +8,10 @@ const router = createRouter({
 
     }, {
         path: '/login',
-        component: () => import('@/views/account/LoginComponent.vue')
+        component: () => import('@/views/account/LoginComponent.vue'),
+        meta: {
+            'hiddenHeader': true
+        }
     }, {
         path: '/buttonGroup',
         component: () => import('@/views/editor/buttonGroup.vue')
@@ -51,11 +54,22 @@ const router = createRouter({
     }, {
         path: '/preview',
         component: ()=> import('@/views/dragger/preview.vue')
+    },{
+        path: '/shared/:sharedId',
+        component: () => import('@/views/editor/share.vue')
     }]
 
 });
 
-router.beforeEach((to, from, next) => {
-    next();
+router.beforeEach((to, from) => {
+    const token = localStorage.getItem('TOKEN');
+    if (!token && to.path !== '/login') {
+        return {
+            path: '/login'
+        };
+    }
+    if (token && to.path === '/login') {
+        return from;
+    }
 });
 export default router

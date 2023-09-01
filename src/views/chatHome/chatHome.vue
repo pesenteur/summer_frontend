@@ -1,27 +1,26 @@
 <template>
 	<vue-advanced-chat :current-user-id="currentUserId" :room-info-enabled="true" :rooms="JSON.stringify(rooms)"
-		:messages="JSON.stringify(messages)" :room-actions="JSON.stringify(roomActions)" :rooms-loaded="true"
+		:messages="JSON.stringify(messages)" :rooms-loaded="true"
 		:height="height" :message-actions="JSON.stringify(messageActions)" :menu-action-handler="menuActionHandler"
-		:messages-loaded="messagesLoaded" :load-first-room="false" :room-id="room_id"
-		@open-user-tag="console.log('usertag')" @send-message="sendMessage($event.detail[0])"
-		@add-room="dialogFormVisible = true" @message-action-handler="handleCustomMessageAction($event.detail[0])"
-		@room-action-handler='handleRoomAction($event.detail[0])' @fetch-messages="addHistoryMessage(($event.detail[0]))"
-		@room-info="handleChatInfo($event.detail[0])">
+		:messages-loaded="messagesLoaded" :load-first-room="false" :room-id="room_id" :message-selection-actions="JSON.stringify(selectActions)"
+		@open-user-tag="console.log('')" @send-message="sendMessage($event.detail[0])"
+		@add-room="addChatInterVis = true" @message-action-handler="handleCustomMessageAction($event.detail[0])" @fetch-messages="addHistoryMessage(($event.detail[0]))"
+		@room-info="handleChatInfo($event.detail[0])" @message-selection-action-handler="messageSelectionActionHandler($event.detail[0])">
 		<template #message-content="{ message }">
 			<div :class="'message ' + 'sender-' + message.senderId">
 				{{ message.content }}
 			</div>
 		</template>
 	</vue-advanced-chat>
-	<el-drawer v-model="drawerTable" direction="rtl" size="20%">
-		<span>成员列表</span>
+	<el-drawer v-model="drawerInterVis" direction="rtl" size="15%">
+		<span class="team_list">成员列表</span>
 		<el-dropdown v-if="!isMain">
 			<el-button text>
 				<font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
 			</el-button>
 			<template #dropdown>
 				<el-dropdown-menu>
-					<el-dropdown-item v-if="isAdmin" @click="handleDeleteMember">邀请成员</el-dropdown-item>
+					<el-dropdown-item v-if="isAdmin" @click="handleInviteMember">邀请成员</el-dropdown-item>
 					<el-dropdown-item v-if="isAdmin" @click="handleDeleteMember">删除成员</el-dropdown-item>
 					<el-dropdown-item v-if="!isMain && isAdmin" @click="handleDeleteChat">解散群聊</el-dropdown-item>
 					<el-dropdown-item v-if="!isMain" @click="handleExit">退出群聊</el-dropdown-item>
@@ -35,8 +34,15 @@
 				<div class="member-email">{{ member.email }}</div>
 			</div>
 		</div>
+		<input v-model="searchMessage" size="small" placeholder="Type to search"
+		       @change="queryAllMessages" />
+		<el-table :data="messagesTableData" style="width: 100%">
+			<el-table-column prop="sender_name" label="发送者姓名" sortable/>
+			<el-table-column prop="content" label="发送内容" sortable/>
+			<el-table-column prop="update_time" label="发送时间" sortable/>
+		</el-table>
 	</el-drawer>
-	<el-dialog v-model="dialogFormVisible" title="创建群聊">
+	<el-dialog v-model="addChatInterVis" title="创建群聊">
 		<el-form :model="newTeamName">
 			<el-form-item label="群聊名称" :label-width="formLabelWidth">
 				<el-input v-model="newTeamName" autocomplete="off" />
@@ -49,14 +55,14 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">Cancel</el-button>
+				<el-button @click="addChatInterVis = false">取消</el-button>
 				<el-button type="primary" @click="addRoom">
-					Confirm
+					确认
 				</el-button>
 			</span>
 		</template>
 	</el-dialog>
-	<el-dialog v-model="chatMemberAddVisible" title="添加成员">
+	<el-dialog v-model="addMemberInterVis" title="添加成员">
 		<el-form :model="newTeamName">
 			<el-form-item label="群聊成员" :label-width="formLabelWidth">
 				<el-select v-model="newChatMember" multiple placeholder="Select">
@@ -66,14 +72,14 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="chatMemberAddVisible = false">Cancel</el-button>
+				<el-button @click="addMemberInterVis = false">取消</el-button>
 				<el-button type="primary" @click="addChatMem">
-					Confirm
+					确认
 				</el-button>
 			</span>
 		</template>
 	</el-dialog>
-	<el-dialog v-model="chatMemberDeleteVisible" title="删除成员">
+	<el-dialog v-model="deleteMemberInterVis" title="删除成员">
 		<el-form :model="newTeamName">
 			<el-form-item label="群聊成员" :label-width="formLabelWidth">
 				<el-select v-model="deleteChatMember" multiple placeholder="Select">
@@ -83,8 +89,25 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="chatMemberDeleteVisible = false">Cancel</el-button>
+				<el-button @click="deleteMemberInterVis = false">取消</el-button>
 				<el-button type="primary" @click="deleteMem">
+					确认
+				</el-button>
+			</span>
+		</template>
+	</el-dialog>
+	<el-dialog v-model="sendMultMessageInterVis" title="创建群聊">
+		<el-form :model="newTeamName">
+			<el-form-item label="发送的群聊" :label-width="formLabelWidth">
+				<el-select v-model="newSendChat"  placeholder="Select">
+					<el-option v-for="opt in rooms" :key="opt.roomId" :label="opt.roomName" :value="opt.roomName" />
+				</el-select>
+			</el-form-item>
+		</el-form>
+		<template #footer>
+			<span class="dialog-footer">
+				<el-button @click="sendMultMessageInterVis = false">Cancel</el-button>
+				<el-button type="primary" @click="sendSelectMessages">
 					Confirm
 				</el-button>
 			</span>
@@ -97,67 +120,79 @@ import { register } from 'vue-advanced-chat'
 import { ElMessage } from 'element-plus'
 import teamFunction from '@/api/team'
 import { onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue"
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { onBeforeRouteUpdate, useRoute} from "vue-router";
 import { getUserId } from "@/utils/token";
 import chatFunction from "@/api/chat.js";
+import axios from "axios";
 
 register()
-const mainChatId = ref()
 const route = useRoute();
-const router = useRouter();
 const socket = ref() //websocket
 const team_id = ref()
 const user_id = ref()
 const rooms = ref([])
 const messages = ref([])
 const currentUserId = ref()
+//聊天界面的基本数据
 const height = ref('800px')
-const content = ref("")
-const dialogFormVisible = ref(false)
-const chatMemberAddVisible = ref(false)
-const chatMemberDeleteVisible = ref(false)
 const formLabelWidth = '140px'
-const chatMemberTable = ref([])
-const drawerTable = ref(false)
+const messagesPerPage = 20
+//控制弹窗界面的是否出现的属性 结尾都为InterVis
+const addChatInterVis = ref(false)
+const addMemberInterVis = ref(false)
+const deleteMemberInterVis = ref(false)
+const sendMultMessageInterVis = ref(false)
+const drawerInterVis = ref(false)
+//判断是否为管理员、是否为主界面、是否是合并发送
 const isAdmin = ref(true)
 const isMain = ref(true)
+const isHole = ref(true)
 
 const newTeamName = ref()
 const newTeamMember = ref([])
 const newChatMember = ref([])
+const newSendChat = ref()
 const deleteChatMember = ref([])
 const teamAddMemberOption = ref([])
 const chatMemberAddOption = ref([])
 const chatMemmberDeleteOption = ref([])
+const chatMemberTable = ref([])
+
+const searchMessage = ref([])
+const messagesTableData = ref([])
+const room_id = ref()
+const operChatId = ref()
+const messagesLoaded = ref(false)
+const sendMessages = ref([])
 const messageActions = reactive([
 	{
-		name: 'replyAction',
-		title: '回复'
-	},
-	{
-		name: 'editAction',
-		title: '编辑',
-		onlyMe: true
-	},
-	{
-		name: 'deleteAction',
-		title: '删除',
-		onlyMe: true
+		name: 'selectMessages',
+		title: 'Select'
 	},
 	{
 		name: 'privateChatAction',
 		title: '私聊'
 	}
 ])
-const roomActions = reactive([
-	{ name: 'inviteUser', title: 'Invite User' },
-	{ name: 'removeUser', title: 'Remove User' },
-	{ name: 'deleteRoom', title: 'Delete Room' }
+const selectActions = reactive([
+	{
+		name:'mergeSend',
+		title:'MergeSend'
+	},
+	{
+		name:'seperateSend',
+		title:'SeperateSend'
+	}
 ])
-const room_id = ref()
-const operChatId = ref()
-const messagesLoaded = ref(false)
-const messagesPerPage = 20
+
+async function queryAllMessages(){
+	let res = await chatFunction.searchHistory(operChatId.value,searchMessage.value)
+	messagesTableData.value = res.data.matches
+	// console.log(res.data.matches)
+	// const target = window.document.getElementById('01360790-4be8-472e-9ba3-f528e5cb489f')
+	// console.log(target)
+	// target.scrollIntoView()
+}
 
 //更新teamAddMemberOption(不包含自己)
 async function getTeamMember() {
@@ -197,13 +232,13 @@ async function getChatMemberInfo(roomId) {
 	}
 	chatMemberTable.value = info.data.members
 }
+async function deleteSpeChat(roomId){
+	await chatFunction.deleteChat(roomId)
+	await addData()
+}
 //创建一个新的聊天室(包括私聊和群聊)
 async function createRoom(member,name,type=null){
 	await chatFunction.createRoom(team_id.value, member, name,type)
-	console.log('@@@@@@')
-	console.log(team_id.value)
-	console.log(member)
-	console.log(name)
 	await addData()
 }
 //根据newTeamMember创建群聊
@@ -223,7 +258,7 @@ async function addRoom() {
 		member.push(user_id.value)
 		await createRoom(member, newTeamName.value)
 	}
-	dialogFormVisible.value = false
+	addChatInterVis.value = false
 }
 async function addChatMem() {
 	let members = []
@@ -240,7 +275,7 @@ async function addChatMem() {
 		await chatFunction.addTeamMember(operChatId.value, members)
 		newChatMember.value = []
 	}
-	chatMemberAddVisible.value = false
+	addMemberInterVis.value = false
 }
 async function deleteMem() {
 	let members = []
@@ -259,18 +294,29 @@ async function deleteMem() {
 		deleteChatMember.value = []
 		await addData()
 	}
-	chatMemberDeleteVisible.value = false
+	deleteMemberInterVis.value = false
+}
+async function sendSelectMessages(){
+	let id
+	let messages = []
+	rooms.value.forEach((room)=>{
+		if(room.roomName === newSendChat.value){
+			id = room.roomId
+		}
+	})
+	sendMessages.value.forEach((message)=>{
+		messages.push(message._id)
+	})
+	if(isHole.value === true){
+		await chatFunction.sendHole(operChatId.value,messages,id)
+	}else{
+		await chatFunction.sendDivide(operChatId.value,messages,id)
+	}
 }
 async function addData() {
 	let result = await chatFunction.queryAllRoom(team_id.value)
-
 	const modifiedRoom = []
 	result.data.forEach((item) => {
-		console.log('@@@@@@@')
-		console.log(item.admin)
-		if (item.priority === 999) {
-			mainChatId.value = item.id.toString()
-		}
 		let users = []
 		item.members.forEach((member) => {
 			let user = {
@@ -281,19 +327,30 @@ async function addData() {
 			}
 			users.push(user)
 		})
-		let room = {
-			roomId: item.id,
-			roomName: item.name,
-			users: users,
-			avatar: "/doe.png",
-			// unreadCount: item.unread_count,
-			// lastMessage: {
-			// 	_id: 'xyz',
-			// 	content: 'Last message received',
-			// 	senderId: '1234',
-			// 	username: 'John Doe',
-			// 	timestamp: '10:20',
-			// }
+		let room = {}
+		if (item.last_message === null) {
+			room = {
+				roomId: item.id,
+				roomName: item.name,
+				users: users,
+				avatar: "/doe.png",
+				unreadCount: item.unread_count,
+			}
+		}else{
+			room = {
+				roomId: item.id,
+				roomName: item.name,
+				users: users,
+				avatar: "/doe.png",
+				unreadCount: item.unread_count,
+				lastMessage: {
+					_id: item.last_message.id.toString(),
+					content: item.last_message.content.substring(0,100),
+					senderId: item.last_message.sender.toString(),
+					username: item.last_message.sender_name,
+					timestamp: item.last_message.update_time,
+				}
+			}
 		}
 		modifiedRoom.push(room)
 	})
@@ -301,62 +358,120 @@ async function addData() {
 }
 async function addHistoryMessage({ room, options = {} }) {
 	let res;
-
+	operChatId.value = room.roomId
+	messagesLoaded.value = false
 	if (options.reset) {
 		messages.value = []
 		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
 	} else {
 		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
 	}
-
-	if (res.data.length === 0 || res.data.length < messagesPerPage) {
+	await chatFunction.readAllMessage(room.roomId)
+	if (!res.data || res.data.length === 0 || res.data.length < messagesPerPage) {
 		setTimeout(() => {
 			messagesLoaded.value = true
 		}, 0)
 	}
 	res.data.forEach((temp) => {
-		let message = {
-			_id: temp.id,
-			content: temp.content,
-			senderId: temp.sender.toString(),
-			username: 'John Doe',
-			date: temp.created_time,
-			timestamp: temp.created_time,
-			avatar: '/doe.png',
-			usersTag: ''
+		if (temp.type == 'text') {
+			let message = {
+				_id: temp.id,
+				content: temp.content,
+				senderId: temp.sender.toString(),
+				username: temp.sender_name,
+				date: temp.created_time,
+				timestamp: temp.created_time,
+				avatar: '/doe.png',
+				usersTag: '',
+			}
+			messages.value.unshift(message)
+		}else{
+			console.log('------downFile------')
+			console.log(temp.content)
+			let message = {
+				_id: temp.id,
+				content: '',
+				senderId: temp.sender.toString(),
+				username: temp.sender_name,
+				date: temp.created_time,
+				timestamp: temp.created_time,
+				avatar: '/doe.png',
+				usersTag: '',
+				files: [
+					{
+						name: '我的文件',
+						url: temp.content,
+						type: temp.content.split('.')[temp.content.split('.').length - 1],
+						
+					}
+				],
+			}
+			messages.value.unshift(message)
 		}
-		messages.value.unshift(message)
 	})
-
+	addData()
 }
+
 async function sendMessage(message) {
-	console.log(message.usersTag)
-	let formatMessage = {
-		"team": team_id.value,
-		"receiver": "",
-		"chat": message.roomId,
-		"content": message.content,
-		"type": "text"
+	console.log('------fileMessage------')
+	console.log(message)
+	let reader = new FileReader()
+
+	if(message.files !== null){
+		for (const file of message.files) {
+			reader.readAsDataURL(file.blob)
+			await chatFunction.sendFile(operChatId.value,file.type,file.extension,file.blob);
+		}
 	}
-	socket.value.send(JSON.stringify(formatMessage))
+	if(message.content !== "") {
+		let formatMessage = {
+			"team": team_id.value,
+			"receiver": "",
+			"chat": message.roomId,
+			"content": message.content,
+			"type": "text"
+		}
+		socket.value.send(JSON.stringify(formatMessage))
+	}
 }
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
-	console.log('@@@@@@')
-	console.log(temp)
-	let message = {
-		_id: temp.id,
-		content: temp.content,
-		senderId: user_id.value.toString(),
-		username: temp.name,
-		date: temp.created_time,
-		timestamp: temp.created_time,
-		avatar: '/doe.png',
+	if(temp.type === 'text') {
+		if (temp.chat === operChatId.value) {
+			let message = {
+				_id: temp.id,
+				content: temp.content,
+				senderId: user_id.value.toString(),
+				username: temp.sender_name,
+				date: temp.created_time,
+				timestamp: temp.created_time,
+				avatar: '/doe.png',
+			}
+			messages.value.push(message)
+		}
+	}else{
+		let message = {
+			_id: temp.id,
+			content: '',
+			senderId: user_id.value.toString(),
+			username: temp.sender_name,
+			date: temp.created_time,
+			timestamp: temp.created_time,
+			avatar: '/doe.png',
+			files: [
+				{
+					name: '基本项',
+					url: 'http://127.0.0.1:8000/media/chat/9b1c01bfaa084dfcc3e06ff0371ffd65.md',
+					preview: 'data:text/markdown/md',
+					type: temp.content.split('.')[temp.content.split('.').length-1],
+				}
+			],
+		}
+		messages.value.push(message)
 	}
-	messages.value.push(message)
+	addData()
 }
 function menuActionHandler({ action, }) {
-	console.log(action)
 	switch (action.name) {
 		case 'inviteUser':
 		// call a method to invite a user to the room
@@ -365,9 +480,6 @@ function menuActionHandler({ action, }) {
 		case 'deleteRoom':
 		// call a method to delete the room
 	}
-}
-function fetchMessages({ options = {} }) {
-
 }
 function handleCustomMessageAction({ roomId, action, message }) {
 	let members = []
@@ -378,30 +490,23 @@ function handleCustomMessageAction({ roomId, action, message }) {
 		case 'replyAction':
 			// 处理回复操作的逻辑
 			break;
-		case 'editAction':
-			// 处理编辑操作的逻辑
-			break;
-		case 'deleteAction':
-			// 处理删除操作的逻辑
-			break;
 		case 'privateChatAction':
 			createRoom(members, roomName, 'single');
 			break;
-		// Add more cases for other custom actions
 	}
 }
-
 function handleInviteMember() {
 	getTeamNoMember(operChatId.value)
-	chatMemberAddVisible.value = true
+	addMemberInterVis.value = true
 }
 function handleDeleteMember() {
 	getTeamNoMember(operChatId.value)
 	getDeleteChatMember(operChatId.value)
-	chatMemberDeleteVisible.value = true
+	deleteMemberInterVis.value = true
 }
 function handleDeleteChat(){
-	
+	deleteSpeChat(operChatId.value)
+	drawerInterVis.value = false
 }
 function handleExit(){
 	if(isAdmin.value === true){
@@ -410,50 +515,36 @@ function handleExit(){
 		chatFunction.deleteChatNormal(operChatId.value)
 	}
 }
-function handleDissolveChat(){
 
-}
-function handleRoomAction({ roomId, action, message }) {
-	operChatId.value = roomId
-	getTeamNoMember(roomId)
-	console.log('@@@@@@@@@@')
-	console.log(mainChatId.value)
-	if (roomId.toString() === mainChatId.value.toString()) {
-		ElMessage.error('您不能对主群进行操作')
-	} else {
-		switch (action.name) {
-			case 'inviteUser':
-				chatMemberAddVisible.value = true
-				break;
-			case 'removeUser':
-				getDeleteChatMember(roomId)
-				chatMemberDeleteVisible.value = true
-				break;
-			case 'deleteAction':
-				// 处理删除操作的逻辑
-				break;
-			case 'privateChatAction':
-				// 处理私聊操作的逻辑
-				break;
-			// Add more cases for other custom actions
-		}
-	}
-}
 
 function handleChatInfo(event) {
-	drawerTable.value = true
+	drawerInterVis.value = true
 	operChatId.value = event.roomId
 	getChatMemberInfo(event.roomId)
 }
+function messageSelectionActionHandler(event) {
+	sendMultMessageInterVis.value =true
+	console.log('@@@@@')
+	console.log(event.messages)
+	sendMessages.value = event.messages
+	switch (event.action.name) {
+		case 'mergeSend':
+			isHole.value = true
+			break;
+		case 'seperateSend':
+			isHole.value = false
+			break;
+	}
+}
 
 onMounted(() => {
+	//刚进入聊天页面时获得用户的Id和所在团队的Id
 	team_id.value = route.params.team_id
 	user_id.value = getUserId()
 	currentUserId.value = user_id.value
 	addData()
-	addHistoryMessage()
 	getTeamMember()
-	socket.value = new WebSocket(`ws://localhost:8000/chat/${user_id.value}`)
+	socket.value = new WebSocket(`ws://localhost:8000/ws/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
 
 })
@@ -464,7 +555,6 @@ onMounted(() => {
 .dialog-footer button:first-child {
 	margin-right: 10px;
 }
-
 .drawer-container {
 	padding: 20px;
 }
@@ -506,6 +596,17 @@ button {
 
 button:last-child {
 	margin-right: 0;
+}
+.team_list{
+	padding-right: 120px;
+}
+.el-drawer__header {
+    align-items: center;
+    color: #72767b;
+    display: flex;
+	margin-bottom: 40px;
+    padding: var(--el-drawer-padding-primary);
+    padding-bottom: 0;
 }
 </style>
 

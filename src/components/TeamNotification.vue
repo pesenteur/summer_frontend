@@ -3,44 +3,54 @@
   <div class="badge-container">
     <span class="badge_top" v-if="unreadCount > 0"></span>
   </div>
-  <el-drawer size="20%" class="aside_msg" v-model="table" title="我的消息" direction="rtl">
+  <el-drawer size="17%" style="margin: 16px;border-radius: 10px;" class="custom-drawer" v-model="table" title="我的消息" direction="rtl">
     <el-col>
       <div class="card-container">
-        <div class="button-left">
-          <el-popover placement="bottom-start" :width="100" trigger="hover" content="已读所有消息">
-            <template #reference>
-              <button @click="readAllNoti" class="action-button"><font-awesome-icon :icon="['fas', 'check']" />
-              </button>
-            </template>
-          </el-popover>
+        <div class="button-container">
+          <div class="button-left">
+            <el-popover placement="bottom-start" :width="100" trigger="hover" content="已读所有消息">
+              <template #reference>
+                <button @click="readAllNoti" class="action-button"><font-awesome-icon :icon="['fas', 'check']" />
+                </button>
+              </template>
+            </el-popover>
+          </div>
+          <div class="button-right">
+            <el-popover placement="bottom-start" :width="100" trigger="hover" content="删除所有已读消息">
+              <template #reference>
+                <button @click="deleteAllRead" class="action-button"><font-awesome-icon
+                    :icon="['fas', 'delete-left']" /></button>
+              </template>
+            </el-popover>
+          </div>
         </div>
-        <div class="button-right">
-          <el-popover placement="bottom-start" :width="100" trigger="hover" content="删除所有已读消息">
-            <template #reference>
-              <button @click="deleteAllRead" class="action-button"><font-awesome-icon
-                  :icon="['fas', 'delete-left']" /></button>
-            </template>
-          </el-popover>
-        </div>
-        <el-card v-for="msg in messages" :key="msg.notId" class="decorate-card" @click="readNoti(msg.notId)">
-          <button @click="deleteSingleNoti(msg.notId)">删除</button>
+        <div v-for="msg in messages" :key="msg.notId" class="message-container">
+          <el-divider></el-divider>
           <div class="details-container">
-            <details>
+            <details @click="readNoti(msg.notId)">
               <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
                 {{ msg.content }}
                 <span class="badge" v-if="msg.isread === 'unread'"></span>
               </summary>
-              <div class="content">{{ msg.content }}</div>
+              <div class="content">{{ msg.content }}
+                <el-popover placement="bottom-start" :width="10" trigger="hover" content="删除消息"
+                  @click="deleteSingleNoti(msg.notId)">
+                  <template #reference>
+                    <button @click="deleteSingleNoti(msg.notId)" class="inside-action-button"><font-awesome-icon
+                        :icon="['fas', 'delete-left']" /></button>
+                  </template>
+                </el-popover>
+              </div>
             </details>
           </div>
-        </el-card>
+        </div>
       </div>
     </el-col>
   </el-drawer>
 </template>
 
 <script lang="js" setup>
-import { ref, computed } from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
 
@@ -49,33 +59,40 @@ const table = ref(false)
 const messages = ref([])
 
 const unreadCount = () => {
+  console.log(messages.filter(msg => msg.isread === 'unread').length);
   return messages.filter(msg => msg.isread === 'unread').length;
 };
-getAllNoti()
+
+onMounted(async () => {
+  await getAllNoti()
+})
 
 async function clickButton() {
   table.value = true
-  getAllNoti()
+  await getAllNoti()
 }
 async function deleteAllRead() {
   await notiFunction.deleteReadNoti()
-  getAllNoti()
+  await getAllNoti()
 }
 async function deleteSingleNoti(NotId) {
   await notiFunction.deleteSingleNoti(NotId)
-  getAllNoti()
+  await getAllNoti()
 }
 async function readAllNoti() {
   await notiFunction.readAllNoti()
-  getAllNoti()
+  await getAllNoti()
 }
 async function readNoti(NotId) {
   await notiFunction.readSingleNoti(NotId)
-  getAllNoti()
+  await getAllNoti()
 }
 async function getAllNoti() {
   let res = await notiFunction.queryAllNoti()
   console.log(res.data)
+    if (!res.data){
+        return
+    }
   let filtermessages = []
   res.data.forEach((item) => {
     const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
@@ -86,7 +103,6 @@ async function getAllNoti() {
     }
     filtermessages.push(noti)
   })
-  console.log(filtermessages)
   messages.value = filtermessages
 }
 </script>
@@ -127,48 +143,37 @@ async function getAllNoti() {
   outline: none;
 }
 
-::v-deep .aside_msg {
-  margin: 20px 20px 20px 0px;
-  height: calc(100vh - 40px) !important;
+.message-container {
+  text-align: center;
+  /* 水平居中文本内容 */
+  align-items: center;
+  /* 调整消息之间的间距 */
 }
 
 .card-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  align-items: center;
+  /* 水平居中 */
 }
 
-.decorate-card {
-  position: relative;
-  /* Add this to make the badge position relative to the card */
-  width: 300px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  overflow: hidden;
-  transition: box-shadow 0.3s;
-}
 
-.decorate-card:hover {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-}
 
 .details-container {
-  padding: 10px;
-  font-size: 14px;
+  width: 100%;
+  text-align: center;
+  padding: 5px;
   position: relative;
   /* Add this to make the badge position relative to the container */
 }
 
 .summary {
   cursor: pointer;
-  border-bottom: 1px solid #ccc;
   position: relative;
   /* Add this to make the badge position relative to the summary */
   list-style: none;
   /* Remove the default list-style */
-  padding-left: 0;
   /* Remove the default padding */
-  margin: 0;
   font-size: 20px;
   /* Remove the default margin */
   outline: none;
@@ -179,9 +184,13 @@ async function getAllNoti() {
   /* Center vertically */
 }
 
+.summary::-webkit-details-marker {
+  display: none;
+  /* 隐藏默认的横线图标 */
+}
+
 .badge {
   position: absolute;
-  right: 10px;
   width: 8px;
   height: 8px;
   background-color: red;
@@ -190,12 +199,20 @@ async function getAllNoti() {
 }
 
 .content {
-  padding: 10px;
   max-height: 0;
   /* Initially hidden */
   overflow: hidden;
+  margin-top: 10px;
   transition: max-height 0.3s ease-in-out;
+  font-size: 15px;
   /* Add transition effect */
+}
+
+.el-drawer__body {
+  flex: 1;
+  /* padding: var(--el-drawer-padding-primary); */
+  padding: 0px !important;
+  overflow: auto;
 }
 
 .open .content {
@@ -208,14 +225,7 @@ async function getAllNoti() {
   border-color: #ccc;
 }
 
-.decorate-card {
-  width: 100%;
-  margin: auto;
-  font-size: 12px;
-}
-
 .action-button {
-  padding: 8px 16px;
   color: rgb(92, 86, 86);
   border: none;
   font-size: 20px;
@@ -225,7 +235,24 @@ async function getAllNoti() {
   transition: background-color 0.3s;
 }
 
+.inside-action-button {
+  padding: 8px 16px;
+  color: rgb(92, 86, 86);
+  border: none;
+  font-size: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.3s;
+}
+
+.inside-action-button:hover {
+  color: red;
+  background-color: white;
+}
+
 .action-button:hover {
+  color: black;
   background-color: #aac1d9;
 }
 
@@ -236,11 +263,18 @@ async function getAllNoti() {
 
 .button-left {
   flex: 1;
-  margin-right: 50px;
+  margin-left: 20px;
 }
 
 .button-right {
   flex: 1;
-  margin-left: 100px;
+  margin-left: 150px;
 }
-</style>
+.button-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+::-webkit-details-marker {
+  display: none;
+}</style>

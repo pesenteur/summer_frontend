@@ -6,7 +6,7 @@
           <h2>团队管理</h2>
         </el-header>
       </div>
-      <el-container>
+      <el-container class="container">
         <el-aside width="250px">
           <div class="leftbox">
             <el-row class="tac" id="container1">
@@ -14,7 +14,7 @@
                 <div class="btton">
                   <div class="avatar"><el-icon class="custom-icon-button"></el-icon></div>
                   <div class="manage">
-                    <button class="btn" text @click="dialogFormVisible = true">创建新的团队
+                    <button class="btn" @click="dialogFormVisible = true">创建新的团队
                     </button>
                   </div>
                   <el-dialog v-model="dialogFormVisible" title="欢迎来到寄了网站，请创建团队" center width="35%">
@@ -62,15 +62,15 @@
                   <!-- <el-button text class="custom-icon-button">
             <el-icon class="el-icon--right"><arrow-down /></el-icon>
           </el-button> -->
-                  <el-button v-if="isNormalMember" text class="interval" @click="dialogTableVisible = true">
+                  <el-button text class="interval" @click="dialogTableVisible = true">
                     <el-icon class="el-icon--right"></el-icon>
                   </el-button>
                 </div>
                 <el-dialog v-model="dialogTableVisible" title="用户列表">
                   <el-table :data="userTableData" style="width: 100%">
-                    <el-table-column prop="name" label="Name" />
-                    <el-table-column prop="username" label="Username" />
-                    <el-table-column prop="email" label="Email" />
+                    <el-table-column prop="name" label="Name" sortable/>
+                    <el-table-column prop="username" label="Username" sortable/>
+                    <el-table-column prop="email" label="Email" sortable/>
                     <el-table-column align="right" width="200">
                       <template #header>
                         <form class="search-bar" @submit.prevent>
@@ -90,10 +90,10 @@
 
             <el-main>
               <el-table :data="filterTableData" style="width: 800px">
-                <el-table-column prop="name" label="Name" />
-                <el-table-column prop="username" label="Username" />
-                <el-table-column prop="email" label="Email" />
-                <el-table-column prop="role" label="Role" />
+                <el-table-column prop="name" label="Name" sortable/>
+                <el-table-column prop="username" label="Username" sortable/>
+                <el-table-column prop="email" label="Email" sortable/>
+                <el-table-column prop="role" label="Role" sortable/>
                 <el-table-column align="right" width="200">
                   <template #header>
                     <form class="search-bar" @submit.prevent>
@@ -114,10 +114,10 @@
             </el-main>
           </el-container>
         </div>
+        <div class="rightbox" v-else style="width:100%;">
+          <el-empty description="请选择团队" style="height:100%;"/>
+        </div>
       </el-container>
-      <div class="back">
-        <el-header height="300px"></el-header>
-      </div>
     </div>
   </div>
 </template>
@@ -128,66 +128,65 @@ import {
 } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref, computed } from 'vue'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
+
 import teamFunction from '../../api/team.js'
 import { InfoFilled } from '@element-plus/icons-vue'
-import {getUserId} from '../../utils/token.js'
-import {ElMessage} from "element-plus";
 const teamData = ref([]) //侧栏的数据
 const tableData = ref([]) //主表的数据
 const userTableData = ref([]) //搜索表中所有的数据
 const dialogFormVisible = ref(false) //弹出的对话框的属性值
 const dialogTableVisible = ref(false)
-const isAdd = ref(true)
 const titleName = ref('') //主表的标题
 const search = ref('') //搜索框用
 const searchUser = ref('')
 const formLabelWidth = '140px'
 const teamId = ref()
-const isNormalMember = ref(true)
 
 const cancelEvent = () => {
   console.log('cancel!')
 }
 async function handleAdd(userInfo) {
-  let res = await teamFunction.inviteTeamMember(teamId.value, userInfo.id)
-  console.log('*********InviteId*******')
-  console.log(res.data)
-  //todo 以后记得删
-  await teamFunction.acceptInvitation(res.data.id, true)
-  await refreshTeamMember()
+	let res = await teamFunction.inviteTeamMember(teamId.value, userInfo.id)
+	console.log('*********InviteId*******')
+	console.log(res.data)
+	//todo 以后记得删
+	await teamFunction.acceptInvitation(res.data.id, true)
+	await refreshTeamMember()
 }
 async function queryALL() {
-  let result = await teamFunction.queryAllTeams();
-  teamData.value = result.data
+	let result = await teamFunction.queryAllTeams();
+	teamData.value = result.data
 }
 async function selectTeam(team_id, teamName) {
-	console.log(team_id)
-	let result = await teamFunction.queryTeamMember(team_id)
-	tableData.value = result.data.members
+	const result = await teamFunction.queryTeamMember(team_id)
+	tableData.value = result.data.members.sort((a,b)=>{
+		const temp = {
+			'团队创建者': 1,
+			'团队管理员': 2,
+			'普通成员': 3
+		}
+		return temp[a.role] - temp[b.role]
+	})
+	console.log(tableData.value)
 	titleName.value = teamName
-	isAdd.value = false
 	teamId.value = team_id
-	refreshTeamMember()
 }
 async function submitTeam() {
-  dialogFormVisible.value = false
-  await teamFunction.addTeam(form.name);
-  await queryALL()
+	dialogFormVisible.value = false
+	await teamFunction.addTeam(form.name);
+	await queryALL()
 }
 async function deleteTeam(team_id) {
-  await teamFunction.deleteTeam(team_id)
-  await queryALL()
+	await teamFunction.deleteTeam(team_id)
+	await queryALL()
 }
 async function handleDelete(userInfo) {
- 
-	if (userInfo.role === "普通成员") {
-		let res =await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
-		if(res.result.toString() === '0'){
-			ElMessage.error('您无权这样做')
-		}
-	} else {
-		ElMessage.error('您无权这样做')
-	}
+  await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
+  if (userInfo.role === "普通成员") {
+
+  } else {
+
+  }
   await refreshTeamMember()
 }
 async function queryAllUser(search_number) {
@@ -198,33 +197,28 @@ async function queryAllUser(search_number) {
   userTableData.value = result.data.results
 }
 async function refreshTeamMember() {
-    let result = await teamFunction.queryTeamMember(teamId.value)
-	result.data.members.forEach((member)=>{
-		if(member.id.toString() === getUserId().toString()){
-			console.log('@@@@')
-			if(member.role.toString() === '普通成员') {
-				isNormalMember.value = false
-			}
+	let result = await teamFunction.queryTeamMember(teamId.value)
+	tableData.value = result.data.members.sort((a,b)=>{
+		const temp = {
+			'团队创建者': 1,
+			'团队管理员': 2,
+			'普通成员': 3
 		}
+		return temp[a.role] - temp[b.role]
 	})
-    tableData.value = result.data.members
 }
 async function addAdminister(memberId) {
-	let res = await teamFunction.addAdmin(teamId.value, memberId)
-	if(res.result.toString() === '0'){
-		ElMessage.error('您无权这样做')
-	}
-	await refreshTeamMember()
+  console.log("handle")
+  console.log(memberId)
+  await teamFunction.addAdmin(teamId.value, memberId)
+  await refreshTeamMember()
 }
 async function rmvAdminister(memberId) {
-    let res = await teamFunction.deleteAdmin(teamId.value, memberId)
-	if(res.result.toString() === '0'){
-		ElMessage.error('您无权这样做')
-	}
-	await refreshTeamMember()
+  await teamFunction.deleteAdmin(teamId.value, memberId)
+  await refreshTeamMember()
 }
 onMounted(() => {
-    queryALL()
+  queryALL()
 });
 const form = reactive({
   name: '',
@@ -421,9 +415,13 @@ h2 {
 
 .common-layout {
   background-color: white;
-  width: 100%;
+  width: 80%;
   height: 120%;
-  margin-left: 20%;
+  margin: 0 auto;
+}
+
+.container {
+  margin-bottom: 80px;
 }
 
 .dialog-footer button:first-child {
@@ -447,8 +445,9 @@ h2 {
   border-style: ridge;
   border-color: #e8e8e8;
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease
+  transition: box-shadow 0.3s ease;
     /* Adjust border properties as needed */
+  height: 500px;
 }
 
 .leftbox:hover {
@@ -460,8 +459,10 @@ h2 {
   border-style: ridge;
   border-color: #e8e8e8;
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease
+  transition: box-shadow 0.3s ease;
     /* Adjust border properties as needed */
+  height: 500px;
+  overflow: auto;
 }
 
 .rightbox:hover {

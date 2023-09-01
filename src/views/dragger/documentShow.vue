@@ -273,7 +273,7 @@ onMounted(async () => {
 
 </script>
 
-<style>
+<style scoped>
 .layout-container-demo .el-aside {
   background-color: white;
 }

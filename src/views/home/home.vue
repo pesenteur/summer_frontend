@@ -6,7 +6,7 @@
             <li><a href="#">About</a></li>
             <li> <a href="#"> Work</a></li>
             <li><a href="#">Contact</a></li>
-            <li> <a href="#" class="btn btn-floating">Get <strong>started</strong></a></li>
+            <li> <router-link to="/login" class="btn btn-floating"><strong>Get started</strong></router-link></li>
         </ul>
     </div>
     <div class="container">
@@ -18,7 +18,7 @@
                             <h2>欢迎来到寄了网站，在这里你可以</h2>
                             <p>根据自己的需求创建团队，更加高效快捷办公</p>
                         </div>
-                        <a href="#" class="btn btn-floating"><strong>Get started</strong></a>
+                        <router-link to="/login" class="btn btn-floating"><strong>Get started</strong></router-link>
                     </div>
 
                 </div>
@@ -77,6 +77,11 @@
         <section id="footer">FOOTER</section>
     </div>
 </template>
+<script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+</script>
 <style scoped>
 * {
     margin: 0;
@@ -330,9 +335,10 @@ section,
     /* 其他样式设置 */
     /* ... */
 }
+
 .image-box-2 img {
     width: 100%;
-    margin-right: 100px ;
+    margin-right: 100px;
     padding: 0px;
     /* 图片宽度不超过容器宽度 */
     /* 根据宽度自适应高度 */

@@ -64,7 +64,7 @@ async function addProject() {
 }
 </script>
 
-<style>
+<style scoped>
 .element-back{
   background-color: rgba(177,184,191,0.25);
 //background-image: url('../../assets/2.jpg');

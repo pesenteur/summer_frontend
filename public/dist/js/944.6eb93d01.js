@@ -1,2 +1,0 @@
-(self["webpackChunkvisual_drag_demo"]=self["webpackChunkvisual_drag_demo"]||[]).push([[944],{7226:function(r,e,n){var t={"./SVGStar/Attr":4061,"./SVGTriangle/Attr":2306};function o(r){var e=u(r);return n(e)}function u(r){if(!n.o(t,r)){var e=new Error("Cannot find module '"+r+"'");throw e.code="MODULE_NOT_FOUND",e}return t[r]}o.keys=function(){return Object.keys(t)},o.resolve=u,r.exports=o,o.id=7226}}]);
-//# sourceMappingURL=944.6eb93d01.js.map

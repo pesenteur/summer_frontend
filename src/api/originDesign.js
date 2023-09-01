@@ -27,5 +27,11 @@ export default {
                 project
             }
         })
+    },
+    deleteDesign(id){
+        return requests({
+            url:`/design/${id}`,
+            method: 'DELETE'
+        })
     }
 }

@@ -48,6 +48,9 @@ const router = createRouter({
     },{
         path: '/home',
         component: ()=> import('@/views/home/home.vue')
+    }, {
+        path: '/preview',
+        component: ()=> import('@/views/dragger/preview.vue')
     }]
 
 });

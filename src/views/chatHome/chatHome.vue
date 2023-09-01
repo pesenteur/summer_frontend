@@ -12,7 +12,7 @@
 			</div>
 		</template>
 	</vue-advanced-chat>
-	<el-drawer v-model="drawerInterVis" direction="rtl" size="15%">
+	<el-drawer v-model="drawerInterVis" direction="rtl" size="30%">
 		<span class="team_list">成员列表</span>
 		<el-dropdown v-if="!isMain">
 			<el-button text>
@@ -36,10 +36,14 @@
 		</div>
 		<input v-model="searchMessage" size="small" placeholder="Type to search"
 		       @change="queryAllMessages" />
-		<el-table :data="messagesTableData" style="width: 100%">
-			<el-table-column prop="sender_name" label="发送者姓名" sortable/>
-			<el-table-column prop="content" label="发送内容" sortable/>
-			<el-table-column prop="update_time" label="发送时间" sortable/>
+		<el-table :data="messagesTableData" style="width: 100%" @row-click="handleRowClick">
+			<el-table-column prop="sender_name" label="发送者姓名" width="100px"/>
+			<el-table-column prop="content" label="发送内容" width="310px">
+			<template v-slot="{ row }">
+				<div class="content-cell" v-html="row.content"></div>
+			</template>
+			</el-table-column>
+			<el-table-column prop="update_time" label="发送时间" />
 		</el-table>
 	</el-drawer>
 	<el-dialog v-model="addChatInterVis" title="创建群聊">
@@ -123,7 +127,7 @@ import { onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref } fro
 import { onBeforeRouteUpdate, useRoute} from "vue-router";
 import { getUserId } from "@/utils/token";
 import chatFunction from "@/api/chat.js";
-import axios from "axios";
+
 
 register()
 const route = useRoute();
@@ -357,6 +361,7 @@ async function addData() {
 	rooms.value = modifiedRoom
 }
 async function addHistoryMessage({ room, options = {} }) {
+	
 	let res;
 	operChatId.value = room.roomId
 	messagesLoaded.value = false
@@ -536,6 +541,17 @@ function messageSelectionActionHandler(event) {
 			break;
 	}
 }
+function scrollToMessage(messageId){
+	const parent = window.document.getElementsByTagName('vue-advanced-chat')[0]
+	const shadow = parent.shadowRoot;
+	const target = shadow.getElementById(messageId)
+	target.scrollIntoView()
+}
+
+function handleRowClick(row){
+	scrollToMessage(row.id);
+	drawerInterVis.value = false
+}
 
 onMounted(() => {
 	//刚进入聊天页面时获得用户的Id和所在团队的Id
@@ -607,6 +623,12 @@ button:last-child {
 	margin-bottom: 40px;
     padding: var(--el-drawer-padding-primary);
     padding-bottom: 0;
+}
+.content-cell {
+	max-height: 75px; /* 设置最大高度 */
+	//overflow: hidden; /* 隐藏溢出内容 */
+	//text-overflow: ellipsis; /* 使用省略号表示溢出内容 */
+	white-space: nowrap; /* 防止换行 */
 }
 </style>
 

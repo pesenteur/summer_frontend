@@ -58,6 +58,7 @@
 					</div>
 				</div>
 			</div>
+			
 		</el-col>
 	</el-drawer>
 </template>
@@ -67,6 +68,7 @@ import {computed, onMounted, onUpdated, ref, watch} from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
 import {getTeamId, getUserId} from "@/utils/token";
+
 
 const table = ref(false)
 // TODO: improvement typing when refactor table

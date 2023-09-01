@@ -3,9 +3,8 @@
 		:messages="JSON.stringify(messages)" :rooms-loaded="true"
 		:height="height" :message-actions="JSON.stringify(messageActions)" :menu-action-handler="menuActionHandler"
 		:messages-loaded="messagesLoaded" :load-first-room="false" :room-id="room_id" :message-selection-actions="JSON.stringify(selectActions)"
-	 
 		@open-user-tag="console.log('')" @send-message="sendMessage($event.detail[0])"
-		@add-room="dialogFormVisible = true" @message-action-handler="handleCustomMessageAction($event.detail[0])" @fetch-messages="addHistoryMessage(($event.detail[0]))"
+		@add-room="addChatInterVis = true" @message-action-handler="handleCustomMessageAction($event.detail[0])" @fetch-messages="addHistoryMessage(($event.detail[0]))"
 		@room-info="handleChatInfo($event.detail[0])" @message-selection-action-handler="messageSelectionActionHandler($event.detail[0])">
 		<template #message-content="{ message }">
 			<div :class="'message ' + 'sender-' + message.senderId">
@@ -13,7 +12,7 @@
 			</div>
 		</template>
 	</vue-advanced-chat>
-	<el-drawer v-model="drawerTable" direction="rtl" size="15%">
+	<el-drawer v-model="drawerInterVis" direction="rtl" size="15%">
 		<span class="team_list">成员列表</span>
 		<el-dropdown v-if="!isMain">
 			<el-button text>
@@ -35,8 +34,15 @@
 				<div class="member-email">{{ member.email }}</div>
 			</div>
 		</div>
+		<input v-model="searchMessage" size="small" placeholder="Type to search"
+		       @change="queryAllMessages" />
+		<el-table :data="messagesTableData" style="width: 100%">
+			<el-table-column prop="sender_name" label="发送者姓名" sortable/>
+			<el-table-column prop="content" label="发送内容" sortable/>
+			<el-table-column prop="update_time" label="发送时间" sortable/>
+		</el-table>
 	</el-drawer>
-	<el-dialog v-model="dialogFormVisible" title="创建群聊">
+	<el-dialog v-model="addChatInterVis" title="创建群聊">
 		<el-form :model="newTeamName">
 			<el-form-item label="群聊名称" :label-width="formLabelWidth">
 				<el-input v-model="newTeamName" autocomplete="off" />
@@ -49,14 +55,14 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">取消</el-button>
+				<el-button @click="addChatInterVis = false">取消</el-button>
 				<el-button type="primary" @click="addRoom">
 					确认
 				</el-button>
 			</span>
 		</template>
 	</el-dialog>
-	<el-dialog v-model="chatMemberAddVisible" title="添加成员">
+	<el-dialog v-model="addMemberInterVis" title="添加成员">
 		<el-form :model="newTeamName">
 			<el-form-item label="群聊成员" :label-width="formLabelWidth">
 				<el-select v-model="newChatMember" multiple placeholder="Select">
@@ -66,14 +72,14 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="chatMemberAddVisible = false">取消</el-button>
+				<el-button @click="addMemberInterVis = false">取消</el-button>
 				<el-button type="primary" @click="addChatMem">
 					确认
 				</el-button>
 			</span>
 		</template>
 	</el-dialog>
-	<el-dialog v-model="chatMemberDeleteVisible" title="删除成员">
+	<el-dialog v-model="deleteMemberInterVis" title="删除成员">
 		<el-form :model="newTeamName">
 			<el-form-item label="群聊成员" :label-width="formLabelWidth">
 				<el-select v-model="deleteChatMember" multiple placeholder="Select">
@@ -83,14 +89,14 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="chatMemberDeleteVisible = false">取消</el-button>
+				<el-button @click="deleteMemberInterVis = false">取消</el-button>
 				<el-button type="primary" @click="deleteMem">
 					确认
 				</el-button>
 			</span>
 		</template>
 	</el-dialog>
-	<el-dialog v-model="chatChooseVisible" title="创建群聊">
+	<el-dialog v-model="sendMultMessageInterVis" title="创建群聊">
 		<el-form :model="newTeamName">
 			<el-form-item label="发送的群聊" :label-width="formLabelWidth">
 				<el-select v-model="newSendChat"  placeholder="Select">
@@ -100,7 +106,7 @@
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="chatChooseVisible = false">Cancel</el-button>
+				<el-button @click="sendMultMessageInterVis = false">Cancel</el-button>
 				<el-button type="primary" @click="sendSelectMessages">
 					Confirm
 				</el-button>
@@ -114,29 +120,30 @@ import { register } from 'vue-advanced-chat'
 import { ElMessage } from 'element-plus'
 import teamFunction from '@/api/team'
 import { onActivated, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue"
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { onBeforeRouteUpdate, useRoute} from "vue-router";
 import { getUserId } from "@/utils/token";
 import chatFunction from "@/api/chat.js";
+import axios from "axios";
 
 register()
-const mainChatId = ref()
 const route = useRoute();
-const router = useRouter();
 const socket = ref() //websocket
 const team_id = ref()
 const user_id = ref()
 const rooms = ref([])
 const messages = ref([])
 const currentUserId = ref()
+//聊天界面的基本数据
 const height = ref('800px')
-const content = ref("")
-const dialogFormVisible = ref(false)
-const chatMemberAddVisible = ref(false)
-const chatMemberDeleteVisible = ref(false)
-const chatChooseVisible = ref(false)
 const formLabelWidth = '140px'
-const chatMemberTable = ref([])
-const drawerTable = ref(false)
+const messagesPerPage = 20
+//控制弹窗界面的是否出现的属性 结尾都为InterVis
+const addChatInterVis = ref(false)
+const addMemberInterVis = ref(false)
+const deleteMemberInterVis = ref(false)
+const sendMultMessageInterVis = ref(false)
+const drawerInterVis = ref(false)
+//判断是否为管理员、是否为主界面、是否是合并发送
 const isAdmin = ref(true)
 const isMain = ref(true)
 const isHole = ref(true)
@@ -149,7 +156,13 @@ const deleteChatMember = ref([])
 const teamAddMemberOption = ref([])
 const chatMemberAddOption = ref([])
 const chatMemmberDeleteOption = ref([])
+const chatMemberTable = ref([])
 
+const searchMessage = ref([])
+const messagesTableData = ref([])
+const room_id = ref()
+const operChatId = ref()
+const messagesLoaded = ref(false)
 const sendMessages = ref([])
 const messageActions = reactive([
 	{
@@ -172,10 +185,14 @@ const selectActions = reactive([
 	}
 ])
 
-const room_id = ref()
-const operChatId = ref()
-const messagesLoaded = ref(false)
-const messagesPerPage = 20
+async function queryAllMessages(){
+	let res = await chatFunction.searchHistory(operChatId.value,searchMessage.value)
+	messagesTableData.value = res.data.matches
+	// console.log(res.data.matches)
+	// const target = window.document.getElementById('01360790-4be8-472e-9ba3-f528e5cb489f')
+	// console.log(target)
+	// target.scrollIntoView()
+}
 
 //更新teamAddMemberOption(不包含自己)
 async function getTeamMember() {
@@ -201,7 +218,6 @@ async function getDeleteChatMember(roomId) {
 }
 async function getChatMemberInfo(roomId) {
 	let info = await chatFunction.getRoomInfo(roomId)
-	console.log(info.data)
 	let adminInfo =info.data.admin
 	if(adminInfo === null){
 		isAdmin.value = false
@@ -242,7 +258,7 @@ async function addRoom() {
 		member.push(user_id.value)
 		await createRoom(member, newTeamName.value)
 	}
-	dialogFormVisible.value = false
+	addChatInterVis.value = false
 }
 async function addChatMem() {
 	let members = []
@@ -259,7 +275,7 @@ async function addChatMem() {
 		await chatFunction.addTeamMember(operChatId.value, members)
 		newChatMember.value = []
 	}
-	chatMemberAddVisible.value = false
+	addMemberInterVis.value = false
 }
 async function deleteMem() {
 	let members = []
@@ -278,16 +294,16 @@ async function deleteMem() {
 		deleteChatMember.value = []
 		await addData()
 	}
-	chatMemberDeleteVisible.value = false
+	deleteMemberInterVis.value = false
 }
 async function sendSelectMessages(){
 	let id
+	let messages = []
 	rooms.value.forEach((room)=>{
 		if(room.roomName === newSendChat.value){
 			id = room.roomId
 		}
 	})
-	let messages = []
 	sendMessages.value.forEach((message)=>{
 		messages.push(message._id)
 	})
@@ -299,12 +315,8 @@ async function sendSelectMessages(){
 }
 async function addData() {
 	let result = await chatFunction.queryAllRoom(team_id.value)
-
 	const modifiedRoom = []
 	result.data.forEach((item) => {
-		if (item.priority === 999) {
-			mainChatId.value = item.id.toString()
-		}
 		let users = []
 		item.members.forEach((member) => {
 			let user = {
@@ -335,7 +347,7 @@ async function addData() {
 					_id: item.last_message.id.toString(),
 					content: item.last_message.content.substring(0,100),
 					senderId: item.last_message.sender.toString(),
-					username: 'John Doe',
+					username: item.last_message.sender_name,
 					timestamp: item.last_message.update_time,
 				}
 			}
@@ -347,6 +359,7 @@ async function addData() {
 async function addHistoryMessage({ room, options = {} }) {
 	let res;
 	operChatId.value = room.roomId
+	messagesLoaded.value = false
 	if (options.reset) {
 		messages.value = []
 		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
@@ -354,49 +367,105 @@ async function addHistoryMessage({ room, options = {} }) {
 		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
 	}
 	await chatFunction.readAllMessage(room.roomId)
-	if (res.data.length === 0 || res.data.length < messagesPerPage) {
+	if (!res.data || res.data.length === 0 || res.data.length < messagesPerPage) {
 		setTimeout(() => {
 			messagesLoaded.value = true
 		}, 0)
 	}
 	res.data.forEach((temp) => {
-		let message = {
-			_id: temp.id,
-			content: temp.content,
-			senderId: temp.sender.toString(),
-			username: temp.sender_name,
-			date: temp.created_time,
-			timestamp: temp.created_time,
-			avatar: '/doe.png',
-			usersTag: ''
+		if (temp.type == 'text') {
+			let message = {
+				_id: temp.id,
+				content: temp.content,
+				senderId: temp.sender.toString(),
+				username: temp.sender_name,
+				date: temp.created_time,
+				timestamp: temp.created_time,
+				avatar: '/doe.png',
+				usersTag: '',
+			}
+			messages.value.unshift(message)
+		}else{
+			console.log('------downFile------')
+			console.log(temp.content)
+			let message = {
+				_id: temp.id,
+				content: '',
+				senderId: temp.sender.toString(),
+				username: temp.sender_name,
+				date: temp.created_time,
+				timestamp: temp.created_time,
+				avatar: '/doe.png',
+				usersTag: '',
+				files: [
+					{
+						name: '我的文件',
+						url: temp.content,
+						type: temp.content.split('.')[temp.content.split('.').length - 1],
+						
+					}
+				],
+			}
+			messages.value.unshift(message)
 		}
-		messages.value.unshift(message)
 	})
 	addData()
 }
+
 async function sendMessage(message) {
-	console.log(message.files)
-	let formatMessage = {
-		"team": team_id.value,
-		"receiver": "",
-		"chat": message.roomId,
-		"content": message.content,
-		"type": "text"
+	console.log('------fileMessage------')
+	console.log(message)
+	let reader = new FileReader()
+
+	if(message.files !== null){
+		for (const file of message.files) {
+			reader.readAsDataURL(file.blob)
+			await chatFunction.sendFile(operChatId.value,file.type,file.extension,file.blob);
+		}
 	}
-	socket.value.send(JSON.stringify(formatMessage))
+	if(message.content !== "") {
+		let formatMessage = {
+			"team": team_id.value,
+			"receiver": "",
+			"chat": message.roomId,
+			"content": message.content,
+			"type": "text"
+		}
+		socket.value.send(JSON.stringify(formatMessage))
+	}
 }
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
-
-	if (temp.chat === operChatId.value) {
+	if(temp.type === 'text') {
+		if (temp.chat === operChatId.value) {
+			let message = {
+				_id: temp.id,
+				content: temp.content,
+				senderId: user_id.value.toString(),
+				username: temp.sender_name,
+				date: temp.created_time,
+				timestamp: temp.created_time,
+				avatar: '/doe.png',
+			}
+			messages.value.push(message)
+		}
+	}else{
 		let message = {
 			_id: temp.id,
-			content: temp.content,
+			content: '',
 			senderId: user_id.value.toString(),
 			username: temp.sender_name,
 			date: temp.created_time,
 			timestamp: temp.created_time,
 			avatar: '/doe.png',
+			files: [
+				{
+					name: '基本项',
+					url: 'http://127.0.0.1:8000/media/chat/9b1c01bfaa084dfcc3e06ff0371ffd65.md',
+					preview: 'data:text/markdown/md',
+					type: temp.content.split('.')[temp.content.split('.').length-1],
+				}
+			],
 		}
 		messages.value.push(message)
 	}
@@ -428,16 +497,16 @@ function handleCustomMessageAction({ roomId, action, message }) {
 }
 function handleInviteMember() {
 	getTeamNoMember(operChatId.value)
-	chatMemberAddVisible.value = true
+	addMemberInterVis.value = true
 }
 function handleDeleteMember() {
 	getTeamNoMember(operChatId.value)
 	getDeleteChatMember(operChatId.value)
-	chatMemberDeleteVisible.value = true
+	deleteMemberInterVis.value = true
 }
 function handleDeleteChat(){
 	deleteSpeChat(operChatId.value)
-	drawerTable.value = false
+	drawerInterVis.value = false
 }
 function handleExit(){
 	if(isAdmin.value === true){
@@ -449,12 +518,12 @@ function handleExit(){
 
 
 function handleChatInfo(event) {
-	drawerTable.value = true
+	drawerInterVis.value = true
 	operChatId.value = event.roomId
 	getChatMemberInfo(event.roomId)
 }
 function messageSelectionActionHandler(event) {
-	chatChooseVisible.value =true
+	sendMultMessageInterVis.value =true
 	console.log('@@@@@')
 	console.log(event.messages)
 	sendMessages.value = event.messages
@@ -469,6 +538,7 @@ function messageSelectionActionHandler(event) {
 }
 
 onMounted(() => {
+	//刚进入聊天页面时获得用户的Id和所在团队的Id
 	team_id.value = route.params.team_id
 	user_id.value = getUserId()
 	currentUserId.value = user_id.value
@@ -485,7 +555,6 @@ onMounted(() => {
 .dialog-footer button:first-child {
 	margin-right: 10px;
 }
-
 .drawer-container {
 	padding: 20px;
 }

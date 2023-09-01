@@ -20,7 +20,7 @@ const route = useRoute();
 const shouldShowNavi = computed(() => {
   // 根据需要的条件来判断是否显示 TeamNavi 组件
   // 在这里根据 route.path 或 route.name 来判断是否显示
-  return route.path !== '/switch' && route.path !== '/' && route.path !== '/login'; // 根据实际情况调整判断条件
+  return route.path !== '/switch' && route.path !== '/' && route.path !== '/login' && route.path !== '/preview'; // 根据实际情况调整判断条件
 });
 const driverObj = driver({
 	showProgress: true,

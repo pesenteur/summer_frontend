@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import accountAPI from "@/api/account";
-import {getToken, setToken, clearToken, setUser, getUserId} from "@/utils/token";
+import { getToken, setToken, clearToken, setUser, getUserId, setName } from "@/utils/token";
 
 const state = () => {
     return {
@@ -18,6 +18,7 @@ const actions = {
             this.token = result.data.token;
             setToken(result.data.token);
             setUser(response.data.id);
+            setName(response.data.name);
             return "登录成功";
         }
         return Promise.reject(result.message);
@@ -29,6 +30,7 @@ const actions = {
             console.log(this.token)
             setToken(response.data.token);
             setUser(response.data.id);
+            setName(response.data.name);
             console.log('*******DataId*******')
             console.log(response.data.id)
             console.log('*******DataId*******')
@@ -96,7 +98,7 @@ const actions = {
         } else {
             return Promise.reject(result.message);
         }
-    }
+    },
 }
 
 export const useAccountStore = defineStore("account", {

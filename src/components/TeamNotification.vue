@@ -64,10 +64,10 @@
 </template>
 
 <script lang="js" setup>
-import {computed, onMounted, onUpdated, ref, watch} from 'vue';
+import { computed, onMounted, onUpdated, ref, watch } from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
-import {getTeamId, getUserId} from "@/utils/token";
+import { getTeamId, getUserId } from "@/utils/token";
 
 
 const table = ref(false)
@@ -82,241 +82,241 @@ const unreadCount = computed(() => {
 });
 
 onMounted(() => {
+  getAllNoti()
+  user_id.value = getUserId()
+  socket.value = new WebSocket(`ws://localhost:8000/ws/message/${user_id.value}`)
+  socket.value.addEventListener('message', () => {
     getAllNoti()
-    user_id.value = getUserId()
-    socket.value = new WebSocket(`ws://localhost:8000/ws/message/${user_id.value}`)
-    socket.value.addEventListener('message', ()=>{
-        getAllNoti()
-    })
+  })
 })
 
 async function clickButton() {
-	table.value = true
-	await getAllNoti()
+  table.value = true
+  await getAllNoti()
 }
 
 async function deleteAllRead() {
-	await notiFunction.deleteReadNoti()
-	await getAllNoti()
+  await notiFunction.deleteReadNoti()
+  await getAllNoti()
 }
 
 async function deleteSingleNoti(NotId) {
-	await notiFunction.deleteSingleNoti(NotId)
-	await getAllNoti()
+  await notiFunction.deleteSingleNoti(NotId)
+  await getAllNoti()
 }
 
 async function readAllNoti() {
-	await notiFunction.readAllNoti()
-	await getAllNoti()
+  await notiFunction.readAllNoti()
+  await getAllNoti()
 }
 
 async function readNoti(NotId) {
-	await notiFunction.readSingleNoti(NotId)
-	await getAllNoti()
+  await notiFunction.readSingleNoti(NotId)
+  await getAllNoti()
 }
 
 function generate_link(item) {
-	if (item.team !== getTeamId()) {
-		return null
-	}
-	if (item.chat_message) {
-		return `/team/${item.team}/chatHome?room=${item.chat}&message=${item.chat_message}`
-	}
-	else if (item.document){
-		return `/document/${item.document}`
-	}
-	// TODO 跳转到文档
-	return `/`
+  if (item.team !== getTeamId()) {
+    return null
+  }
+  if (item.chat_message) {
+    return `/team/${item.team}/chatHome?room=${item.chat}&message=${item.chat_message}`
+  }
+  else if (item.document) {
+    return `/document/${item.document}`
+  }
+  return null
 }
 
 async function getAllNoti() {
-	let res = await notiFunction.queryAllNoti()
-	console.log(res.data)
-	if (!res.data) {
-		return
-	}
-	let filtermessages = []
-	res.data.forEach((item) => {
-		let noti = {
-			content: item.content,
-			isread: item.is_read === true ? 'read' : 'unread',
-			notId: item.id,
-			link: generate_link(item)
-		}
-		filtermessages.push(noti)
-	})
-	messages.value = filtermessages
+  let res = await notiFunction.queryAllNoti()
+  console.log(res.data)
+  if (!res.data) {
+    return
+  }
+  let filtermessages = []
+  res.data.forEach((item) => {
+    let noti = {
+      content: item.content,
+      isread: item.is_read === true ? 'read' : 'unread',
+      notId: item.id,
+      link: generate_link(item)
+    }
+    filtermessages.push(noti)
+  })
+  messages.value = filtermessages
 }
 </script>
 
 <style scoped>
 .butt {
-	margin-top: 12px;
+  margin-top: 12px;
 }
 
 .message_icon {
-	height: 2px;
+  height: 2px;
 }
 
 .badge_top {
-	position: absolute;
-	margin-left: -33px;
-	margin-top: 17px;
-	width: 8px;
-	height: 8px;
-	background-color: red;
-	border-radius: 50%;
+  position: absolute;
+  margin-left: -33px;
+  margin-top: 17px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
 }
 
 .custom-icon-button {
-	background-image: url('@/assets/envelope-regular.svg');
-	/* 根据您的项目路径调整 */
-	background-size: 25px;
-	/* 根据需要调整 */
-	background-repeat: no-repeat;
-	margin-top: 18px;
-	width: 25px;
-	/* 根据需要调整 */
-	height: 25px;
-	/* 根据需要调整 */
-	display: inline-block;
-	border: none;
-	cursor: pointer;
-	outline: none;
+  background-image: url('@/assets/envelope-regular.svg');
+  /* 根据您的项目路径调整 */
+  background-size: 25px;
+  /* 根据需要调整 */
+  background-repeat: no-repeat;
+  margin-top: 18px;
+  width: 25px;
+  /* 根据需要调整 */
+  height: 25px;
+  /* 根据需要调整 */
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  outline: none;
 }
 
 .message-container {
-	text-align: center;
-	/* 水平居中文本内容 */
-	align-items: center;
-	/* 调整消息之间的间距 */
+  text-align: center;
+  /* 水平居中文本内容 */
+  align-items: center;
+  /* 调整消息之间的间距 */
 }
 
 .card-container {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	/* 水平居中 */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  /* 水平居中 */
 }
 
 
 .details-container {
-	width: 100%;
-	text-align: center;
-	padding: 5px;
-	position: relative;
-	/* Add this to make the badge position relative to the container */
+  width: 100%;
+  text-align: center;
+  padding: 5px;
+  position: relative;
+  /* Add this to make the badge position relative to the container */
 }
 
 .summary {
-	cursor: pointer;
-	position: relative;
-	/* Add this to make the badge position relative to the summary */
-	list-style: none;
-	/* Remove the default list-style */
-	/* Remove the default padding */
-	font-size: 20px;
-	/* Remove the default margin */
-	outline: none;
-	/* Remove the default outline */
-	justify-content: space-between;
-	/* Align items to the right */
-	align-items: center;
-	/* Center vertically */
+  cursor: pointer;
+  position: relative;
+  /* Add this to make the badge position relative to the summary */
+  list-style: none;
+  /* Remove the default list-style */
+  /* Remove the default padding */
+  font-size: 20px;
+  /* Remove the default margin */
+  outline: none;
+  /* Remove the default outline */
+  justify-content: space-between;
+  /* Align items to the right */
+  align-items: center;
+  /* Center vertically */
 }
 
 .summary::-webkit-details-marker {
-	display: none;
-	/* 隐藏默认的横线图标 */
+  display: none;
+  /* 隐藏默认的横线图标 */
 }
 
 .badge {
-	position: absolute;
-	width: 8px;
-	height: 8px;
-	background-color: red;
-	border-radius: 50%;
-	/* visibility: hidden; */
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+  /* visibility: hidden; */
 }
 
 .content {
-	max-height: 0;
-	/* Initially hidden */
-	overflow: hidden;
-	margin-top: 10px;
-	transition: max-height 0.3s ease-in-out;
-	font-size: 15px;
-	/* Add transition effect */
+  max-height: 0;
+  /* Initially hidden */
+  overflow: hidden;
+  margin-top: 10px;
+  transition: max-height 0.3s ease-in-out;
+  font-size: 15px;
+  /* Add transition effect */
 }
 
 .el-drawer__body {
-	flex: 1;
-	/* padding: var(--el-drawer-padding-primary); */
-	padding: 0px !important;
-	overflow: auto;
+  flex: 1;
+  /* padding: var(--el-drawer-padding-primary); */
+  padding: 0px !important;
+  overflow: auto;
 }
 
 .open .content {
-	max-height: 1000px;
-	/* Show content when open */
+  max-height: 1000px;
+  /* Show content when open */
 }
 
 .el-divider {
-	margin: 10px 0;
-	border-color: #ccc;
+  margin: 10px 0;
+  border-color: #ccc;
 }
 
 .action-button {
-	color: rgb(92, 86, 86);
-	border: none;
-	font-size: 20px;
-	border-radius: 5px;
-	cursor: pointer;
-	background-color: white;
-	transition: background-color 0.3s;
+  color: rgb(92, 86, 86);
+  border: none;
+  font-size: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.3s;
 }
 
 .inside-action-button {
-	padding: 8px 16px;
-	color: rgb(92, 86, 86);
-	border: none;
-	font-size: 15px;
-	border-radius: 5px;
-	cursor: pointer;
-	background-color: white;
-	transition: background-color 0.3s;
+  padding: 8px 16px;
+  color: rgb(92, 86, 86);
+  border: none;
+  font-size: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.3s;
 }
 
 .inside-action-button:hover {
-	color: red;
-	background-color: white;
+  color: red;
+  background-color: white;
 }
 
 .action-button:hover {
-	color: black;
-	background-color: #aac1d9;
+  color: black;
+  background-color: #aac1d9;
 }
 
 .button-container {
-	display: flex;
-	justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .button-left {
-	flex: 1;
-	margin-left: 20px;
+  flex: 1;
+  margin-left: 20px;
 }
 
 .button-right {
-	flex: 1;
-	margin-left: 150px;
+  flex: 1;
+  margin-left: 150px;
 }
 
 .button-container {
-	display: flex;
-	justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 ::-webkit-details-marker {
-	display: none;
-}</style>
+  display: none;
+}
+</style>

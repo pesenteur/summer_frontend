@@ -15,14 +15,14 @@
             <el-menu-item index="2">
               <div class="menu-item-container">
                 <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="images">
-                <span class="element-title">项目文档</span>
+                <span class="element-title" @click="seeDocs">项目文档</span>
               </div>
             </el-menu-item>
             <el-divider />
 
             <el-menu-item index="4">
               <img src="@/assets/imgs/emoji/rainbow.png" alt="!!!" class="images">
-              <span class="element-title">页面视图</span>
+              <span class="element-title" @click="seeDesign">页面视图</span>
             </el-menu-item>
 
 
@@ -33,7 +33,10 @@
 
     <el-container>
       <el-main>
-        <el-scrollbar>
+
+        <documentShow v-if="switchMenu === false"/>
+
+        <el-scrollbar v-else>
           <el-table :data="tableData" style="width: 100%" max-height="250">
             <!--            <el-table-column fixed prop="date" label="" width="150" />-->
             <el-table-column prop="created_time" label="创建时间" />
@@ -56,6 +59,10 @@
               <el-form-item label="画布名称" :label-width="formLabelWidth">
                 <el-input v-model="designName" autocomplete="off" class="element-form" />
               </el-form-item>
+              <el-radio-group v-model="ifTemplate">
+                <el-radio label="1" size="large" >不使用模板</el-radio>
+                <el-radio label="2" size="large" >使用模板</el-radio>
+              </el-radio-group>
             </el-form>
             <template #footer>
               <span class="dialog-footer">
@@ -69,9 +76,6 @@
             </template>
           </el-dialog>
 
-
-          <!--          <el-button class="mt-4" style="width: 100%" @click="onAddDesign"-->
-          <!--          >新建画布</el-button>-->
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -80,12 +84,13 @@
 
 <script setup>
 import { onMounted, onUpdated, ref} from 'vue'
-import { Menu as IconMenu, Message, Search, Setting } from '@element-plus/icons-vue'
+import {Document, Menu as IconMenu, Message, Search, Setting} from '@element-plus/icons-vue'
 import { reactive } from "vue";
 import { getProjectName, getProjId, setDesignId } from '@/utils/token'
 import projAPI from '@/api/proj'
 import originAPI from '@/api/originDesign'
 import { useRouter } from "vue-router";
+import documentShow from './documentShow.vue'
 
 const router = useRouter()
 
@@ -93,6 +98,8 @@ const form = reactive({
   name: '',
   describe: '',
 })
+
+const switchMenu = ref(true)
 
 const projName = ref('')
 projName.value = getProjectName()
@@ -107,9 +114,20 @@ const tableData = ref([])
 
 const designName = ref()
 
+const ifTemplate = ref('')
+
 // const deleteRow = (index: number) => {
 //   tableData.value.splice(index, 1)
 // }
+
+
+function seeDocs(){
+  switchMenu.value = false
+}
+
+function seeDesign(){
+  switchMenu.value = true
+}
 
 function intoDesign(designId) {
   setDesignId(designId)
@@ -119,16 +137,35 @@ function intoDesign(designId) {
 }
 
 async function addDesign() {
-  if (designName.value === '') {
+  console.log('ifTemplate',ifTemplate.value)
+  if(ifTemplate.value === '1'){
+    console.log('ifTemplate1',ifTemplate.value)
+    if (designName.value === '') {
+      dialogFormVisible2.value = true
+    } else {
+      const result = await originAPI.addOrigin(designName.value, getProjId())
+      console.log('designName', designName.value)
+      tableData.value.push({ name: designName.value })
+      dialogFormVisible2.value = false
+      const result2 = await originAPI.getAllDesign(getProjId())
+      tableData.value = result2.data
+    }
+  }else if(ifTemplate.value === '2'){
+    console.log('ifTemplate2',ifTemplate.value)
+    await router.push('/origin/template')
     dialogFormVisible2.value = false
-  } else {
-    const result = await originAPI.addOrigin(designName.value, getProjId())
-    console.log('designName', designName.value)
-    tableData.value.push({ name: designName.value })
-    dialogFormVisible2.value = false
-    const result2 = await originAPI.getAllDesign(getProjId())
-    tableData.value = result2.data
   }
+
+  // if (designName.value === '') {
+  //   dialogFormVisible2.value = true
+  // } else {
+  //   const result = await originAPI.addOrigin(designName.value, getProjId())
+  //   console.log('designName', designName.value)
+  //   tableData.value.push({ name: designName.value })
+  //   dialogFormVisible2.value = false
+  //   const result2 = await originAPI.getAllDesign(getProjId())
+  //   tableData.value = result2.data
+  // }
 }
 
 onMounted(async () => {

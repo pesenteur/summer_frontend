@@ -14,20 +14,19 @@
             <template v-if="status === 'connected'">
               {{ editor.storage.collaborationCursor.users.length }} user{{
                 editor.storage.collaborationCursor.users.length === 1 ? '' : 's'
-              }} online in
+              }} online is editing {{ currentDocumentName }}
             </template>
             <template v-else>
               offline
             </template>
-            {{ currentUser.name }}
           </div>
           <div class="optionButton">
             <button @click="saveDocument">Save</button>
             <button @click="exportMarkdown">导出为Markdown</button>
             <button @click="exportPDF">导出为PDF</button>
             <button @click="exportWord">导出为Word</button>
-            <button @click="openDialog">共享</button>
-            <div v-if="isDialogVisible" class="dialog">
+            <button v-if="!share" @click="openDialog">共享</button> <button @click="share=false" v-else>取消分享</button>
+            <el-diglog v-if="isDialogVisible" class="dialog">
               <h2>生成共享链接</h2>
               <label for="editable">是否可编辑：</label>
               <input type="checkbox" id="editable" v-model="isEditable">
@@ -37,7 +36,7 @@
                 生成的链接：<a :href="sharedLink" target="_blank">{{ sharedLink }}</a>
                 <button @click="copyToClipboard">复制链接</button>
               </p>
-            </div>
+            </el-diglog>
           </div>
         </div>
       </el-header>
@@ -74,7 +73,7 @@
                           </template>
                           <el-menu-item-group>
                             <el-menu-item v-for="d in folder.documents" :key="d.id" :index="d.id"
-                              @click="getDocumentContent(d.id, d.title)">
+                              @click="changeDocument(d.id, d.title)">
                               <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ d.title }}</span>
                               <button class="transparent-button-2"
                                 @click.stop="showDeleteDocumentDialog(d.id)"><font-awesome-icon
@@ -85,7 +84,7 @@
                         </el-sub-menu>
                       </div>
                       <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id"
-                        @click="getDocumentContent(document.id, document.title)">
+                        @click="changeDocument(document.id, document.title)">
                         <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ document.title }}</span>
                         <button class="transparent-button-2"
                           @click.stop="showDeleteDocumentDialog(document.id)"><font-awesome-icon
@@ -213,8 +212,8 @@
 
                   <el-popover placement="top-start" title="Heading 1" :width="100" trigger="hover" content="设置为一级标题">
                     <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+                        :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
                         h1
                       </el-button>
                     </template>
@@ -223,8 +222,8 @@
                   <!-- 标题按钮 - Heading 2 -->
                   <el-popover placement="top-start" title="Heading 2" :width="100" trigger="hover" content="设置为二级标题">
                     <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+                        :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
                         h2
                       </el-button>
                     </template>
@@ -388,7 +387,7 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { saveAs } from 'file-saver';
 import { ElMessage } from 'element-plus';
-import { getProjId, setDocumentId, getProjectName } from "@/utils/token";
+import { getProjId, getName, setDocumentId, getProjectName } from "@/utils/token";
 import Clipboard from 'clipboard';
 import router from '../../router';
 const route = useRoute();
@@ -438,8 +437,9 @@ const provider = ref();
 const editor = ref();
 const status = ref('connecting');
 const folderId = ref('')
-const documentId = ref(route.params.documentId || '123');
+const documentId = ref(route.params.documentId);
 const title = ref('');
+const share = ref(false);
 const isEditingTitle = ref(false);
 const folders = ref([]);
 const rootDocuments = ref([])
@@ -470,13 +470,9 @@ const closeDialog = () => {
   addDocumentDialogVisible.value = false;
 };
 
-const share = () => {
-
-}
 
 const currentUser = ref({
-  // TODO 获取用户姓名
-  name: route.params.documentId || '123',
+  name: getName(),
   color: getRandomColor()
 });
 const toggleEditTitle = () => {
@@ -596,19 +592,21 @@ const processDocuments = (data) => {
   });
 
 };
+
 async function generateLink() {
   // 在这里生成共享链接，可以根据 isEditable 的值来决定是否允许编辑
-  const baseUrl = 'http://localhost:5173/shared/';
+  const baseUrl = 'http://127.0.0.1:5173/shared/';
+  share.value = true
   console.log(documentId.value, isEditable.value)
   await documentRequest.createShareLink(documentId.value, isEditable.value)
   sharedLink.value = baseUrl + documentId.value;
 };
 async function saveDocument() {
   try {
-    const content = editor.value.getHTML();
-    console.log(content)
-    console.log(documentId)
-    await documentRequest.saveDocument(documentId.value, content);
+    // const content = editor.value.getHTML();
+    // console.log(content)
+    // console.log(documentId)
+    // await documentRequest.saveDocument(documentId.value, content);
     ElMessage({
       message: '保存成功',
       type: 'success'
@@ -672,33 +670,74 @@ async function addFolder() {
   // Implement logic to add a new folder using newFolderName.value
   closeDialog();
 };
-async function getDocumentContent(document, documentName) {
+async function changeDocument(document, documentName) {
   try {
     router.push(`/document/${document}`)
     documentId.value = document
     currentDocumentName.value = documentName
-    const response = await documentRequest.getDocumentContent(document)
-    console.log("content:", response.data.content)
-    if (response.data.detail === "已授权阅读") {
-      editor.value.commands.setContent(response.data.content)
-      if (response.data.editable === false) {
-        editor.value.setEditable(false)
-      }
-      else {
-        editor.value.setEditable(true)
-      }
-    } else {
-      ElMessage({
-        message: '你没有权限阅读',
-        type: 'error'
-      })
-    }
+    const ydoc = new Y.Doc();
+    provider.value.destroy();
+    provider.value = new HocuspocusProvider({
+      url: 'ws://127.0.0.1:1234',
+      name: documentId.value,
+      document: ydoc,
+      forceSyncInterval: 200
+    });
+    provider.value.on('status', event => {
+      status.value = event.status;
+    });
+    editor.value.destroy();
+    editor.value = new Editor({
+      editable: Editable,
+      extensions: [
+        StarterKit.configure({
+          history: false
+        }),
+        Highlight,
+        TaskList,
+        TaskItem,
+        Collaboration.configure({
+          document: ydoc
+        }),
+        CollaborationCursor.configure({
+          provider: provider.value,
+          user: currentUser.value
+        }),
+        CharacterCount.configure({
+          limit: 100000,
+        }),
+        StarterKit,
+        Mention.configure({
+          HTMLAttributes: {
+            class: 'mention',
+          },
+          suggestion
+        })
+      ]
+    });
+    // const response = await documentRequest.getDocumentContent(document)
+    // console.log("content:", response.data.content)
+    // if (response.data.detail === "已授权阅读") {
+    //   editor.value.commands.setContent(response.data.content)
+    //   if (response.data.editable === false) {
+    //     editor.value.setEditable(false)
+    //   }
+    //   else {
+    //     editor.value.setEditable(true)
+    //   }
+    // } else {
+    //   ElMessage({
+    //     message: '你没有权限阅读',
+    //     type: 'error'
+    //   })
+    // }
   }
   catch (error) {
     ElMessage({
       message: '文档获取失败',
       type: 'error'
     })
+    console.log(error)
   }
 }
 async function addDocument() {
@@ -732,8 +771,7 @@ function exportMarkdown() {
 
   const downloadLink = document.createElement('a');
   downloadLink.href = URL.createObjectURL(blob);
-  // TODO 文档名
-  downloadLink.download = 'filename.txt';
+  downloadLink.download = currentDocumentName.value + '.md';
   downloadLink.click();
   URL.revokeObjectURL(downloadLink.href);
 }
@@ -774,7 +812,7 @@ function exportPDF() {
       contentHeight
     );
     // 下载 PDF 文件
-    pdf.save('filename.pdf');
+    pdf.save(currentDocumentName.value + '.pdf');
   });
 }
 
@@ -803,7 +841,7 @@ function exportWord() {
   const html = getModelHtml(editor.value.getHTML())
   const blob = new Blob([html], { type: 'application/msword;charset=utf-8' })
   //调用file-saver插件的saveAs方法导出
-  saveAs(blob, title.value + '.doc')
+  saveAs(blob, currentDocumentName.value + '.docx')
 }
 </script>
 
@@ -975,14 +1013,32 @@ function exportWord() {
     padding: 0 1rem;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    line-height: 1.1;
+  h1{  
+    margin-top: 40px;
+    line-height: 0px;
+    font-size: 60px;
   }
+  h2{
+    font-size: 52px;
+    line-height: 0px;
+  }
+  h3{
+    font-size: 42px;
+    line-height: 0px;
+  }
+  h4{
+    font-size: 35px;
+    line-height: 0px;
+  }
+  h5{
+    font-size: 30px;
+    line-height: 0px;
+  }
+  h6 {
+    font-size: 24px;
+    line-height: 0px;
+  }
+
 
   code {
     background-color: rgba(#616161, 0.1);

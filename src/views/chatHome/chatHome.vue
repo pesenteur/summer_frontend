@@ -458,7 +458,7 @@ async function sendMessage(message) {
 function openFile({ file }) {
 	window.open(file.file.url, '_blank')
 }
-function upMessage(event) {
+async function upMessage(event) {
 	let temp = JSON.parse(event.data)
 	if (temp.type === 'text') {
 		if (temp.chat === operChatId.value) {
@@ -492,6 +492,7 @@ function upMessage(event) {
 		}
 		messages.value.push(message)
 	}
+	await chatFunction.readAllMessage(operChatId.value)
 	addData()
 }
 function menuActionHandler({ action, }) {

@@ -21,11 +21,12 @@ const driverObj = driver({
 });
 
 onMounted(()=>{
-	let arr = getOldArr()
+	let arr = JSON.parse(getOldArr())
+	if (!Array.isArray(arr)) arr=[]
 	if (!arr||!arr.includes(getUserId())){
-		arr = !arr ? [] : arr;
+		if (!arr) arr = []
 		arr.push(getUserId())
-		setIsOld(arr)
+		setIsOld(JSON.stringify(arr))
 		const buttonElements = window.document.getElementsByClassName('img-decorate')[0]
 		driverObj.drive()
 		setTimeout(() => {

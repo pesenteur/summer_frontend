@@ -33,7 +33,6 @@ const driverObj = driver({
 	]
 });
 onUpdated(()=>{
-	console.log(route)
 	// let arr = getOldArr()
 	// if (!arr||!arr.includes(getUserId())){
 	// 	arr = !arr ? [] : arr;

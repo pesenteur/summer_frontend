@@ -36,12 +36,12 @@ export default {
         });
     },
 
-    queryMessage(chat_id, message_id=null, count=20) {
+    queryMessage(chat_id, message_id=null, count=20, all=null) {
         return requests({
             url: `/chat/${chat_id}/message`,
             method: 'GET',
             params: {
-                id: message_id, count
+                id: message_id, count, all
             }
         });
     },

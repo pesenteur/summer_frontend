@@ -31,6 +31,12 @@ export default {
             }
         });
     },
+    queryAllInvitation() {
+        return requests({
+            url: `/user/invitations`,
+            method: 'GET',
+        });
+    },
     deleteTeam(team_id) {
         return requests({
             url: `/team/${team_id}`,
@@ -50,7 +56,7 @@ export default {
         return requests({
             url: '/team-invites',
             method: 'GET',
-            data:{
+            params:{
                 team
             }
         });

@@ -96,7 +96,7 @@ const actions = {
         } else {
             return Promise.reject(result.message);
         }
-    }
+    },
 }
 
 export const useAccountStore = defineStore("account", {

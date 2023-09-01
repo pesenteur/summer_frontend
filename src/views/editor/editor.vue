@@ -27,7 +27,7 @@
             <button @click="exportPDF">导出为PDF</button>
             <button @click="exportWord">导出为Word</button>
             <button @click="openDialog">共享</button>
-            <div v-if="isDialogVisible" class="dialog">
+            <el-diglog v-if="isDialogVisible" class="dialog">
               <h2>生成共享链接</h2>
               <label for="editable">是否可编辑：</label>
               <input type="checkbox" id="editable" v-model="isEditable">
@@ -37,7 +37,7 @@
                 生成的链接：<a :href="sharedLink" target="_blank">{{ sharedLink }}</a>
                 <button @click="copyToClipboard">复制链接</button>
               </p>
-            </div>
+            </el-diglog>
           </div>
         </div>
       </el-header>

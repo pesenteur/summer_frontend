@@ -62,6 +62,9 @@ const router = createRouter({
         meta: {
             no_login: true
         }
+    }, {
+        path: '/restore/',
+        component: () => import('@/views/editor/restore.vue')
     }]
 
 });

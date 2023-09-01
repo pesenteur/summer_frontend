@@ -8,7 +8,7 @@
         :key="index"
         @click="selectItem(index)"
       >
-        {{ item }}
+        {{ item.name }}
       </button>
     </template>
     <div class="item" v-else>
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import documentRequest from '@/api/document';
 export default {
   props: {
     items: {
@@ -34,6 +35,7 @@ export default {
   data() {
     return {
       selectedIndex: 0,
+      
     }
   },
 
@@ -75,9 +77,12 @@ export default {
       this.selectItem(this.selectedIndex)
     },
 
-    selectItem(index) {
-      const item = this.items[index]
-
+    async selectItem(index) {
+      const documentId = this.$route.params.documentId;
+      const result = await documentRequest.processAt(documentId,this.items[index].id)
+      
+      console.log(this.items[index].id)
+      const item = this.items[index].name
       if (item) {
         this.command({ id: item })
       }

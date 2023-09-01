@@ -119,7 +119,8 @@ function generate_link(item) {
 	}
 	if (item.chat_message) {
 		return `/team/${item.team}/chatHome?room=${item.chat}&message=${item.chat_message}`
-	}else{
+	}
+	else if (item.document){
 		return `/document/${item.document}`
 	}
 	// TODO 跳转到文档

@@ -25,7 +25,8 @@
             <button @click="exportMarkdown">导出为Markdown</button>
             <button @click="exportPDF">导出为PDF</button>
             <button @click="exportWord">导出为Word</button>
-            <button v-if="!share" @click="openDialog">共享</button> <button @click="share=false" v-else>取消分享</button>
+            <button @click="toggleSidebar">历史版本</button>
+            <button v-if="!share" @click="openDialog">共享</button> <button @click="cancelShare" v-else>取消分享</button>
             <el-diglog v-if="isDialogVisible" class="dialog">
               <h2>生成共享链接</h2>
               <label for="editable">是否可编辑：</label>
@@ -43,7 +44,7 @@
       <el-affix>
         <el-container>
           <el-affix :offset="120">
-            <el-aside width="230px">
+            <el-aside width="100%">
               <el-row class="tac">
                 <el-col :span="24">
                   <el-menu>
@@ -357,6 +358,25 @@
               </div>
             </div>
           </el-main>
+          <transition>
+            <el-aside :key="showSidebar" v-if="showSidebar" width="300px"> <!-- 右侧侧栏 -->
+              <!-- 右侧侧栏内容 -->
+              <div class="history">
+                <h2>文档历史记录</h2>
+                <el-table :data="historyRecord" style="width: 100%">
+                  <el-table-column prop="id" label="版本" />
+                  <el-table-column prop="update_time" label="更新时间" />
+                  <el-table-column fixed="right" label="操作" width="60px">
+                    <template #default="scope">
+                      <el-button link type="primary" size="small" @click.prevent="restore(scope.row.id)">
+                        回退
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-aside>
+          </transition>
         </el-container>
       </el-affix>
     </el-container>
@@ -375,7 +395,6 @@ import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
 import { Editor, EditorContent, useEditor } from '@tiptap/vue-3'
 import suggestion from './suggestion.js'
-import asideNav from './asideNav.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import * as Y from 'yjs'
 import { onBeforeUnmount, onMounted, ref } from "vue";
@@ -386,7 +405,7 @@ import TurndownService from 'turndown'
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { saveAs } from 'file-saver';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElTableColumn } from 'element-plus';
 import { getProjId, getName, setDocumentId, getProjectName } from "@/utils/token";
 import Clipboard from 'clipboard';
 import router from '../../router';
@@ -443,13 +462,21 @@ const share = ref(false);
 const isEditingTitle = ref(false);
 const folders = ref([]);
 const rootDocuments = ref([])
+const historyRecord = ref([])
 const projectName = getProjectName()
 const currentDocumentName = ref('')
 const newTitle = ref(currentDocumentName.value);
 const Editable = ref(true)
+const showSidebar = ref(false)
 const showAddFolderDialog = () => {
   addFolderDialogVisible.value = true;
 };
+const toggleSidebar = () => {
+  if (showSidebar.value == false) {
+    getHistory()
+  }
+  showSidebar.value = !showSidebar.value
+}
 const showDeleteDocumentDialog = (dId) => {
   centerDialogVisible.value = true;
   deleteDocumentId.value = dId
@@ -508,6 +535,7 @@ const wordCss = `
 
 onMounted(async () => {
   await getAllDocuments();
+
   const ydoc = new Y.Doc();
   provider.value = new HocuspocusProvider({
     url: 'ws://127.0.0.1:1234',
@@ -555,8 +583,9 @@ onBeforeUnmount(() => {
 });
 async function changeDocumentName() {
   try {
-    await documentRequest.updateDocument(newTitle.value, getProjId(), documentId)
+    await documentRequest.updateDocument(newTitle.value, getProjId(), documentId.value)
     currentDocumentName.value = newTitle.value
+    console.log(currentDocumentName.value)
     getAllDocuments()
     ElMessage({
       message: '保存成功',
@@ -588,6 +617,9 @@ const processDocuments = (data) => {
       rootDocuments.value.push(item)
     } else {
       folders.value.push(item)
+    }
+    if (item.id === documentId.value) {
+      currentDocumentName.value = item.title;
     }
   });
 
@@ -633,6 +665,38 @@ async function deleteFolder() {
       message: '删除失败',
       type: 'error'
     });
+  }
+}
+async function cancelShare() {
+  try {
+    share.value = false
+    await documentRequest.cancelShare(documentId.value)
+    ElMessage({
+      message: '取消成功',
+      type: 'success'
+    })
+  } catch (error) {
+    ElMessage({
+      message: '删除失败',
+      type: 'error'
+    })
+  }
+}
+async function restore(dId) {
+  try {
+    if (editor.value.storage.collaborationCursor.users.length === 1) {
+      console.log(dId)
+      await documentRequest.restore(dId)
+      ElMessage({
+        message: '回退成功',
+        type: 'success'
+      })
+    }
+  } catch (error) {
+    ElMessage({
+      message: '删除失败',
+      type: 'error'
+    })
   }
 }
 async function deleteDocument() {
@@ -815,7 +879,19 @@ function exportPDF() {
     pdf.save(currentDocumentName.value + '.pdf');
   });
 }
+async function getHistory() {
+  try {
+    const result = await documentRequest.getHistory(documentId.value, '')
+    historyRecord.value = result.data
+    console.log(result.data)
+  } catch (error) {
+    ElMessage({
+      message: '获取文档失败',
+      type: 'error'
+    })
+  }
 
+}
 function getModelHtml(mhtml) {
   return `<!DOCTYPE html>
                 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -1013,27 +1089,32 @@ function exportWord() {
     padding: 0 1rem;
   }
 
-  h1{  
+  h1 {
     margin-top: 40px;
     line-height: 0px;
     font-size: 60px;
   }
-  h2{
+
+  h2 {
     font-size: 52px;
     line-height: 0px;
   }
-  h3{
+
+  h3 {
     font-size: 42px;
     line-height: 0px;
   }
-  h4{
+
+  h4 {
     font-size: 35px;
     line-height: 0px;
   }
-  h5{
+
+  h5 {
     font-size: 30px;
     line-height: 0px;
   }
+
   h6 {
     font-size: 24px;
     line-height: 0px;
@@ -1170,6 +1251,7 @@ function exportWord() {
 .transparent-button-2 {
   border: none;
   background-color: transparent;
+  padding-bottom: 4px;
   /* Optional: Remove padding if needed */
   cursor: pointer;
 }
@@ -1196,5 +1278,34 @@ function exportWord() {
   border: 1px solid #ccc;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+}
+
+.item {
+  margin-left: 10px;
+  margin-right: 20px;
+  margin-top: 2px;
+}
+
+.v-enter-from,
+.v-leave-to {
+  transform: translateX(100%);
+}
+
+.v-enter-to,
+.v-leave-from {
+  transform: translateX(0);
+}
+
+.v-leave-active {
+  transition: transform .6s ease;
+}
+
+.v-enter-active {
+  transition: transform .6s ease;
+}
+
+.history {
+  height: 80vh;
+  overflow: auto;
 }
 </style>

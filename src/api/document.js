@@ -92,6 +92,31 @@ export default {
                 document, receiver
             }
         });
+    },
+    cancelShare(document) {
+        return requests({
+            url: '/documents/deauthorize',
+            method: 'PATCH',
+            data: {
+                document
+            }
+        });
+    },getHistory(document,project){
+        return requests({
+            url: '/documents/history',
+            method: 'GET',
+            params: {
+                document, project
+            }
+        });
+    },restore(document_history){
+        return requests({
+            url: '/documents/restore',
+            method: 'PATCH',
+            data: {
+                document_history
+            }
+        });
     }
 
 }

@@ -5,13 +5,13 @@
 			<br>
 			<span class="subtitle">选择后将自动为您跳转到主页面</span>
 			<br>
-			<button @click="dialogTableVisible = true">查看你收到的邀请</button>
-			<el-divider/>
+			<button @click="dialogTableVisible = true" class="view-invitations-button">查看你收到的邀请</button>
+			<el-divider />
 			<el-menu v-for="team in teamTeamTable" key="team.id" class="el-menu-vertical-demo">
-				<el-menu-item index="1" @click="jumpToHome(team.id,team.name)">
+				<el-menu-item index="1" @click="jumpToHome(team.id, team.name)">
 					<div class="moji">
 						<el-icon>
-							<icon-menu/>
+							<icon-menu />
 						</el-icon>
 						<span class="team-name">{{ team.name }}</span>
 					</div>
@@ -19,34 +19,36 @@
 			</el-menu>
 			<el-dialog v-model="dialogTableVisible" title="你收到的邀请">
 				<el-table :data="userTableData" style="width: 100%">
-					<el-table-column prop="team.name" label="团队名称" sortable/>
-					<el-table-column prop="create_time" label="发送时间" sortable/>
+					<el-table-column prop="team.name" label="团队名称" sortable />
+					<el-table-column prop="create_time" label="发送时间" sortable />
 					<el-table-column prop="status" label="状态" sortable />
 					<el-table-column align="right" width="200">
 						<template #default="scope">
-							<el-button size="small" type="danger" @click="handleAdd(scope.row,false)" v-if="scope.row.status==='已发送'">拒绝</el-button>
-							<el-button size="small" type="danger" @click="handleAdd(scope.row,true)" v-if="scope.row.status==='已发送'">接受</el-button>
+							<el-button size="small" type="danger" @click="handleAdd(scope.row, false)"
+								v-if="scope.row.status === '已发送'">拒绝</el-button>
+							<el-button size="small" type="danger" @click="handleAdd(scope.row, true)"
+								v-if="scope.row.status === '已发送'">接受</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 			</el-dialog>
 			<el-menu>
 				<div class="create-team-btn" @click="dialogFormVisible = true">
-					<font-awesome-icon :icon="['fas', 'plus']"/>
+					<font-awesome-icon :icon="['fas', 'plus']" />
 				</div>
 				<el-dialog v-model="dialogFormVisible" title="欢迎来到寄了网站，请创建团队" center width="35%">
 					<el-form :model="form">
 						<el-form-item label="团队名称" :label-width="formLabelWidth">
-							<el-input v-model="form.name" autocomplete="off"/>
+							<el-input v-model="form.name" autocomplete="off" />
 						</el-form-item>
 					</el-form>
 					<template #footer>
-            <span class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="submitTeam">
-                Confirm
-              </el-button>
-            </span>
+						<span class="dialog-footer">
+							<el-button @click="dialogFormVisible = false">Cancel</el-button>
+							<el-button type="primary" @click="submitTeam">
+								Confirm
+							</el-button>
+						</span>
 					</template>
 				</el-dialog>
 			</el-menu>
@@ -59,10 +61,10 @@
 import {
 	Menu as IconMenu,
 } from '@element-plus/icons-vue'
-import {onMounted, ref, reactive} from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import teamFunction from "@/api/team";
-import {useRoute, useRouter} from "vue-router";
-import {setTeamId, setTeamName} from "@/utils/token"
+import { useRoute, useRouter } from "vue-router";
+import { setTeamId, setTeamName } from "@/utils/token"
 
 const dialogFormVisible = ref(false) //弹出的对话框的属性值
 const teamTeamTable = ref([])
@@ -91,17 +93,17 @@ function jumpToHome(team_id, team_name) {
 	console.log(team_name)
 	setTeamId(team_id)
 	setTeamName(team_name)
-	router.push(('/'))
-	
+	router.push(('/home'))
+
 }
 
-async function getAllInvitations(){
+async function getAllInvitations() {
 	let res = await teamFunction.queryAllInvitation()
 	console.log(res)
 	res.data.forEach(item => {
 		item.team.update_time = Date.parse(item.create_time);
 	});
-	userTableData.value = res.data.sort((a,b)=>b.team.update_time -a.team.update_time)
+	userTableData.value = res.data.sort((a, b) => b.team.update_time - a.team.update_time)
 }
 
 async function submitTeam() {
@@ -109,11 +111,11 @@ async function submitTeam() {
 	await teamFunction.addTeam(form.name);
 	await queryALL()
 }
-async function handleAdd(userInfo,isaccept){
+async function handleAdd(userInfo, isaccept) {
 	await teamFunction.acceptInvitation(userInfo.id, isaccept)
 	await queryALL()
 	await getAllInvitations()
-	dialogTableVisible.value =false
+	dialogTableVisible.value = false
 }
 
 onMounted(() => {
@@ -245,4 +247,26 @@ onMounted(() => {
 	font-size: 24px;
 	color: #333;
 }
+
+.view-invitations-button {
+	text-decoration: underline;
+	background-color: white;
+	color: #0066CC;
+	/* 文字颜色 */
+	border: none;
+	/* 移除按钮边框 */
+	border-radius: 4px;
+	/* 圆角 */
+	cursor: pointer;
+	/* 鼠标指针样式 */
+	font-size: 14px;
+	/* 字体大小 */
+}
+
+/* 鼠标悬停时的样式 */
+.view-invitations-button:hover {
+	color: blue;
+	/* 鼠标悬停时的背景颜色 */
+}
+/* 鼠标按下时的样式 */
 </style>

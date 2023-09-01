@@ -4,6 +4,7 @@
 		:height="height" :message-actions="JSON.stringify(messageActions)" :menu-action-handler="menuActionHandler"
 		:messages-loaded="messagesLoaded" :load-first-room="false" :room-id="room_id" :message-selection-actions="JSON.stringify(selectActions)"
 		@open-user-tag="console.log('')" @send-message="sendMessage($event.detail[0])"
+		               @open-file="openFile($event.detail[0])"
 		@add-room="addChatInterVis = true" @message-action-handler="handleCustomMessageAction($event.detail[0])" @fetch-messages="addHistoryMessage(($event.detail[0]))"
 		@room-info="handleChatInfo($event.detail[0])" @message-selection-action-handler="messageSelectionActionHandler($event.detail[0])">
 		<template #message-content="{ message }">
@@ -165,6 +166,7 @@ const chatMemberTable = ref([])
 const searchMessage = ref([])
 const messagesTableData = ref([])
 const room_id = ref()
+const target_message = ref()
 const operChatId = ref()
 const messagesLoaded = ref(false)
 const sendMessages = ref([])
@@ -362,17 +364,23 @@ async function addData() {
 }
 async function addHistoryMessage({ room, options = {} }) {
 	
-	let res;
+	let res, goto;
 	operChatId.value = room.roomId
 	messagesLoaded.value = false
 	if (options.reset) {
 		messages.value = []
-		res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
+		if (target_message.value) {
+			res = await chatFunction.queryMessage(room.roomId, target_message.value, messagesPerPage, true);
+			goto = target_message.value;
+			target_message.value = null;
+		} else {
+			res = await chatFunction.queryMessage(room.roomId, null, messagesPerPage)
+		}
 	} else {
 		res = await chatFunction.queryMessage(room.roomId, messages.value[0]._id, messagesPerPage)
 	}
 	await chatFunction.readAllMessage(room.roomId)
-	if (!res.data || res.data.length === 0 || res.data.length < messagesPerPage) {
+	if ((!res.data || res.data.length === 0 || res.data.length < messagesPerPage) && !options.reset) {
 		setTimeout(() => {
 			messagesLoaded.value = true
 		}, 0)
@@ -414,7 +422,11 @@ async function addHistoryMessage({ room, options = {} }) {
 			messages.value.unshift(message)
 		}
 	})
-	addData()
+	await addData();
+	setTimeout(() => {
+		scrollToMessage(goto);
+	}, 100)
+	
 }
 
 async function sendMessage(message) {
@@ -438,6 +450,10 @@ async function sendMessage(message) {
 		}
 		socket.value.send(JSON.stringify(formatMessage))
 	}
+}
+
+function openFile({ file }) {
+	window.open(file.file.url, '_blank')
 }
 function upMessage(event) {
 	let temp = JSON.parse(event.data)
@@ -466,8 +482,7 @@ function upMessage(event) {
 			files: [
 				{
 					name: '基本项',
-					url: 'http://127.0.0.1:8000/media/chat/9b1c01bfaa084dfcc3e06ff0371ffd65.md',
-					preview: 'data:text/markdown/md',
+					url: temp.content,
 					type: temp.content.split('.')[temp.content.split('.').length-1],
 				}
 			],
@@ -558,7 +573,10 @@ onMounted(() => {
 	team_id.value = route.params.team_id
 	user_id.value = getUserId()
 	currentUserId.value = user_id.value
-	addData()
+	addData().then(()=>{
+		room_id.value = route.query.room;
+		target_message.value = route.query.message;
+	})
 	getTeamMember()
 	socket.value = new WebSocket(`ws://localhost:8000/ws/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)

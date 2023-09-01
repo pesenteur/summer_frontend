@@ -34,10 +34,16 @@
 						<details @click="readNoti(msg.notId)">
 							<summary class="summary"
 							         :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
-								{{ msg.content }}
+									{{ msg.content }}
 								<span class="badge" v-if="msg.isread === 'unread'"></span>
 							</summary>
-							<div class="content">{{ msg.content }}
+							<div class="content">
+								<router-link :to="msg.link" v-if="msg.link">
+									{{ msg.content }}
+								</router-link>
+								<span v-else>
+									{{ msg.content }}
+								</span>
 								<el-popover placement="bottom-start" :width="10" trigger="hover" content="删除消息"
 								            @click="deleteSingleNoti(msg.notId)">
 									<template #reference>
@@ -100,6 +106,17 @@ async function readNoti(NotId) {
 	await getAllNoti()
 }
 
+function generate_link(item) {
+	if (item.team !== getTeamId()) {
+		return null
+	}
+	if (item.chat_message) {
+		return `/team/${item.team}/chatHome?room=${item.chat}&message=${item.chat_message}`
+	}
+	// TODO 跳转到文档
+	return `/`
+}
+
 async function getAllNoti() {
 	let res = await notiFunction.queryAllNoti()
 	console.log(res.data)
@@ -113,7 +130,7 @@ async function getAllNoti() {
 			content: messagePart,
 			isread: item.is_read === true ? 'read' : 'unread',
 			notId: item.id,
-			// link: item.chat_message ? `/team/${getTeamId()}/chatHome?`
+			link: generate_link(item)
 		}
 		filtermessages.push(noti)
 	})

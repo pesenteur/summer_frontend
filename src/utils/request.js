@@ -37,12 +37,18 @@ requests.interceptors.response.use(response => {
     return response
 }, error => {
     console.log(error)
-    if (error.response && error.response.data.detail) {
+    if (error.response && error.response.status === 401) {
         const accountStore = useAccountStore();
         accountStore.logout();
         router.push({
             path: '/login',
         }).then(() => { });
+        ElMessage({
+            message: 'token失效，请重新登录',
+            type: 'error'
+        });
+    }
+    else if (error.response && error.response.data.detail) {
         ElMessage({
             message: error.response.data.detail,
             type: 'error'

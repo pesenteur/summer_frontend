@@ -3,7 +3,7 @@
   <div class="badge-container">
     <span class="badge_top" v-if="unreadCount > 0"></span>
   </div>
-  <el-drawer size="20%" style="margin: 16px;border-radius: 10px;" class="custom-drawer" v-model="table" title="我的消息"
+  <el-drawer size="22%" style="margin: 16px;border-radius: 10px;" class="custom-drawer" v-model="table" title="我的消息"
     direction="rtl">
     <el-col>
       <div class="card-container">
@@ -303,7 +303,7 @@ async function getAllNoti() {
 
 .button-right {
   flex: 1;
-  margin-left: 150px;
+  margin-left: 260px;
 }
 
 .button-container {

@@ -4,13 +4,9 @@
             <el-header>
                 <div class="editor__header">
                     <div>
-                        <span class="title" v-if="!isEditingTitle">{{ currentDocumentName }}</span>
-                        <input v-else v-model="newTitle" class="edit-title-input" />
-                        <button class="changeName" @click="toggleEditTitle">
-                            <font-awesome-icon :icon="['fas', isEditingTitle ? 'save' : 'pen-to-square']" />
-                        </button>
+                        <span class="title" v-if="!isEditingTitle">111{{ currentDocumentName }}</span>
                     </div>
-                    <div :class="`editor__status editor__status--${status}`">
+                    <div v-if="Editable" :class="`editor__status editor__status--${status}`">
                         <template v-if="status === 'connected'">
                             {{ editor.storage.collaborationCursor.users.length }} user{{
                                 editor.storage.collaborationCursor.users.length === 1 ? '' : 's'
@@ -33,7 +29,7 @@
                 <el-container>
                     <el-main>
                         <el-affix>
-                            <div v-if="editor" class="button-container">
+                            <div v-if="editor&&Editable" class="button-container">
                                 <div class="column">
                                     <el-popover placement="top-start" title="加粗(Ctrl+B)" :width="100" trigger="hover"
                                         content="将文本加粗">
@@ -355,7 +351,7 @@ const wordCss = `
 `
 
 onMounted(async () => {
-    console.log("document", documentId.value)
+    const result = await documentRequest.getDocumentContent(documentId.value)
     const ydoc = new Y.Doc();
     provider.value = new HocuspocusProvider({
         url: 'ws://127.0.0.1:1234',
@@ -395,7 +391,22 @@ onMounted(async () => {
             })
         ]
     });
-    await getdocument();
+    const response = result.data
+    if (response.detail === "已授权阅读") {
+        if (response.editable === false) {
+            editor.value.setEditable(false)
+            Editable.value = false
+        }
+        else {
+            editor.value.setEditable(true)
+        }
+    } else {
+        ElMessage({
+            message: '你没有权限阅读',
+            type: 'error'
+        })
+    }
+    console.log("document", documentId.value)
 });
 
 onBeforeUnmount(() => {
@@ -424,15 +435,21 @@ const getdocument = async () => {
     // Simulating the API response
     const response = result.data
     console.log("response", response)
-    editor.value.commands.setContent(response.content)
-    if (!response.editable) {
-        editor.value.setEditable(false)
-    }
-    else {
-        editor.value.setEditable(true)
+    if (response.detail === "已授权阅读") {
+        editor.value.commands.setContent(response.content)
+        if (response.editable === false) {
+            editor.value.setEditable(false)
+        }
+        else {
+            editor.value.setEditable(true)
+        }
+    } else {
+        ElMessage({
+            message: '你没有权限阅读',
+            type: 'error'
+        })
     }
 }
-
 async function saveDocument() {
     try {
         const content = editor.value.getHTML();

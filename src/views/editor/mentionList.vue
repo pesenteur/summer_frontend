@@ -78,6 +78,7 @@ export default {
     },
 
     async selectItem(index) {
+      
       const documentId = this.$route.params.documentId;
       const result = await documentRequest.processAt(documentId,this.items[index].id)
       
@@ -91,7 +92,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .items {
   padding: 0.2rem;
   position: relative;

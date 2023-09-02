@@ -1,43 +1,41 @@
 <template>
-  <el-container class="layout-container-demo" style="height: 500px">
-    <el-aside width="200px">
-      <el-row class="tac">
-        <el-col :span="24">
-          <el-menu default-active="2" class="element-back">
-            <el-menu-item index="1">
-              <div class="menu-item-container">
-                <img src="@/assets/imgs/emoji/smiling-face-with-horns.png" alt="!!!" class="images">
-                <span class="element-title">项目名称：{{ projName }}</span>
-              </div>
-            </el-menu-item>
-            <el-divider />
+  <el-container class="layout-container-demo" style="height;: 800px">
+    <el-aside width="250px" class="custom-aside">
+      <div class="logo">
+        <img src="@/assets/logo.webp" alt="Logo">
+      </div>
+      <el-menu default-active="2" class="element-back">
+        <el-menu-item index="1">
+          <div class="menu-item-container">
+            <font-awesome-icon :icon="['fas', 'signature']" style="color: #5683d2;" />
+            <span class="element-title">项目名称：{{ projName }}</span>
+          </div>
+        </el-menu-item>
+        <el-divider />
 
-            <el-menu-item index="2">
-              <div class="menu-item-container">
-                <img src="@/assets/imgs/emoji/sparkles.png" alt="!!!" class="images">
-                <span class="element-title" @click="seeDocs">项目文档</span>
-              </div>
-            </el-menu-item>
-            <el-divider />
+        <el-menu-item index="2">
+          <div class="menu-item-container-2">
+            <font-awesome-icon :icon="['fas', 'file-invoice']" style="color: #5587dd;" />
+            <span class="element-title" @click="seeDocs">项目文档</span>
+          </div>
+        </el-menu-item>
+        <el-divider />
 
-            <el-menu-item index="4">
-              <img src="@/assets/imgs/emoji/rainbow.png" alt="!!!" class="images">
-              <span class="element-title" @click="seeDesign">页面视图</span>
-            </el-menu-item>
-
-
-          </el-menu>
-        </el-col>
-      </el-row>
+        <el-menu-item index="4">
+          <div class="menu-item-container">
+           <font-awesome-icon :icon="['fas', 'eye']" style="color: #5587dd;"/>
+            <span class="element-title" @click="seeDesign">页面视图</span>
+          </div>
+        </el-menu-item>
+      </el-menu>
     </el-aside>
 
     <el-container>
-      <el-main>
+      <el-main style="height: 100%;">
 
-        <documentShow v-if="switchMenu === false"/>
-
-        <el-scrollbar v-else>
-          <el-table :data="tableData" style="width: 100%" max-height="250">
+        <documentShow v-if="switchMenu === false" />
+        <el-scrollbar style="height: 100%;" v-else>
+          <el-table :data="tableData" style="width: 100%;height: 100%;" max-height="600" >
             <!--            <el-table-column fixed prop="date" label="" width="150" />-->
             <el-table-column prop="created_time" label="创建时间" />
             <el-table-column prop="title" label="画布名称" />
@@ -60,8 +58,8 @@
                 <el-input v-model="designName" autocomplete="off" class="element-form" />
               </el-form-item>
               <el-radio-group v-model="ifTemplate">
-                <el-radio label="1" size="large" >不使用模板</el-radio>
-                <el-radio label="2" size="large" >使用模板</el-radio>
+                <el-radio label="1" size="large">不使用模板</el-radio>
+                <el-radio label="2" size="large">使用模板</el-radio>
               </el-radio-group>
             </el-form>
             <template #footer>
@@ -83,8 +81,8 @@
 </template>
 
 <script setup>
-import { onMounted, onUpdated, ref} from 'vue'
-import {Document, Menu as IconMenu, Message, Search, Setting} from '@element-plus/icons-vue'
+import { onMounted, onUpdated, ref } from 'vue'
+import { Document, Menu as IconMenu, Message, Search, Setting } from '@element-plus/icons-vue'
 import { reactive } from "vue";
 import { getProjectName, getProjId, setDesignId } from '@/utils/token'
 import projAPI from '@/api/proj'
@@ -122,12 +120,12 @@ const ifTemplate = ref('')
 // }
 
 
-function seeDocs(){
+function seeDocs() {
   switchMenu.value = false
 
 }
 
-function seeDesign(){
+function seeDesign() {
   switchMenu.value = true
 }
 
@@ -139,9 +137,9 @@ function intoDesign(designId) {
 }
 
 async function addDesign() {
-  console.log('ifTemplate',ifTemplate.value)
-  if(ifTemplate.value === '1'){
-    console.log('ifTemplate1',ifTemplate.value)
+  console.log('ifTemplate', ifTemplate.value)
+  if (ifTemplate.value === '1') {
+    console.log('ifTemplate1', ifTemplate.value)
     if (designName.value === '') {
       dialogFormVisible2.value = true
     } else {
@@ -201,7 +199,7 @@ onMounted(async () => {
 
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
-  background: var(--el-color-primary-light-8);
+  background: white;
 }
 
 .layout-container-demo .el-menu {
@@ -219,18 +217,50 @@ onMounted(async () => {
   height: 100%;
   right: 20px;
 }
+font-awesome-icon{
+  size: 20px;
+}
+.custom-aside {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo img {
+  max-width: 100%;
+  height: auto;
+}
 
 .menu-item-container {
   display: flex;
   align-items: center;
+  cursor: pointer;
+  padding: 10px 0;
+  margin-left: 10px;
+  font-size: 30px;
+}
+.menu-item-container-2 {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px 0;
+  margin-left: 15px;
+  font-size: 30px;
 }
 
-.images {
+.menu-icon {
   width: 24px;
-  /* 调整图片宽度 */
   height: 24px;
-  /* 调整图片高度 */
-  margin-right: 8px;
-  /* 添加图片和文字之间的间距 */
+  margin-right: 10px;
+}
+
+.element-title {
+  font-size: 16px;
+  margin-left: 15px;
+  font-weight: bold;
 }
 </style>

@@ -173,7 +173,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .button-container {
   display: flex;

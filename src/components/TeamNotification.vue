@@ -42,8 +42,7 @@
                 <span v-else>
                   {{ msg.content }}
                 </span>
-                <el-popover placement="bottom-start" :width="10" trigger="hover" content="删除消息"
-                  @click="deleteSingleNoti(msg.notId)">
+                <el-popover placement="bottom-start" :width="10" trigger="hover" content="删除消息">
                   <template #reference>
                     <button @click="deleteSingleNoti(msg.notId)" class="inside-action-button">
                       <font-awesome-icon :icon="['fas', 'delete-left']" />
@@ -64,6 +63,7 @@ import { computed, onMounted, onUpdated, ref, watch } from 'vue';
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import notiFunction from '@/api/notification'
 import { getTeamId, getUserId } from "@/utils/token";
+
 
 const table = ref(false)
 // TODO: improvement typing when refactor table

@@ -21,11 +21,10 @@
             </template>
           </div>
           <div class="optionButton">
-            <button @click="saveDocument">Save</button>
             <button @click="exportMarkdown">导出为Markdown</button>
             <button @click="exportPDF">导出为PDF</button>
             <button @click="exportWord">导出为Word</button>
-            <button v-if="!share" @click="openDialog">共享</button> <button @click="share=false" v-else>取消分享</button>
+            <button v-if="!share" @click="openDialog">共享</button> <button @click="cancelShare" v-else>取消分享</button>
             <el-diglog v-if="isDialogVisible" class="dialog">
               <h2>生成共享链接</h2>
               <label for="editable">是否可编辑：</label>
@@ -37,315 +36,315 @@
                 <button @click="copyToClipboard">复制链接</button>
               </p>
             </el-diglog>
+            <button class="saveButton" @click="saveDocument"><font-awesome-icon :icon="['fas', 'floppy-disk']"
+                style="color: #96abcf;" /></button>
+            <button class="historyButton" @click="toggleSidebar"><font-awesome-icon :icon="['fas', 'clock-rotate-left']"
+                style="color: #96abcf;" /></button>
           </div>
         </div>
       </el-header>
-      <el-affix>
-        <el-container>
-          <el-affix :offset="120">
-            <el-aside width="230px">
-              <el-row class="tac">
-                <el-col :span="24">
-                  <el-menu>
-                    <el-sub-menu index="1">
-                      <template #title>
-                        <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ projectName }}</span>
-                        <button class="transparent-button-1" @click.stop="showAddFolderDialog">
-                          <font-awesome-icon :icon="['fas', 'folder-plus']" /></button>
-                        <button class="transparent-button-2" @click.stop="showAddDocumentDialog('')"><font-awesome-icon
-                            :icon="['fas', 'file-circle-plus']" />
-                        </button>
-                      </template>
-                      <div class="button-container">
-                      </div>
-                      <div v-for="folder in folders" :key="folder.id">
-                        <el-sub-menu :index="folder.id">
-                          <template #title>
-                            <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ folder.name }}</span>
+      <el-container>
+        <el-affix :offset="53">
+          <el-aside width="100%">
+            <el-row class="tac">
+              <el-col :span="24">
+                <el-menu>
+                  <el-sub-menu index="1">
+                    <template #title>
+                      <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ projectName }}</span>
+                      <button class="transparent-button-1" @click.stop="showAddFolderDialog">
+                        <font-awesome-icon :icon="['fas', 'folder-plus']" /></button>
+                      <button class="transparent-button-2" @click.stop="showAddDocumentDialog('')"><font-awesome-icon
+                          :icon="['fas', 'file-circle-plus']" />
+                      </button>
+                    </template>
+                    <div class="button-container">
+                    </div>
+                    <div v-for="folder in folders" :key="folder.id">
+                      <el-sub-menu :index="folder.id">
+                        <template #title>
+                          <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ folder.name }}</span>
+                          <button class="transparent-button-2"
+                            @click.stop="showAddDocumentDialog(folder.id)"><font-awesome-icon
+                              :icon="['fas', 'file-circle-plus']" />
+                          </button>
+                          <button class="transparent-button-2"
+                            @click.stop="showDeleteFolderDialog(folder.id)"><font-awesome-icon :icon="['fas', 'trash']" />
+                          </button>
+                        </template>
+                        <el-menu-item-group>
+                          <el-menu-item v-for="d in folder.documents" :key="d.id" :index="d.id"
+                            @click="changeDocument(d.id, d.title)">
+                            <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ d.title }}</span>
                             <button class="transparent-button-2"
-                              @click.stop="showAddDocumentDialog(folder.id)"><font-awesome-icon
-                                :icon="['fas', 'file-circle-plus']" />
+                              @click.stop="showDeleteDocumentDialog(d.id)"><font-awesome-icon :icon="['fas', 'trash']" />
                             </button>
-                            <button class="transparent-button-2"
-                              @click.stop="showDeleteFolderDialog(folder.id)"><font-awesome-icon
-                                :icon="['fas', 'trash']" />
-                            </button>
-                          </template>
-                          <el-menu-item-group>
-                            <el-menu-item v-for="d in folder.documents" :key="d.id" :index="d.id"
-                              @click="changeDocument(d.id, d.title)">
-                              <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ d.title }}</span>
-                              <button class="transparent-button-2"
-                                @click.stop="showDeleteDocumentDialog(d.id)"><font-awesome-icon
-                                  :icon="['fas', 'trash']" />
-                              </button>
-                            </el-menu-item>
-                          </el-menu-item-group>
-                        </el-sub-menu>
-                      </div>
-                      <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id"
-                        @click="changeDocument(document.id, document.title)">
-                        <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ document.title }}</span>
-                        <button class="transparent-button-2"
-                          @click.stop="showDeleteDocumentDialog(document.id)"><font-awesome-icon
-                            :icon="['fas', 'trash']" />
-                        </button>
-                      </el-menu-item>
-                    </el-sub-menu>
-                  </el-menu>
-                </el-col>
-              </el-row>
-            </el-aside>
-          </el-affix>
-          <el-dialog v-model="addFolderDialogVisible" title="添加文件夹" @close="closeDialog">
-            <el-input v-model="newFolderName" placeholder="文件夹名..."></el-input>
-            <div slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="addFolder">添加</el-button>
-              <el-button @click="closeDialog">取消</el-button>
-            </div>
-          </el-dialog>
-          <!-- Add Document Dialog -->
-          <el-dialog v-model="addDocumentDialogVisible" title="添加文档" @close="closeDialog">
-            <el-input v-model="newDocumentName" placeholder="文档名..."></el-input>
-            <div slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="addDocument(foldername)">添加</el-button>
-              <el-button @click="closeDialog">取消</el-button>
-            </div>
-          </el-dialog>
-          <el-dialog v-model="centerDialogVisible" title="删除" width="30%" center>
-            <span>
-              确认删除？
+                          </el-menu-item>
+                        </el-menu-item-group>
+                      </el-sub-menu>
+                    </div>
+                    <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id"
+                      @click="changeDocument(document.id, document.title)">
+                      <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ document.title }}</span>
+                      <button class="transparent-button-2"
+                        @click.stop="showDeleteDocumentDialog(document.id)"><font-awesome-icon :icon="['fas', 'trash']" />
+                      </button>
+                    </el-menu-item>
+                  </el-sub-menu>
+                </el-menu>
+              </el-col>
+            </el-row>
+          </el-aside>
+        </el-affix>
+        <el-dialog v-model="addFolderDialogVisible" title="添加文件夹" @close="closeDialog">
+          <el-input v-model="newFolderName" placeholder="文件夹名..."></el-input>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="addFolder">添加</el-button>
+            <el-button @click="closeDialog">取消</el-button>
+          </div>
+        </el-dialog>
+        <!-- Add Document Dialog -->
+        <el-dialog v-model="addDocumentDialogVisible" title="添加文档" @close="closeDialog">
+          <el-input v-model="newDocumentName" placeholder="文档名..."></el-input>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="addDocument(foldername)">添加</el-button>
+            <el-button @click="closeDialog">取消</el-button>
+          </div>
+        </el-dialog>
+        <el-dialog v-model="centerDialogVisible" title="删除" width="30%" center>
+          <span>
+            确认删除？
+          </span>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="centerDialogVisible = false">取消</el-button>
+              <el-button type="primary" @click="deleteDocument">
+                确认
+              </el-button>
             </span>
-            <template #footer>
-              <span class="dialog-footer">
-                <el-button @click="centerDialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="deleteDocument">
-                  确认
-                </el-button>
-              </span>
-            </template>
-          </el-dialog>
-          <el-dialog v-model="deleteFolderDialogVisible" title="删除" width="30%" center>
-            <span>
-              确认删除？
+          </template>
+        </el-dialog>
+        <el-dialog v-model="deleteFolderDialogVisible" title="删除" width="30%" center>
+          <span>
+            确认删除？
+          </span>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="deleteFolderDialogVisible = false">取消</el-button>
+              <el-button type="primary" @click="deleteFolder">
+                确认
+              </el-button>
             </span>
-            <template #footer>
-              <span class="dialog-footer">
-                <el-button @click="deleteFolderDialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="deleteFolder">
-                  确认
-                </el-button>
-              </span>
-            </template>
-          </el-dialog>
-          <el-main>
-            <el-affix>
-              <div v-if="editor" class="button-container">
-                <div class="column">
-                  <el-popover placement="top-start" title="加粗(Ctrl+B)" :width="100" trigger="hover" content="将文本加粗">
+          </template>
+        </el-dialog>
+        <el-main>
+          <el-affix>
+            <div v-if="editor" class="button-container">
+              <div class="column">
+                <el-popover placement="top-start" title="加粗(Ctrl+B)" :width="100" trigger="hover" content="将文本加粗">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().toggleBold().run()"
+                      :disabled="!editor.can().chain().focus().toggleBold().run()"
+                      :class="{ 'is-active': editor.isActive('bold') }">
+                      <font-awesome-icon :icon="['fas', 'bold']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+                <el-popover placement="top-start" title="高亮" :width="100" trigger="hover" content="将文本高亮">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().toggleHighlight().run()"
+                      :class="{ 'is-active': editor.isActive('highlight') }">
+                      <font-awesome-icon :icon="['fas', 'highlighter']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+                <el-popover placement="top-start" title="倾斜(Ctrl+l)" :width="100" trigger="hover" content="将文字变为斜体">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().toggleItalic().run()"
+                      :disabled="!editor.can().chain().focus().toggleItalic().run()"
+                      :class="{ 'is-active': editor.isActive('italic') }">
+                      <font-awesome-icon :icon="['fas', 'italic']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <el-popover placement="top-start" title="删除线" :width="100" trigger="hover" content="在文本中间画一条线">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().toggleStrike().run()"
+                      :disabled="!editor.can().chain().focus().toggleStrike().run()"
+                      :class="{ 'is-active': editor.isActive('strike') }">
+                      <font-awesome-icon :icon="['fas', 'strikethrough']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <el-popover placement="top-start" title="代码块" :width="100" trigger="hover" content="将文本转换为代码块">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().toggleCode().run()"
+                      :disabled="!editor.can().chain().focus().toggleCode().run()"
+                      :class="{ 'is-active': editor.isActive('code') }">
+                      <font-awesome-icon :icon="['fas', 'code']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+
+              </div>
+
+              <!--          <el-button @click="editor.chain().focus().toggleBold().run()" :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
+              <!--            bold-->
+              <!--&lt;!&ndash;          </el-button>&ndash;&gt;-->
+              <!--          <el-button @click="editor.chain().focus().toggleItalic().run()" :disabled="!editor.can().chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
+              <!--            italic-->
+              <!--          </el-button>-->
+              <!--          <el-button @click="editor.chain().focus().toggleStrike().run()" :disabled="!editor.can().chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
+              <!--            strike-->
+              <!--          </el-button>-->
+              <div class="column">
+                <el-popover title="段落" content="一段文字">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().setParagraph().run()"
+                      :class="{ 'is-active': editor.isActive('paragraph') }" tooltip="段落">
+                      <font-awesome-icon :icon="['fas', 'paragraph']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <el-popover placement="top-start" title="Heading 1" :width="100" trigger="hover" content="设置为一级标题">
+                  <template #reference>
+                    <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+                      :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+                      h1
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <!-- 标题按钮 - Heading 2 -->
+                <el-popover placement="top-start" title="Heading 2" :width="100" trigger="hover" content="设置为二级标题">
+                  <template #reference>
+                    <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+                      :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+                      h2
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <!-- 标题按钮 - Heading 3 -->
+                <el-popover placement="top-start" title="Heading 3" :width="100" trigger="hover" content="设置为三级标题">
+                  <template #reference>
+                    <el-button text @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+                      :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
+                      h3
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <!-- 标题按钮 - Heading 4 -->
+                <el-popover placement="top-start" title="Heading 4" :width="100" trigger="hover" content="设置为四级标题">
+                  <template #reference>
+                    <el-button text @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
+                      :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }">
+                      h4
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <!-- 标题按钮 - Heading 5 -->
+                <el-popover placement="top-start" title="Heading 5" :width="100" trigger="hover" content="设置为五级标题">
+                  <template #reference>
+                    <el-button text @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
+                      :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }">
+                      h5
+                    </el-button>
+                  </template>
+                </el-popover>
+
+                <!-- 标题按钮 - Heading 6 -->
+                <el-popover placement="top-start" title="Heading 6" :width="100" trigger="hover" content="设置为六级标题">
+                  <template #reference>
+                    <el-button text @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
+                      :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }">
+                      h6
+                    </el-button>
+                  </template>
+                </el-popover>
+
+              </div>
+
+              <div class="column">
+                <div class="buttonSet">
+                  <el-popover title="无序列表" content="将选中文本转换为无序列表" placement="top-start">
                     <template #reference>
-                      <el-button @click="editor.chain().focus().toggleBold().run()"
-                        :disabled="!editor.can().chain().focus().toggleBold().run()"
-                        :class="{ 'is-active': editor.isActive('bold') }">
-                        <font-awesome-icon :icon="['fas', 'bold']" />
+                      <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBulletList().run()"
+                        :class="{ 'is-active': editor.isActive('bulletList') }">
+                        <font-awesome-icon :icon="['fas', 'bars-staggered']" />
                       </el-button>
                     </template>
                   </el-popover>
-                  <el-popover placement="top-start" title="高亮" :width="100" trigger="hover" content="将文本高亮">
+                  <el-popover title="有序列表" content="将选中文本转换为有序列表" placement="top-start">
                     <template #reference>
-                      <el-button @click="editor.chain().focus().toggleHighlight().run()"
-                        :class="{ 'is-active': editor.isActive('highlight') }">
-                        <font-awesome-icon :icon="['fas', 'highlighter']" />
+                      <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleOrderedList().run()"
+                        :class="{ 'is-active': editor.isActive('orderedList') }">
+                        <font-awesome-icon :icon="['fas', 'list']" />
                       </el-button>
                     </template>
                   </el-popover>
-                  <el-popover placement="top-start" title="倾斜(Ctrl+l)" :width="100" trigger="hover" content="将文字变为斜体">
+                  <el-popover title="引用块" content="将选中文本转换为引用块" placement="top-start">
                     <template #reference>
-                      <el-button @click="editor.chain().focus().toggleItalic().run()"
-                        :disabled="!editor.can().chain().focus().toggleItalic().run()"
-                        :class="{ 'is-active': editor.isActive('italic') }">
-                        <font-awesome-icon :icon="['fas', 'italic']" />
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <el-popover placement="top-start" title="删除线" :width="100" trigger="hover" content="在文本中间画一条线">
-                    <template #reference>
-                      <el-button @click="editor.chain().focus().toggleStrike().run()"
-                        :disabled="!editor.can().chain().focus().toggleStrike().run()"
-                        :class="{ 'is-active': editor.isActive('strike') }">
-                        <font-awesome-icon :icon="['fas', 'strikethrough']" />
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <el-popover placement="top-start" title="代码块" :width="100" trigger="hover" content="将文本转换为代码块">
-                    <template #reference>
-                      <el-button @click="editor.chain().focus().toggleCode().run()"
-                        :disabled="!editor.can().chain().focus().toggleCode().run()"
-                        :class="{ 'is-active': editor.isActive('code') }">
-                        <font-awesome-icon :icon="['fas', 'code']" />
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                </div>
-
-                <!--          <el-button @click="editor.chain().focus().toggleBold().run()" :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
-                <!--            bold-->
-                <!--&lt;!&ndash;          </el-button>&ndash;&gt;-->
-                <!--          <el-button @click="editor.chain().focus().toggleItalic().run()" :disabled="!editor.can().chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
-                <!--            italic-->
-                <!--          </el-button>-->
-                <!--          <el-button @click="editor.chain().focus().toggleStrike().run()" :disabled="!editor.can().chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
-                <!--            strike-->
-                <!--          </el-button>-->
-                <div class="column">
-                  <el-popover title="段落" content="一段文字">
-                    <template #reference>
-                      <el-button @click="editor.chain().focus().setParagraph().run()"
-                        :class="{ 'is-active': editor.isActive('paragraph') }" tooltip="段落">
-                        <font-awesome-icon :icon="['fas', 'paragraph']" />
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <el-popover placement="top-start" title="Heading 1" :width="100" trigger="hover" content="设置为一级标题">
-                    <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
-                        h1
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <!-- 标题按钮 - Heading 2 -->
-                  <el-popover placement="top-start" title="Heading 2" :width="100" trigger="hover" content="设置为二级标题">
-                    <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
-                        h2
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <!-- 标题按钮 - Heading 3 -->
-                  <el-popover placement="top-start" title="Heading 3" :width="100" trigger="hover" content="设置为三级标题">
-                    <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
-                        h3
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <!-- 标题按钮 - Heading 4 -->
-                  <el-popover placement="top-start" title="Heading 4" :width="100" trigger="hover" content="设置为四级标题">
-                    <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }">
-                        h4
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <!-- 标题按钮 - Heading 5 -->
-                  <el-popover placement="top-start" title="Heading 5" :width="100" trigger="hover" content="设置为五级标题">
-                    <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }">
-                        h5
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                  <!-- 标题按钮 - Heading 6 -->
-                  <el-popover placement="top-start" title="Heading 6" :width="100" trigger="hover" content="设置为六级标题">
-                    <template #reference>
-                      <el-button text @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }">
-                        h6
-                      </el-button>
-                    </template>
-                  </el-popover>
-
-                </div>
-
-                <div class="column">
-                  <div class="buttonSet">
-                    <el-popover title="无序列表" content="将选中文本转换为无序列表" placement="top-start">
-                      <template #reference>
-                        <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBulletList().run()"
-                          :class="{ 'is-active': editor.isActive('bulletList') }">
-                          <font-awesome-icon :icon="['fas', 'bars-staggered']" />
-                        </el-button>
-                      </template>
-                    </el-popover>
-                    <el-popover title="有序列表" content="将选中文本转换为有序列表" placement="top-start">
-                      <template #reference>
-                        <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleOrderedList().run()"
-                          :class="{ 'is-active': editor.isActive('orderedList') }">
-                          <font-awesome-icon :icon="['fas', 'list']" />
-                        </el-button>
-                      </template>
-                    </el-popover>
-                    <el-popover title="引用块" content="将选中文本转换为引用块" placement="top-start">
-                      <template #reference>
-                        <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBlockquote().run()"
-                          :class="{ 'is-active': editor.isActive('blockquote') }">
-                          <font-awesome-icon :icon="['fas', 'quote-left']" />
-                        </el-button>
-                      </template>
-                    </el-popover>
-
-                    <el-popover title="水平线" content="插入水平分隔线" placement="top-start">
-                      <template #reference>
-                        <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHorizontalRule().run()">
-                          <font-awesome-icon :icon="['fas', 'ruler-horizontal']" />
-                        </el-button>
-                      </template>
-                    </el-popover>
-
-                    <el-popover title="硬换行" content="插入硬换行" placement="top-start">
-                      <template #reference>
-                        <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHardBreak().run()">
-                          <font-awesome-icon :icon="['fas', 'bacon']" />
-                        </el-button>
-                      </template>
-                    </el-popover>
-                  </div>
-                </div>
-                <div class="column">
-                  <el-popover title="撤销" placement="top-start">
-                    <template #reference>
-                      <el-button @click="editor.chain().focus().undo().run()"
-                        :disabled="!editor.can().chain().focus().undo().run()">
-                        <font-awesome-icon :icon="['fas', 'rotate-left']" />
+                      <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBlockquote().run()"
+                        :class="{ 'is-active': editor.isActive('blockquote') }">
+                        <font-awesome-icon :icon="['fas', 'quote-left']" />
                       </el-button>
                     </template>
                   </el-popover>
 
-                  <el-popover title="重做" placement="top-start">
+                  <el-popover title="水平线" content="插入水平分隔线" placement="top-start">
                     <template #reference>
-                      <el-button @click="editor.chain().focus().redo().run()"
-                        :disabled="!editor.can().chain().focus().redo().run()">
-                        <font-awesome-icon :icon="['fas', 'arrow-rotate-right']" />
+                      <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHorizontalRule().run()">
+                        <font-awesome-icon :icon="['fas', 'ruler-horizontal']" />
                       </el-button>
                     </template>
                   </el-popover>
-                </div>
-                <div class="column">
-                  <el-popover title="清除所有标记" placement="top-start">
+
+                  <el-popover title="硬换行" content="插入硬换行" placement="top-start">
                     <template #reference>
-                      <el-button @click="editor.chain().focus().unsetAllMarks().run()">
-                        <font-awesome-icon :icon="['fas', 'broom']" />
+                      <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHardBreak().run()">
+                        <font-awesome-icon :icon="['fas', 'bacon']" />
                       </el-button>
                     </template>
                   </el-popover>
                 </div>
               </div>
-            </el-affix>
+              <div class="column">
+                <el-popover title="撤销" placement="top-start">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().undo().run()"
+                      :disabled="!editor.can().chain().focus().undo().run()">
+                      <font-awesome-icon :icon="['fas', 'rotate-left']" />
+                    </el-button>
+                  </template>
+                </el-popover>
 
+                <el-popover title="重做" placement="top-start">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().redo().run()"
+                      :disabled="!editor.can().chain().focus().redo().run()">
+                      <font-awesome-icon :icon="['fas', 'arrow-rotate-right']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+              </div>
+              <div class="column">
+                <el-popover title="清除所有标记" placement="top-start">
+                  <template #reference>
+                    <el-button @click="editor.chain().focus().unsetAllMarks().run()">
+                      <font-awesome-icon :icon="['fas', 'broom']" />
+                    </el-button>
+                  </template>
+                </el-popover>
+              </div>
+            </div>
+          </el-affix>
+          <el-scrollbar>
             <div class="editor" v-if="editor">
               <editor-content :editor="editor" id="editor" />
             </div>
@@ -356,9 +355,31 @@
                 </div>
               </div>
             </div>
-          </el-main>
-        </el-container>
-      </el-affix>
+          </el-scrollbar>
+
+
+        </el-main>
+        <transition>
+          <el-aside :key="showSidebar" v-if="showSidebar" width="300px"> <!-- 右侧侧栏 -->
+            <!-- 右侧侧栏内容 -->
+            <div class="history">
+              <h2>文档历史记录</h2>
+              <el-table :data="historyRecord" style="width: 100%">
+                <el-table-column prop="id" label="版本" />
+                <el-table-column prop="update_time" label="更新时间" />
+                <el-table-column fixed="right" label="操作" width="60px">
+                  <template #default="scope">
+                    <el-button link type="primary" size="small" @click.prevent="restore(scope.row.id)">
+                      回退
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-aside>
+        </transition>
+      </el-container>
+
     </el-container>
   </div>
 </template>
@@ -375,7 +396,6 @@ import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
 import { Editor, EditorContent, useEditor } from '@tiptap/vue-3'
 import suggestion from './suggestion.js'
-import asideNav from './asideNav.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import * as Y from 'yjs'
 import { onBeforeUnmount, onMounted, ref } from "vue";
@@ -386,7 +406,7 @@ import TurndownService from 'turndown'
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { saveAs } from 'file-saver';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElTableColumn } from 'element-plus';
 import { getProjId, getName, setDocumentId, getProjectName } from "@/utils/token";
 import Clipboard from 'clipboard';
 import router from '../../router';
@@ -443,13 +463,21 @@ const share = ref(false);
 const isEditingTitle = ref(false);
 const folders = ref([]);
 const rootDocuments = ref([])
+const historyRecord = ref([])
 const projectName = getProjectName()
 const currentDocumentName = ref('')
 const newTitle = ref(currentDocumentName.value);
 const Editable = ref(true)
+const showSidebar = ref(false)
 const showAddFolderDialog = () => {
   addFolderDialogVisible.value = true;
 };
+const toggleSidebar = () => {
+  if (showSidebar.value == false) {
+    getHistory()
+  }
+  showSidebar.value = !showSidebar.value
+}
 const showDeleteDocumentDialog = (dId) => {
   centerDialogVisible.value = true;
   deleteDocumentId.value = dId
@@ -508,6 +536,7 @@ const wordCss = `
 
 onMounted(async () => {
   await getAllDocuments();
+
   const ydoc = new Y.Doc();
   provider.value = new HocuspocusProvider({
     url: 'ws://127.0.0.1:1234',
@@ -555,8 +584,9 @@ onBeforeUnmount(() => {
 });
 async function changeDocumentName() {
   try {
-    await documentRequest.updateDocument(newTitle.value, getProjId(), documentId)
+    await documentRequest.updateDocument(newTitle.value, getProjId(), documentId.value)
     currentDocumentName.value = newTitle.value
+    console.log(currentDocumentName.value)
     getAllDocuments()
     ElMessage({
       message: '保存成功',
@@ -588,6 +618,9 @@ const processDocuments = (data) => {
       rootDocuments.value.push(item)
     } else {
       folders.value.push(item)
+    }
+    if (item.id === documentId.value) {
+      currentDocumentName.value = item.title;
     }
   });
 
@@ -633,6 +666,38 @@ async function deleteFolder() {
       message: '删除失败',
       type: 'error'
     });
+  }
+}
+async function cancelShare() {
+  try {
+    share.value = false
+    await documentRequest.cancelShare(documentId.value)
+    ElMessage({
+      message: '取消成功',
+      type: 'success'
+    })
+  } catch (error) {
+    ElMessage({
+      message: '删除失败',
+      type: 'error'
+    })
+  }
+}
+async function restore(dId) {
+  try {
+    if (editor.value.storage.collaborationCursor.users.length === 1) {
+      console.log(dId)
+      await documentRequest.restore(dId)
+      ElMessage({
+        message: '回退成功',
+        type: 'success'
+      })
+    }
+  } catch (error) {
+    ElMessage({
+      message: '删除失败',
+      type: 'error'
+    })
   }
 }
 async function deleteDocument() {
@@ -815,7 +880,19 @@ function exportPDF() {
     pdf.save(currentDocumentName.value + '.pdf');
   });
 }
+async function getHistory() {
+  try {
+    const result = await documentRequest.getHistory(documentId.value, '')
+    historyRecord.value = result.data
+    console.log(result.data)
+  } catch (error) {
+    ElMessage({
+      message: '获取文档失败',
+      type: 'error'
+    })
+  }
 
+}
 function getModelHtml(mhtml) {
   return `<!DOCTYPE html>
                 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -871,7 +948,8 @@ function exportWord() {
 }
 
 .editor {
-  min-height: 600px;
+  position: static !important;
+  height: 600px;
   background-color: #FFF;
   border: 1px solid #0D0D0D;
   box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
@@ -897,15 +975,15 @@ function exportWord() {
       margin-right: 10px;
       margin-bottom: 10px;
       padding: 5px 10px;
-      background-color: #007bff;
-      color: white;
+      background-color: white;
+      color: #000;
       border: none;
       border-radius: 4px;
       cursor: pointer;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #dcdee0;
     }
   }
 
@@ -1013,27 +1091,32 @@ function exportWord() {
     padding: 0 1rem;
   }
 
-  h1{  
+  h1 {
     margin-top: 40px;
     line-height: 0px;
     font-size: 60px;
   }
-  h2{
+
+  h2 {
     font-size: 52px;
     line-height: 0px;
   }
-  h3{
+
+  h3 {
     font-size: 42px;
     line-height: 0px;
   }
-  h4{
+
+  h4 {
     font-size: 35px;
     line-height: 0px;
   }
-  h5{
+
+  h5 {
     font-size: 30px;
     line-height: 0px;
   }
+
   h6 {
     font-size: 24px;
     line-height: 0px;
@@ -1170,6 +1253,7 @@ function exportWord() {
 .transparent-button-2 {
   border: none;
   background-color: transparent;
+  padding-bottom: 4px;
   /* Optional: Remove padding if needed */
   cursor: pointer;
 }
@@ -1196,5 +1280,50 @@ function exportWord() {
   border: 1px solid #ccc;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+}
+
+.item {
+  margin-left: 10px;
+  margin-right: 20px;
+  margin-top: 2px;
+}
+
+.v-enter-from,
+.v-leave-to {
+  transform: translateX(100%);
+}
+
+.v-enter-to,
+.v-leave-from {
+  transform: translateX(0);
+}
+
+.v-leave-active {
+  transition: transform .6s ease;
+}
+
+.v-enter-active {
+  transition: transform .6s ease;
+}
+
+.history {
+  height: 80vh;
+  overflow: auto;
+}
+
+.historyButton {
+  font-size: 20px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.optionButton {
+  color: #000;
+}
+
+.saveButton {
+  font-size: 20px;
+  margin: 0px;
+  padding: 0px;
 }
 </style>

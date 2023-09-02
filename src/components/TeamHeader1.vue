@@ -1,8 +1,5 @@
 <template>
   <img src="@/assets/imgs/icons/menu.svg" @click="drawer = true" class="img-decorate">
-  <!--  <el-button type="plain" style="margin-left: 16px;margin-top: 12px" @click="drawer = true" >-->
-  <!--    <i class="el-icon-custom expand-icon"></i>-->
-  <!--  </el-button>-->
   <el-drawer v-model="drawer" title="SUMMER" :with-header="false" direction="ltr" size="15%">
     <div class="drawer-content">
       <div class="summer-heading">
@@ -14,14 +11,13 @@
     <div class="button-container">
       <button text v-for="button in buttons" :key="button.id" :type="button.type" :icon="button.icon"
         @click="jump(button.id)" class="custom-button" :id="button.id"><i :class="button.icon"
-          style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{
-            button.text }}
+          style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{button.text}}
       </button>
     </div>
     <el-divider></el-divider>
     <div class="team-heading">个人</div> <!-- 添加的小标题 -->
     <div class="button-container">
-      <button text class="custom-button">
+      <button text class="custom-button" >
         <font-awesome-icon :icon="['fas', 'user']" style="margin-right: 15px; min-width: 25px; height: 25px;" />
         个人信息
       </button>
@@ -66,6 +62,13 @@ function jump(buttonId) {
   }
 
 }
+
+function setDrawer(data){
+	drawer.value = data
+}
+defineExpose({setDrawer})
+
+
 
 </script>
 

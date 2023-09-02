@@ -2,6 +2,7 @@
   <div class="common-layout">
     <el-container>
       <el-header>
+	      <button @click="backTo">回到上一级</button>
         <div class="editor__header">
           <div>
             <span class="title" v-if="!isEditingTitle">{{ currentDocumentName }}</span>
@@ -534,7 +535,9 @@ const wordCss = `
   padding: 24px;
 }
 `
-
+function backTo(){
+	router.push(`/design?back=active`)
+}
 onMounted(async () => {
   await getAllDocuments();
   opens.value.push('1')

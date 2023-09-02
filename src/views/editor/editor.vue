@@ -545,7 +545,7 @@ onMounted(async () => {
   selectedDocumentId.value = documentId.value
   const ydoc = new Y.Doc();
   provider.value = new HocuspocusProvider({
-    url: 'ws://127.0.0.1:1234',
+    url: 'ws://39.105.159.199:1108/hocuspocus',
     name: documentId.value,
     document: ydoc,
     forceSyncInterval: 200

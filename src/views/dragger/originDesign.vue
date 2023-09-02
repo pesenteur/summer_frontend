@@ -23,7 +23,7 @@
 
         <el-menu-item index="4">
           <div class="menu-item-container">
-           <font-awesome-icon :icon="['fas', 'eye']" style="color: #5587dd;"/>
+            <font-awesome-icon :icon="['fas', 'eye']" style="color: #5587dd;" />
             <span class="element-title" @click="seeDesign">页面视图</span>
           </div>
         </el-menu-item>
@@ -32,10 +32,9 @@
 
     <el-container>
       <el-main style="height: 100%;">
-
         <documentShow v-if="switchMenu === false" />
         <el-scrollbar style="height: 100%;" v-else>
-          <el-table :data="tableData" style="width: 100%;height: 100%;" max-height="600" >
+          <el-table :data="tableData" style="width: 100%;height: 100%;" max-height="600">
             <!--            <el-table-column fixed prop="date" label="" width="150" />-->
             <el-table-column prop="created_time" label="创建时间" />
             <el-table-column prop="title" label="画布名称" />
@@ -217,9 +216,11 @@ onMounted(async () => {
   height: 100%;
   right: 20px;
 }
-font-awesome-icon{
+
+font-awesome-icon {
   size: 20px;
 }
+
 .custom-aside {
   background-color: #2a2a2a;
   color: #fff;
@@ -243,6 +244,7 @@ font-awesome-icon{
   margin-left: 10px;
   font-size: 30px;
 }
+
 .menu-item-container-2 {
   display: flex;
   align-items: center;
@@ -262,5 +264,4 @@ font-awesome-icon{
   font-size: 16px;
   margin-left: 15px;
   font-weight: bold;
-}
-</style>
+}</style>

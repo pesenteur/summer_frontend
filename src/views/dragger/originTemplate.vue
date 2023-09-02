@@ -217,7 +217,7 @@ body.lb-disable-scrolling {
 
 .lb-outerContainer {
   position: relative;
-  *zoom: 1;
+  zoom: 1;
   width: 250px;
   height: 250px;
   margin: 0 auto;
@@ -249,7 +249,7 @@ body.lb-disable-scrolling {
   width: 32px;
   height: 32px;
   margin: 0 auto;
-  //background: url(@/assets/imgs/) no-repeat;
+  /* //background: url(@/assets/imgs/) no-repeat; */
 }
 
 .lb-nav {
@@ -280,7 +280,7 @@ body.lb-disable-scrolling {
   width: 34%;
   left: 0;
   float: left;
-  //background: url(../images/prev.png) left 48% no-repeat;
+  /* //background: url(../images/prev.png) left 48% no-repeat; */
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
   -webkit-transition: opacity 0.6s;
@@ -298,7 +298,7 @@ body.lb-disable-scrolling {
   width: 64%;
   right: 0;
   float: right;
-  //background: url(../images/next.png) right 48% no-repeat;
+  /* //background: url(../images/next.png) right 48% no-repeat; */
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
   -webkit-transition: opacity 0.6s;
@@ -315,7 +315,7 @@ body.lb-disable-scrolling {
 .lb-dataContainer {
   margin: 0 auto;
   padding-top: 5px;
-  *zoom: 1;
+  zoom: 1;
   width: 100%;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -362,7 +362,7 @@ body.lb-disable-scrolling {
   float: right;
   width: 30px;
   height: 30px;
-  //background: url(../images/close.png) top right no-repeat;
+  /* //background: url(../images/close.png) top right no-repeat; */
   text-align: right;
   outline: none;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);

@@ -35,10 +35,17 @@ requests.interceptors.response.use(response => {
         router.push({
             path: '/login',
         }).then(() => { });
-        ElMessage({
-            message: 'token失效，请重新登录',
-            type: 'error'
-        });
+        if (!error.response.data.detail) {
+            ElMessage({
+                message: 'token失效，请重新登录',
+                type: 'error'
+            });
+        } else {
+            ElMessage({
+                message: error.response.data.detail,
+                type: 'error'
+            });
+        }
     }
     else if (error.response && error.response.data.detail) {
         ElMessage({

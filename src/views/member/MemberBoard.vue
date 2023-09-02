@@ -90,10 +90,10 @@
 
             <el-main>
               <el-table :data="filterTableData" style="width: 800px">
-                <el-table-column prop="name" label="Name" sortable/>
-                <el-table-column prop="username" label="Username" sortable/>
-                <el-table-column prop="email" label="Email" sortable/>
-                <el-table-column prop="role" label="Role" sortable/>
+                <el-table-column prop="name" label="姓名" sortable/>
+                <el-table-column prop="username" label="昵称" sortable/>
+                <el-table-column prop="email" label="邮箱" sortable/>
+                <el-table-column prop="role" label="身份" sortable/>
                 <el-table-column align="right" width="200">
                   <template #header>
                     <form class="search-bar" @submit.prevent>

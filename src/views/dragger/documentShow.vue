@@ -230,10 +230,19 @@ async function intoDocumentManage2(docPos) {
   console.log('projPos111', docPos)
   console.log('myResult!!!!!', myResult.value)
 
-  if (totalCards1.value === docPos + 1) {
+  console.log('totalCards1',totalCards1.value)
+  console.log('docPos',docPos.value)
+
+  if(totalCards1.value === docPos+1){
+
+    console.log('docPos',docPos)
+    console.log('lastId.value',lastId.value)
+
     await router.push(`/document/${lastId.value}`)
-  } else {
-    for (let i = 0; i < myResult.value.length; i++) {
+  }else{
+
+    console.log('1231313131')
+    for(let i = 0 ; i < myResult.value.length ; i++){
 
       console.log('folder_id', folder_id.value)
 
@@ -265,6 +274,9 @@ async function intoFolder(folderPos) {
     }
   }
 
+
+  let len = myResult.value[folderPos].documents.length
+  lastId.value = myResult.value[folderPos].documents[len-1].id
   folder_id.value = folderId.value
 
   secondDoc.value = temp_document

@@ -39,5 +39,14 @@ export default {
             url:'/design/templates',
             method:'GET',
         })
+    },
+    useTemplate(design_id,template){
+        return requests({
+            url:`/design/${design_id}/use-template`,
+            method:'GET',
+            params:{
+                template
+            }
+        })
     }
 }

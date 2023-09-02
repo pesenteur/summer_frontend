@@ -723,6 +723,7 @@ async function restore(dId) {
     if (editor.value.storage.collaborationCursor.users.length === 1) {
       console.log(dId)
       await documentRequest.restore(dId)
+      Location.reload()
       documentId.value = dId
       ElMessage({
         message: '回退成功',

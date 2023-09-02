@@ -13,7 +13,6 @@
                 <label>密码</label>
             </div>
             <div class="remember-password">
-                <label for=""><input type="checkbox" v-model="agree">{{ userAgreement }}</label>
                 <a href="#">忘记密码?</a>
             </div>
             <button class="btn" id="siBtn">登录</button>
@@ -31,7 +30,6 @@ import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 const email = ref('')
 const password = ref('')
-const agree = ref(false)
 const accountStore = useAccountStore();
 const router = useRouter();
 const route = useRoute();
@@ -46,9 +44,6 @@ const showLogin = computed({
     }
 });
 
-const userAgreement = `
-    我已阅读并同意《用户协议》
-`;
 
 const showRegisterForm = () => {
     showLogin.value = false;
@@ -65,13 +60,6 @@ async function loginWithPassword() {
     if (!password.value) {
         ElMessage({
             message: '请输入密码',
-            type: 'error'
-        });
-        return;
-    }
-    if (!agree.value) {
-        ElMessage({
-            message: '请勾选同意用户协议',
             type: 'error'
         });
         return;
@@ -211,6 +199,7 @@ async function loginWithPassword() {
     font-size: 30px;
 
 }
+
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
@@ -220,6 +209,7 @@ select:-webkit-autofill {
     background-image: none;
     transition: background-color 50000s ease-in-out 0s;
 }
+
 .text-item h2 {
     font-size: 40px;
     line-height: 1;
@@ -390,6 +380,7 @@ select:-webkit-autofill {
 .create-account p a:hover {
     text-decoration: underline;
 }
+
 .password-mismatch {
     color: red;
     font-size: 12px;

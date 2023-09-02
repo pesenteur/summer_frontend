@@ -159,7 +159,7 @@ async function addDesign() {
     const result2 = await originAPI.getAllDesign(getProjId())
     tableData.value = result2.data
 
-    await router.push('/origin/template')
+    await router.push(`/origin/template/${designName.value}`)
     dialogFormVisible2.value = false
   }
 
@@ -185,7 +185,6 @@ onMounted(async () => {
   console.log('result.data.data', result.data.data)
   console.log('onMounted')
 })
-
 
 </script>
 

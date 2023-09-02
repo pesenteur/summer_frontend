@@ -67,7 +67,7 @@ const router = createRouter({
         component: () => import('@/views/editor/restore.vue')
     },
     {
-        path: '/origin/template',
+        path: '/origin/template/:tempName',
         component: () => import('@/views/dragger/originTemplate.vue')
 
     }]

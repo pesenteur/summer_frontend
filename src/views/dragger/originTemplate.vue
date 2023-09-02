@@ -19,35 +19,38 @@
 import { ref } from 'vue';
 import { onMounted } from "vue";
 import originAPI from '@/api/originDesign'
-import { useRouter } from "vue-router";
-import { getProjId, setDesignId } from "@/utils/token";
+import {useRouter,useRoute} from "vue-router";
+import {getProjId, setDesignId} from "@/utils/token";
 
 const router = useRouter()
+const route = useRoute()
 
 const images = ref()
 
-async function intoTemplate(designId) {
+const tempName = ref(route.params.tempName);
+
+async function intoTemplate(designId){
   // const result = await originAPI.getSingle(null,designId)
   // setDesignId(designId)
 
   console.log('setDesignId', designId)
 
-  let currentName = ''
+  // let currentName = ''
 
-  for (let i = 0; i < images.value.length; i++) {
-    if (images.value[i].designId === designId) {
-      currentName = images.value[i].title
-      break
-    }
-  }
+  // for(let i = 0 ; i < images.value.length ; i++){
+  //   if(images.value[i].designId === designId){
+  //     currentName = images.value[i].title
+  //     break
+  //   }
+  // }
 
-  console.log('curentName', currentName)
+  // console.log('curentName',currentName)
 
-  const result = await originAPI.addOrigin(currentName, getProjId())
+  const result = await originAPI.addOrigin(tempName.value, getProjId())
 
   setDesignId(result.data.id)
 
-  const result2 = await originAPI.useTemplate(result.data.id, designId)
+  const result2 = await originAPI.useTemplate(tempName.value,result.data.id,designId)
 
 
   await router.push('/drag')

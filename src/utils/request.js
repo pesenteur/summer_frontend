@@ -30,7 +30,7 @@ requests.interceptors.response.use(response => {
 }, error => {
     console.log(error)
     if (error.response && error.response.data.detail) {
-        let pattern = /^(token)$/i
+        let pattern = /token/i
         if (pattern.test(error.response.data.detail)) {
             const accountStore = useAccountStore();
             accountStore.logout();
@@ -49,12 +49,6 @@ requests.interceptors.response.use(response => {
                 });
             }
         }
-    }
-    else if (error.response && error.response.data.detail) {
-        ElMessage({
-            message: error.response.data.detail,
-            type: 'error'
-        });
     }
     else if (error.response && error.response.status === 403) {
         ElMessage({

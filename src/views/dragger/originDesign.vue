@@ -26,17 +26,35 @@
             <span class="element-title">画布视图</span>
           </div>
         </el-menu-item>
+
+<!--        <el-menu-item index="4">-->
+<!--          <div class="menu-item-container-another">-->
+<!--            <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />-->
+<!--            <span class="element-title" >项目描述</span>-->
+<!--            <br>-->
+<!--            <span>{{projDescribe}}</span>-->
+<!--          </div>-->
+<!--        </el-menu-item>-->
       </el-menu>
-      <!--      <div class="logo">-->
-      <!--        <img src="@/assets/summer.png" alt="Logo">-->
-      <!--      </div>-->
+      <el-divider/>
+      <div class="menu-item-container-another">
+        <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />
+        <span class="element-title" >项目描述</span>
+        <br>
+        <span>{{projDescribe}}</span>
+      </div>
+
+
+<!--      <div class="logo">-->
+<!--        <img src="@/assets/summer.png" alt="Logo">-->
+<!--      </div>-->
     </el-aside>
 
     <el-container>
       <el-main style="height: 100%;">
         <documentShow v-if="switchMenu === false" />
         <el-scrollbar style="height: 700px;" v-else>
-          <el-button class="mt-4" style="margin-right: 8px; margin-top: 0px; width:70%"
+          <el-button class="mt-4" style="margin-left: 800px; padding: 10px;"
             @click="dialogFormVisible2 = true">新建画布</el-button>
           <el-dialog draggable=true v-model="dialogFormVisible2" title="新建画布:" center width="30%">
             <el-form :model="form">
@@ -62,19 +80,32 @@
             </template>
           </el-dialog>
           <div class="box">
-            <div class="list" v-for="(data, index) in tableData" @click.prevent="intoDesign(data.id)">
-              <div class="imgBx">
-                <img src="@/assets/2.jpg">
+            <div class="list-container" v-for="(data, index) in tableData">
+              <div class="list" @click.prevent="intoDesign(data.id)">
+                <div class="imgBx">
+                  <img src="@/assets/2.jpg">
+                </div>
+                <div class="content">
+                  <h2 class="rank"><small>#</small>{{ index + 1 }}</h2>
+                  <h4>画布名称：{{ data.title }}</h4>
+                  <p>创建时间：{{ data.created_time }}</p>
+                </div>
               </div>
-              <div class="content">
-                <h2 class="rank"><small>#</small>{{ index + 1 }}</h2>
-                <h4>画布名称：{{ data.title }}</h4>
-                <p>创建时间：{{ data.created_time }}</p>
-              </div>
-              <el-button link type="primary" size="small" @click.prevent="deleteDesign(data.id)">
-                删除画布
+              <el-button class="delete" link type="primary" size="small" @click.prevent="openDeleteDialog(data.id)">
+                <font-awesome-icon :icon="['fas', 'trash']" style="color: #e22828;" />
               </el-button>
             </div>
+            <el-dialog v-model="deletedialogVisible" title="确认" width="30%" :before-close="handleClose">
+              <span>确认删除？</span>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="deletedialogVisible = false">取消</el-button>
+                  <el-button type="primary" @click="deleteDesign()">
+                    确认
+                  </el-button>
+                </span>
+              </template>
+            </el-dialog>
           </div>
           <!-- <el-table :data="tableData" style="width: 100%;height: 100%;" max-height="600">
             <el-table-column prop="created_time" label="创建时间" />
@@ -104,6 +135,7 @@ import originAPI from '@/api/originDesign'
 import { useRouter, useRoute } from "vue-router";
 import documentShow from './documentShow.vue'
 import editor from '../editor/editor.vue'
+import {ElMessage} from "element-plus";
 
 const router = useRouter()
 const route = useRoute()
@@ -118,10 +150,13 @@ const switchMenu = ref(true)
 const projName = ref('')
 projName.value = getProjectName()
 
+const projDescribe = ref()
+
 const dialogFormVisible = ref(false)
 
 const dialogFormVisible2 = ref(false)
-
+const deletedialogVisible = ref(false)
+const deleteDesignId = ref('')
 const formLabelWidth = '140px'
 
 const tableData = ref([])
@@ -134,7 +169,10 @@ const ifTemplate = ref('')
 //   tableData.value.splice(index, 1)
 // }
 
-
+function openDeleteDialog(deleteId) {
+  deletedialogVisible.value = true
+  deleteDesignId.value = deleteId
+}
 function seeDocs() {
   switchMenu.value = false
 
@@ -151,8 +189,9 @@ function intoDesign(designId) {
   console.log('11111111')
 }
 
-async function deleteDesign(designId) {
-  await originAPI.deleteDesign(designId)
+async function deleteDesign() {
+  deletedialogVisible.value = false
+  await originAPI.deleteDesign(deleteDesignId.value)
   const result = await originAPI.getAllDesign(getProjId())
   tableData.value = result.data
   projName.value = getProjectName()
@@ -184,6 +223,9 @@ async function addDesign() {
 
     await router.push(`/origin/template/${designName.value}`)
     dialogFormVisible2.value = false
+  }else{
+    dialogFormVisible.value = true
+    ElMessage.error('请选择是否调用模板')
   }
 
   // if (designName.value === '') {
@@ -202,9 +244,11 @@ onMounted(async () => {
   const result = await originAPI.getAllDesign(getProjId())
   tableData.value = result.data
   projName.value = getProjectName()
-  if (route.query.back != null) {
-    switchMenu.value = false
-  }
+  const result1 = await projAPI.getSingleProject(getProjId())
+  projDescribe.value = result1.data.describe
+	if(route.query.back !=null){
+		switchMenu.value = false
+	}
   console.log('projName', projName.value)
   console.log('result', result)
   console.log('result.data', result.data)
@@ -216,6 +260,7 @@ onMounted(async () => {
 
 <style scoped>
 .layout-container-demo .el-header {
+  margin-top: 200px !important;
   position: relative;
   background-color: var(--el-color-primary-light-7);
   color: var(--el-text-color-primary);
@@ -247,6 +292,7 @@ font-awesome-icon {
 }
 
 .custom-aside {
+  margin-left: 100px;
   background-color: #2a2a2a;
   color: #fff;
 }
@@ -277,6 +323,10 @@ font-awesome-icon {
   padding: 10px 0;
   margin-left: 15px;
   font-size: 20px;
+}
+
+.menu-item-container-another{
+  margin-left: 25%;
 }
 
 .menu-icon {
@@ -328,12 +378,12 @@ h3 {
 }
 
 .box .list {
-  width: 70%;
+  width: 60%;
   position: relative;
   display: flex;
   padding: 10px;
   border-radius: 10px;
-  margin-left: 200px;
+  margin-left: 80px;
   cursor: pointer;
   transition: 0.5s;
   overflow: hidden;
@@ -645,5 +695,18 @@ h3 {
 .el-main {
   align-items: center;
   text-align: center;
+}
+
+.list-container {
+  display: flex;
+  align-items: center;
+  /* 垂直居中 */
+  justify-content: space-between;
+  /* 将元素水平对齐到容器两端 */
+}
+
+.delete {
+  font-size: 20px;
+  margin-right: 280px;
 }
 </style>

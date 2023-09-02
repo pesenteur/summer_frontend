@@ -8,7 +8,7 @@
 		  @select="handleSelect"
 		>
 			<TeamHeader1/>
-      <img src="@/assets/summerTitle.png" class="summerTitle"/>
+      <img @click="returnHome" src="@/assets/summerTitle.png" class="summerTitle"/>
 			<div class="flex-grow" />
 			<button @click="jumpToHome" class="home-button" />
 			<TeamMessage></TeamMessage>
@@ -52,6 +52,10 @@ function jumpToHome(){
 function logout(){
 	clearToken()
 	router.push('/login')
+}
+
+function returnHome(){
+  router.push('/')
 }
 </script>
 

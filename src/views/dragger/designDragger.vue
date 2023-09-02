@@ -201,12 +201,17 @@ onMounted(async ()=>{
   editableTabs.value = []
   await get_all_design()
   let designTitle = ''
+  console.log('myResult 111',myResult.value)
+
+  console.log('getDesignId',getDesignId())
+
   for(let i = 0 ; i < myResult.value.length ; i++){
     if(myResult.value[i].id === getDesignId()){
       designTitle = myResult.value[i].title
+      console.log('myResult.value[i].title',myResult.value[i].title)
     }
   }
-  console.log('&&&&title',designTitle)
+  console.log('&&&&!!!title',designTitle)
   // editableTabs.value.push({label:designTitle, id:getDesignId(), name:getDesignId()})
   iframeSrc.value = `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
   editableTabsValue.value = getDesignId()

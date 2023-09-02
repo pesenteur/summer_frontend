@@ -1,5 +1,5 @@
 <template>
-  <el-container class="layout-container-demo" style="height;: 800px">
+  <el-container class="layout-container-demo" style="height: 800px">
     <el-aside width="250px" class="custom-aside">
       <div class="logo">
         <img src="@/assets/logo.webp" alt="Logo">

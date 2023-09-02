@@ -24,17 +24,9 @@
             </template>
           </div>
           <div> <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-              <el-sub-menu index="2">
+              <el-sub-menu index="2" v-for="model in Model">
                 <template #title>模版</template>
-                <el-menu-item index="2-1">item one</el-menu-item>
-                <el-menu-item index="2-2">item two</el-menu-item>
-                <el-menu-item index="2-3">item three</el-menu-item>
-                <el-sub-menu index="2-4">
-                  <template #title>item four</template>
-                  <el-menu-item index="2-4-1">item one</el-menu-item>
-                  <el-menu-item index="2-4-2">item two</el-menu-item>
-                  <el-menu-item index="2-4-3">item three</el-menu-item>
-                </el-sub-menu>
+                <el-menu-item @click="setModel(model.content)" :index="model.id">{{ model.name }}</el-menu-item>
               </el-sub-menu>
               <el-menu-item @click="exportMarkdown" index="4">导出为Markdown</el-menu-item>
               <el-menu-item @click="exportPDF" index="5">导出为PDF</el-menu-item>
@@ -484,6 +476,7 @@ const isEditingTitle = ref(false);
 const folders = ref([]);
 const rootDocuments = ref([])
 const historyRecord = ref([])
+const Model = ref([])
 const projectName = getProjectName()
 const currentDocumentName = ref('')
 const newTitle = ref(currentDocumentName.value);
@@ -557,7 +550,11 @@ const wordCss = `
 function backTo() {
   router.push(`/design?back=active`)
 }
+function setModel(content){
+    editor.value.commands.setContent(content)
+}
 onMounted(async () => {
+  Model.value = [{id:"adasdad",name:"model1",content:"哈哈哈哈"},]
   await getAllDocuments();
   opens.value.push('1')
   console.log(opens.value)

@@ -111,6 +111,7 @@ import router from "@/router";
 import projectMainRe from './projectMainRe.vue';
 import { getTeamId, setProjectName, setProjId } from "@/utils/token";
 import teamFunction from "@/api/team";
+import {ElMessage} from "element-plus";
 
 const childFunctions1 = ref(null)
 
@@ -189,7 +190,11 @@ async function handleClose() {
 async function addProject() {
   if (form.name === '') {
     dialogFormVisible.value = true
-  } else {
+    ElMessage.error('请输入项目名称')
+  } else if(form.describe === ''){
+    dialogFormVisible.value = true
+    ElMessage.error('请输入项目描述')
+  }else {
     const result = await projectAPI.addProject(form.name, form.describe, team.value);
     dialogFormVisible.value = false
     setProjId(result.data.id)

@@ -5,7 +5,7 @@
         <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
           shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
           <img @click="intoDesignManage((rowIndex) * 4 + colIndex)"
-            src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+            :src="backImages[2]" class="image" />
           <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
             <div class="project-name">
               <span>项目：{{ projectName[(rowIndex) * 4 + colIndex] }}</span>
@@ -50,6 +50,10 @@ import projectAPI from '@/api/proj.js'
 import { CircleCloseFilled, DocumentCopy } from "@element-plus/icons-vue";
 import { getTeamId, setDesignId, setProjectName, setProjId } from "@/utils/token";
 import originAPI from "@/api/originDesign";
+import picture1 from '@/assets/imgs/1.png';
+import picture2 from '@/assets/imgs/2.png';
+import picture3 from '@/assets/imgs/3.png';
+import picture4 from '@/assets/imgs/4.png';
 
 const router = useRouter()
 const currentDate = reactive(new Date())
@@ -64,6 +68,14 @@ const reCol = ref()
 
 const cardsPerRow = 4
 const rows = ref([])
+
+
+const backImages = ref([
+  picture1,
+  picture2,
+  picture3,
+  picture4,
+])
 
 const numRows = computed(() => {
   return Math.ceil(totalCards.value / cardsPerRow)

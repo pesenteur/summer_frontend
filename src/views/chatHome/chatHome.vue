@@ -465,7 +465,7 @@ async function upMessage(event) {
 			let message = {
 				_id: temp.id,
 				content: temp.content,
-				senderId: user_id.value.toString(),
+				senderId: temp.sender.toString(),
 				username: temp.sender_name,
 				date: temp.created_time,
 				timestamp: temp.created_time,
@@ -477,7 +477,7 @@ async function upMessage(event) {
 		let message = {
 			_id: temp.id,
 			content: '',
-			senderId: user_id.value.toString(),
+			senderId: temp.sender.toString(),
 			username: temp.sender_name,
 			date: temp.created_time,
 			timestamp: temp.created_time,

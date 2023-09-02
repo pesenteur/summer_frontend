@@ -13,13 +13,12 @@
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
           <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-            <img
+            <font-awesome-icon
               v-if="firstDoc.filter((item) => { return item.id === myResult[(rowIndex) * 4 + colIndex].id })[0].type === 0"
-              @click="intoDocumentManage((rowIndex) * 4 + colIndex)"
-              src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
-            <img v-else
-              src="https://img2.baidu.com/it/u=4238855641,2359345742&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083"
-              @click="intoFolder((rowIndex) * 4 + colIndex)" class="image">
+              @click="intoDocumentManage1((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']" style="color: #64d2e8;"
+              class="image" />
+            <font-awesome-icon v-else @click="intoFolder((rowIndex) * 4 + colIndex)" class="image"
+              :icon="['fas', 'folder']" style="color: #53d0ea; font-size: 150px;" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
                 <span>{{ documentName[(rowIndex) * 4 + colIndex] }}</span>
@@ -77,13 +76,12 @@
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
           <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-            <img @click="intoDocumentManage((rowIndex) * 4 + colIndex)"
-              src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+            <font-awesome-icon @click="intoDocumentManage2((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']"
+              style="color: #64d2e8;" class="image" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
                 <span>{{ secondDocNames[(rowIndex) * 4 + colIndex] }}</span>
                 <div class="project-actions">
-
                 </div>
               </div>
               <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
@@ -192,7 +190,7 @@ async function addDocument2() {
   console.log('addDocument2', result.data)
   let temp_document = []
   lastId.value = result.data.id
-  folder_id.value = result.data.folder
+  // folder_id.value = result.data.folder
   documentArray.value.push({ id: result.data.id, name: result.data.title, folder: result.data.folder })
   for (let i = 0; i < documentArray.value.length; i++) {
     if (documentArray.value[i].folder === folderId.value) {
@@ -216,7 +214,17 @@ function openDialog2() {
   dialogVisible3.value = true
 }
 
-async function intoDocumentManage(docPos) {
+
+async function intoDocumentManage1(docPos) {
+
+  let docId = myResult.value[docPos].id
+
+  console.log('docId', docId)
+
+  await router.push(`/document/${docId}`)
+}
+
+async function intoDocumentManage2(docPos) {
   let temp_folder = []
   // await getData()
   console.log('projPos111', docPos)
@@ -226,6 +234,9 @@ async function intoDocumentManage(docPos) {
     await router.push(`/document/${lastId.value}`)
   } else {
     for (let i = 0; i < myResult.value.length; i++) {
+
+      console.log('folder_id', folder_id.value)
+
       if (myResult.value[i].id === folder_id.value) {
         temp_folder = myResult.value[i].documents
         break;
@@ -234,6 +245,9 @@ async function intoDocumentManage(docPos) {
     console.log('myResult.value', myResult.value)
     console.log('temp_folder', temp_folder)
     let docId = temp_folder[docPos].id;
+
+    console.log('docId', docId)
+
     await router.push(`/document/${docId}`)
 
   }
@@ -250,6 +264,9 @@ async function intoFolder(folderPos) {
       temp_document.push({ id: documentArray.value[i].id, name: documentArray.value[i].name })
     }
   }
+
+  folder_id.value = folderId.value
+
   secondDoc.value = temp_document
   switchTo2.value = false
   showSecondDocs()
@@ -408,8 +425,11 @@ onMounted(async () => {
 }
 
 .image {
-  width: 100%;
-  height: 98px !important;
+  width: 150px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 25px;
+  height: 150px !important;
   display: block;
   object-fit: cover;
 }
@@ -436,28 +456,22 @@ onMounted(async () => {
 }
 
 .project-info {
-  padding-left: 20px;
-  padding-bottom: 20px;
   position: relative;
-  height: 20px;
   border-radius: 10px;
   font-size: 16px;
-  background-color: white;
   /* padding: 10px; */
   transition: top 0.3s ease;
+  z-index: 99999;
   top: 0;
 }
 
-.project-info.active {
-  top: -40px;
-  /* 负数值根据实际需求调整，控制向上滑动的距离 */
-}
 
 
 .project-name {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: transparent;
 }
 
 .project-actions {
@@ -525,5 +539,16 @@ onMounted(async () => {
 
 .right {
   margin-left: 50px;
+}
+
+.small-card {
+  width: 200px;
+  height: 200px;
+  border: none;
+  border-radius: 20px;
+}
+
+.small-card:hover {
+  background-color: #ebecef;
 }
 </style>

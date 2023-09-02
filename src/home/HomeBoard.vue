@@ -11,6 +11,7 @@ import {getOldArr, getUserId, setIsOld} from "@/utils/token";
 
 const driverObj = driver({
 	showProgress: true,
+	allowClose: false,
 	steps: [
 		{ element: '.el-dropdown', popover: { title: '个人界面', description: '点击后可以选择退出或切换团队' } },
 		{ element: '.custom-icon-button', popover: { title: '消息中心', description: '点击可以查看自己收到的消息' } },

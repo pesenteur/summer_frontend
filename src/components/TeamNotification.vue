@@ -83,7 +83,7 @@ const unreadCount = computed(() => {
 onMounted(() => {
   getAllNoti()
   user_id.value = getUserId()
-  socket.value = new WebSocket(`ws://localhost:8000/ws/message/${user_id.value}`)
+  socket.value = new WebSocket(`ws://azure.bienboy.store/summer/ws/message/${user_id.value}`)
   socket.value.addEventListener('message', () => {
     getAllNoti()
   })

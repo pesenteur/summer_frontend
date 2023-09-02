@@ -13,16 +13,15 @@
         @click="jump(button.id)" class="custom-button" :id="button.id"><i :class="button.icon"
           style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{button.text}}
       </button>
+	    <el-divider></el-divider>
+	    
+	    <button text v-for="button in buttons2" :key="button.id" :type="button.type" :icon="button.icon"
+	            @click="jump(button.id)" class="custom-button" :id="button.id"><i
+		    :class="button.icon" style="margin-right: 15px; min-width: 30px; height: 30px;"></i>{{button.text}}
+	    </button>
     </div>
     <el-divider></el-divider>
-    <div class="team-heading">个人</div> <!-- 添加的小标题 -->
-    <div class="button-container">
-      <button text class="custom-button" >
-        <font-awesome-icon :icon="['fas', 'user']" style="margin-right: 15px; min-width: 25px; height: 25px;" />
-        个人信息
-      </button>
-    </div>
-    <el-divider></el-divider>
+	  
   </el-drawer>
 </template>
 
@@ -30,7 +29,7 @@
 import { reactive, ref } from 'vue'
 import router from "@/router";
 import { useRoute } from 'vue-router';
-import { getTeamId, getTeamName } from "@/utils/token";
+import {clearToken, getTeamId, getTeamName} from "@/utils/token";
 const drawer = ref(false)
 const teamName = ref(getTeamName())
 const buttons = reactive([
@@ -38,6 +37,10 @@ const buttons = reactive([
   { id: "002", type: 'plain', text: '原型设计', icon: 'el-icon-my-platform' },
   { id: "003", type: 'plain', text: '团队管理', icon: 'el-icon-my-custom' },
   { id: "004", type: 'plain', text: '聊天室', icon: 'el-icon-my-custom1' },
+])
+const buttons2 = reactive([
+	{ id: "005", type: 'plain', text: '切换团队', icon: 'el-icon-my-custom1' },
+	{ id: "006", type: 'plain', text: '退出登录', icon: 'el-icon-my-custom1' },
 ])
 
 function jump(buttonId) {
@@ -57,7 +60,15 @@ function jump(buttonId) {
     router.push({
       path: `/team/${getTeamId()}/chatHome`,
     })
-  } else {
+  } else if(buttonId === '005'){
+	  drawer.value = !drawer.value
+	  router.push('/switch')
+  } else if(buttonId === '006'){
+	  drawer.value = !drawer.value
+	  clearToken()
+	  router.push('/login')
+  }
+  else {
     router.push('/home')
   }
 

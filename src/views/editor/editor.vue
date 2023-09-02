@@ -2,9 +2,11 @@
   <div class="common-layout">
     <el-container>
       <el-header>
-	      <button @click="backTo">回到上一级</button>
+
         <div class="editor__header">
           <div>
+            <button class="goback" @click="backTo"><font-awesome-icon :icon="['fas', 'arrow-up-from-bracket']"
+                style="color: #7dd4df;" /></button>
             <span class="title" v-if="!isEditingTitle">{{ currentDocumentName }}</span>
             <input v-else v-model="newTitle" class="edit-title-input" />
             <button class="changeName" @click="toggleEditTitle">
@@ -21,10 +23,25 @@
               offline
             </template>
           </div>
+          <div> <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+              <el-sub-menu index="2">
+                <template #title>模版</template>
+                <el-menu-item index="2-1">item one</el-menu-item>
+                <el-menu-item index="2-2">item two</el-menu-item>
+                <el-menu-item index="2-3">item three</el-menu-item>
+                <el-sub-menu index="2-4">
+                  <template #title>item four</template>
+                  <el-menu-item index="2-4-1">item one</el-menu-item>
+                  <el-menu-item index="2-4-2">item two</el-menu-item>
+                  <el-menu-item index="2-4-3">item three</el-menu-item>
+                </el-sub-menu>
+              </el-sub-menu>
+              <el-menu-item @click="exportMarkdown" index="4">导出为Markdown</el-menu-item>
+              <el-menu-item @click="exportPDF" index="5">导出为PDF</el-menu-item>
+              <el-menu-item @click="exportWord" index="6">导出为Word</el-menu-item>
+            </el-menu>
+          </div>
           <div class="optionButton">
-            <button @click="exportMarkdown">导出为Markdown</button>
-            <button @click="exportPDF">导出为PDF</button>
-            <button @click="exportWord">导出为Word</button>
             <button v-if="!share" @click="openDialog">共享</button> <button @click="cancelShare" v-else>取消分享</button>
             <el-diglog v-if="isDialogVisible" class="dialog">
               <h2>生成共享链接</h2>
@@ -52,7 +69,8 @@
                 <el-menu :default-openeds="['1']">
                   <el-sub-menu index="1" :default-openeds="opens">
                     <template #title>
-                      <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ projectName }}</span>
+                      <font-awesome-icon style="color: #53d0ea" :icon="['fas', 'folder']" /><span class="item">{{
+                        projectName }}</span>
                       <button class="transparent-button-1" @click.stop="showAddFolderDialog">
                         <font-awesome-icon :icon="['fas', 'folder-plus']" /></button>
                       <button class="transparent-button-2" @click.stop="showAddDocumentDialog('')"><font-awesome-icon
@@ -64,7 +82,8 @@
                     <div v-for="folder in folders" :key="folder.id">
                       <el-sub-menu :index="folder.id" :default-openeds="folder.id">
                         <template #title>
-                          <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ folder.name }}</span>
+                          <font-awesome-icon style="color: #53d0ea" :icon="['fas', 'folder']" /><span class="item">{{
+                            folder.name }}</span>
                           <button class="transparent-button-2"
                             @click.stop="showAddDocumentDialog(folder.id)"><font-awesome-icon
                               :icon="['fas', 'file-circle-plus']" />
@@ -535,8 +554,8 @@ const wordCss = `
   padding: 24px;
 }
 `
-function backTo(){
-	router.push(`/design?back=active`)
+function backTo() {
+  router.push(`/design?back=active`)
 }
 onMounted(async () => {
   await getAllDocuments();
@@ -1341,4 +1360,12 @@ function exportWord() {
   margin: 0px;
   padding: 0px;
 }
+
+.goback {
+  font-size: 20px;
+}
+.el-menu--horizontal.el-menu {
+    border-bottom: none !important;
+}
+
 </style>

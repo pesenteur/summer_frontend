@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header">
         <span class="title">消息中心</span>
-        <el-button class="button" text >查看详情</el-button>
+        <el-button class="button" text>查看详情</el-button>
       </div>
     </template>
     <el-table :data="tableData" height="250" style="width: 100%">
@@ -14,25 +14,25 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import { ref } from "vue";
 import router from "@/router";
 import notiFunction from "@/api/notification";
 const tableData = ref([])
 addData()
-async function addData(){
-	let res = await notiFunction.queryAllNoti()
-	let filtermessages = []
-	res.data.forEach((item) => {
-		const messagePart = item.content.match(/(.+?)：/)?.[1] || "";
-		let noti = {
-			content: messagePart,
-			isread: item.is_read === true ? 'read' : 'unread',
-			notId: item.id
-		}
-		filtermessages.push(noti)
-	})
-	tableData.value = filtermessages
-	
+async function addData() {
+  let res = await notiFunction.queryAllNoti()
+  let filtermessages = []
+  res.data.forEach((item) => {
+
+    let noti = {
+      content: item.content,
+      isread: item.is_read === true ? 'read' : 'unread',
+      notId: item.id
+    }
+    filtermessages.push(noti)
+  })
+  tableData.value = filtermessages
+
 }
 
 

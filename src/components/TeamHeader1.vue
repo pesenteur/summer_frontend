@@ -33,8 +33,7 @@ import {clearToken, getTeamId, getTeamName} from "@/utils/token";
 const drawer = ref(false)
 const teamName = ref(getTeamName())
 const buttons = reactive([
-  { id: "001", type: 'plain', text: '项目协作', icon: 'el-icon-my-help' },
-  { id: "002", type: 'plain', text: '原型设计', icon: 'el-icon-my-platform' },
+  { id: "002", type: 'plain', text: '团队项目', icon: 'el-icon-my-platform' },
   { id: "003", type: 'plain', text: '团队管理', icon: 'el-icon-my-custom' },
   { id: "004", type: 'plain', text: '聊天室', icon: 'el-icon-my-custom1' },
 ])

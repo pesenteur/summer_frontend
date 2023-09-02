@@ -1,14 +1,16 @@
 <template>
   <div>
-    <el-button @click="openDialog1">
-      新建文件夹
-    </el-button>
-    <el-button @click="openDialog2">
-      新建文件
-    </el-button>
-    <el-button @click="goBehind">
+    <el-button v-if="behind > 0" class="head_button" @click="goBehind">
       返回上一级
     </el-button>
+    <div class="button-container">
+      <el-button v-if="behind === 0" class="head_button" @click="openDialog1">
+        新建文件夹
+      </el-button>
+      <el-button class="head_button" @click="openDialog2">
+        新建文件
+      </el-button>
+    </div>
     <div v-if="switchTo2">
       <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
@@ -16,34 +18,14 @@
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
             <font-awesome-icon
               v-if="firstDoc.filter((item) => { return item.id === myResult[(rowIndex) * 4 + colIndex].id })[0].type === 0"
-              @click="intoDocumentManage1((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']" style="color: #64d2e8;"
+              @click="intoDocumentManage1((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']" style="color: #c7dbdf;"
               class="image" />
             <font-awesome-icon v-else @click="intoFolder((rowIndex) * 4 + colIndex)" class="image"
               :icon="['fas', 'folder']" style="color: #53d0ea; font-size: 150px;" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
                 <span>{{ documentName[(rowIndex) * 4 + colIndex] }}</span>
-                <div class="project-actions">
-                  <el-dialog v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
-                    <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
-                    </el-input>
-                    <span class="dialog-footer">
-                      <el-button type="primary" @click="addFolder(); closeDialog1()" class="confirm-button">确认</el-button>
-                      <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
-                    </span>
-                  </el-dialog>
 
-
-                  <el-dialog v-model="dialogVisible2" title="新建文档" class="project-dialog">
-                    <el-input v-model="newName" placeholder="文档名称" class="input-field">
-                    </el-input>
-                    <span class="dialog-footer">
-                      <el-button type="primary" @click="addDocument(); closeDialog2()"
-                        class="confirm-button">确认</el-button>
-                      <el-button @click="closeDialog2" class="cancel-button">取消</el-button>
-                    </span>
-                  </el-dialog>
-                </div>
               </div>
               <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
             </div>
@@ -78,7 +60,7 @@
           <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
             <font-awesome-icon @click="intoDocumentManage2((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']"
-              style="color: #64d2e8;" class="image" />
+              style="color: #c7dbdf;" class="image" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
                 <span>{{ secondDocNames[(rowIndex) * 4 + colIndex] }}</span>
@@ -141,6 +123,7 @@ const numRows1 = computed(() => {
 const dialogVisible1 = ref(false)
 const dialogVisible2 = ref(false)
 const dialogVisible3 = ref(false)
+const behind = ref(0)
 
 const folderId = ref()
 
@@ -211,8 +194,13 @@ function openDialog1() {
 }
 function openDialog2() {
   newName.value = ''; // 清空输入框
-  dialogVisible2.value = true; // 打开对话框
-  dialogVisible3.value = true
+  if (behind.value === 1) {
+    dialogVisible3.value = true
+  }
+  else {
+    dialogVisible2.value = true; // 打开对话框
+  }
+
 }
 
 
@@ -231,19 +219,19 @@ async function intoDocumentManage2(docPos) {
   console.log('projPos111', docPos)
   console.log('myResult!!!!!', myResult.value)
 
-  console.log('totalCards1',totalCards1.value)
-  console.log('docPos',docPos.value)
+  console.log('totalCards1', totalCards1.value)
+  console.log('docPos', docPos.value)
 
-  if(totalCards1.value === docPos+1){
+  if (totalCards1.value === docPos + 1) {
 
-    console.log('docPos',docPos)
-    console.log('lastId.value',lastId.value)
+    console.log('docPos', docPos)
+    console.log('lastId.value', lastId.value)
 
     await router.push(`/document/${lastId.value}`)
-  }else{
+  } else {
 
     console.log('1231313131')
-    for(let i = 0 ; i < myResult.value.length ; i++){
+    for (let i = 0; i < myResult.value.length; i++) {
 
       console.log('folder_id', folder_id.value)
 
@@ -266,6 +254,7 @@ async function intoDocumentManage2(docPos) {
 async function intoFolder(folderPos) {
   folderId.value = myResult.value[folderPos].id
   switchTo2.value = false
+  behind.value = behind.value + 1
 
 
   let temp_document = []
@@ -277,7 +266,7 @@ async function intoFolder(folderPos) {
 
 
   let len = myResult.value[folderPos].documents.length
-  lastId.value = myResult.value[folderPos].documents[len-1].id
+  lastId.value = myResult.value[folderPos].documents[len - 1].id
   folder_id.value = folderId.value
 
   secondDoc.value = temp_document
@@ -410,13 +399,15 @@ function showSecondDocs() {
 }
 
 onMounted(async () => {
+  behind.value = 0
   // getOrdering()
   await getData()
   showFirstDocs()
   console.log('$$$$$$$$$$', totalCards.value)
 })
 
-async function goBehind(){
+async function goBehind() {
+  behind.value = behind.value - 1
   console.log('1111@@@成功')
   switchTo2.value = true
   await getData()
@@ -480,7 +471,6 @@ async function goBehind(){
   font-size: 16px;
   /* padding: 10px; */
   transition: top 0.3s ease;
-  z-index: 99999;
   top: 0;
 }
 
@@ -527,11 +517,11 @@ async function goBehind(){
 }
 
 .confirm-button {
-  background-color: #67c23a;
+  background-color: #2183bc;
   /* 修改按钮的背景颜色 */
   color: white;
   /* 修改按钮的文本颜色 */
-  border-color: #67c23a;
+  border-color: #2296c8;
 }
 
 .cancel-button {
@@ -569,5 +559,16 @@ async function goBehind(){
 
 .small-card:hover {
   background-color: #ebecef;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  /* 将按钮靠右对齐 */
+}
+
+.head_button {
+  margin-left: 10px;
+  /* 可选：为按钮之间添加一些间距 */
 }
 </style>

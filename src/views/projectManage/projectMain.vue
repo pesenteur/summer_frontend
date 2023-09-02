@@ -16,12 +16,14 @@
                   </el-icon>
                 </el-button>
                 <el-button @click="copyProject((rowIndex) * 4 + colIndex)" text>
-                    <el-icon><DocumentCopy /></el-icon>
+                  <el-icon>
+                    <DocumentCopy />
+                  </el-icon>
                 </el-button>
-                <el-button class="edit" @click="openDialog(rowIndex,colIndex)" text>
+                <el-button class="edit" @click="openDialog(rowIndex, colIndex)" text>
                   <font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 </el-button>
-                <el-dialog  v-model="dialogVisible" title="修改项目名称" class="project-dialog">
+                <el-dialog v-model="dialogVisible" title="修改项目名称" class="project-dialog">
                   <el-input v-model="newName" placeholder="新项目名称" class="input-field">
                   </el-input>
                   <span class="dialog-footer">
@@ -40,13 +42,13 @@
   </div>
 </template>
 <script setup>
-import {ref, reactive, onMounted, computed, watch} from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import projectDialog from "./projectDialog.vue";
 import { useRouter } from "vue-router";
 
 import projectAPI from '@/api/proj.js'
-import {CircleCloseFilled, DocumentCopy} from "@element-plus/icons-vue";
-import {getTeamId, setDesignId, setProjectName, setProjId} from "@/utils/token";
+import { CircleCloseFilled, DocumentCopy } from "@element-plus/icons-vue";
+import { getTeamId, setDesignId, setProjectName, setProjId } from "@/utils/token";
 import originAPI from "@/api/originDesign";
 
 const router = useRouter()
@@ -71,7 +73,7 @@ const dialogFormVisible = ref(false)
 
 const formLabelWidth = '140px'
 
-const props = defineProps(['teamId','ordering','radio1','radio2'])
+const props = defineProps(['teamId', 'ordering', 'radio1', 'radio2'])
 
 // const radio1 = computed(()=>{
 //   return props.radio1
@@ -92,7 +94,7 @@ const team = ref('')
 
 team.value = props.teamId
 
-const ordering = computed(()=>{
+const ordering = computed(() => {
   return props.ordering
 })
 
@@ -109,12 +111,12 @@ const hoveredProjectIndex = ref(-1);
 
 const contextMenuVisible = ref(false);
 
-async function copyProject(projPos){
+async function copyProject(projPos) {
   let projId = myResult.value[projPos].id
 
   console.log('projPos111', projPos)
 
-  const result = await projectAPI.copyProject(getTeamId(),projId)
+  const result = await projectAPI.copyProject(getTeamId(), projId)
 
   await getData()
   showProjects1()
@@ -133,8 +135,8 @@ async function getSingleProj(projPos) {
   await router.push('/drag')
   console.log('getSingleProject成功被调用！')
 }
-function openDialog(rowIndex,colIndex) {
-  console.log('rowIndex,colIndex',rowIndex,colIndex)
+function openDialog(rowIndex, colIndex) {
+  console.log('rowIndex,colIndex', rowIndex, colIndex)
 
   reRow.value = rowIndex
   reCol.value = colIndex
@@ -169,18 +171,18 @@ async function deleteCard(projPos) {
 
 }
 async function changeProjectName() {
-  let projPos = reRow.value*4+reCol.value
+  let projPos = reRow.value * 4 + reCol.value
   let projId = myResult.value[projPos].id;
   myResult.value[projPos].name = newName.value;
-  console.log('myResult',myResult.value)
-  console.log('row',reRow.value)
-  console.log('col',reCol.value)
-  console.log('projPos##########',projPos)
+  console.log('myResult', myResult.value)
+  console.log('row', reRow.value)
+  console.log('col', reCol.value)
+  console.log('projPos##########', projPos)
   console.log('adsprojName', newName.value)
   setProjectName(newName.value)
-  console.log('projId',projId)
-  console.log('describe',myResult.value[projPos].describe)
-  const result = await projectAPI.resetProject(newName.value,myResult.value[projPos].describe,projId)
+  console.log('projId', projId)
+  console.log('describe', myResult.value[projPos].describe)
+  const result = await projectAPI.resetProject(newName.value, myResult.value[projPos].describe, projId)
   showProjects1()
 }
 
@@ -188,45 +190,45 @@ const tempData = ref([])
 
 const search = ref()
 
-watch(search,()=>{
+watch(search, () => {
   showProjects1()
 })
 
 const myResult = computed(() =>
-    tempData.value.filter(
-        (data) => !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
-    )
+  tempData.value.filter(
+    (data) => !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
+  )
 )
 
-function getOrdering(){
-  if(radio1.value === "1" && radio2.value === "1"){
+function getOrdering() {
+  if (radio1.value === "1" && radio2.value === "1") {
     ordering.value = 'name'
-  }else if(radio1.value === "1" && radio2.value === "2"){
+  } else if (radio1.value === "1" && radio2.value === "2") {
     ordering.value = '-name'
-  }else if(radio1.value === "2" && radio2.value === "1"){
+  } else if (radio1.value === "2" && radio2.value === "1") {
     ordering.value = 'create_time'
-  }else if(radio1.value === "2" && radio2.value === "2"){
+  } else if (radio1.value === "2" && radio2.value === "2") {
     ordering.value = '-create_time'
-  }else if(radio1.value === "3" && radio2.value === "1"){
+  } else if (radio1.value === "3" && radio2.value === "1") {
     ordering.value = 'update_time'
-  }else if(radio1.value === "3" && radio2.value === "2"){
+  } else if (radio1.value === "3" && radio2.value === "2") {
     ordering.value = '-update_time'
-  }else{
-    ordering.value='wrong'
+  } else {
+    ordering.value = 'wrong'
   }
-  console.log('radio1.value',radio1.value)
-  console.log('radio2.value',radio2.value)
-  console.log('ordering.value',ordering.value)
+  console.log('radio1.value', radio1.value)
+  console.log('radio2.value', radio2.value)
+  console.log('ordering.value', ordering.value)
 }
 
 async function getData() {
-  console.log('ordering',ordering)
-  const result = await projectAPI.getAllProjects(team.value,ordering.value)
+  console.log('ordering', ordering)
+  const result = await projectAPI.getAllProjects(team.value, ordering.value)
   tempData.value = result.data
 }
 
 function getSearch(searchName) {
-  search.value=searchName
+  search.value = searchName
 }
 
 function showProjects1() {
@@ -261,7 +263,7 @@ function showProjects1() {
 }
 
 defineExpose({
-  showProjects1,getSearch,getData,getOrdering
+  showProjects1, getSearch, getData, getOrdering
 })
 
 onMounted(async () => {
@@ -278,6 +280,7 @@ onMounted(async () => {
 .layout-container-demo .el-aside {
   background-color: white;
 }
+
 .bottom {
   margin-top: 13px;
   line-height: 12px;
@@ -378,23 +381,27 @@ onMounted(async () => {
   margin-top: 20px;
 }
 
+
+.project-actions .el-button {
+  padding: 0px;
+}
+
 .confirm-button {
-  background-color: #67c23a;
+  background-color: #1f75a0;
   /* 修改按钮的背景颜色 */
   color: white;
   /* 修改按钮的文本颜色 */
-  border-color: #67c23a;
+  border-color: #3a8ec2;
+  padding: 5px !important;
 }
 
 .cancel-button {
   background-color: #909399;
   color: white;
   border-color: #909399;
+  padding: 5px !important;
 }
-.project-actions .el-button{
-   padding:0px;
-}
-.project-actions{
+
+.project-actions {
   margin-right: 10px;
-}
-</style>
+}</style>

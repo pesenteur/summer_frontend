@@ -1,37 +1,39 @@
 <template>
-  <div>
-    <el-button @click="openDialog1">
-      新建文件夹
-    </el-button>
-    <el-button @click="openDialog2">
-      新建文件
-    </el-button>
+  <div class="right">
+    <div class="button-container">
+      <el-button @click="openDialog1">
+        新建文件夹
+      </el-button>
+      <el-button @click="openDialog2">
+        新建文档
+      </el-button>
+    </div>
     <div v-if="switchTo2">
       <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
           <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-            <img v-if="firstDoc.filter((item)=>{return item.id === myResult[(rowIndex) * 4 + colIndex].id})[0].type === 0" @click="intoDocumentManage1((rowIndex) * 4 + colIndex)"
-              src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
-            <img v-else src="https://img2.baidu.com/it/u=4238855641,2359345742&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" @click="intoFolder((rowIndex) * 4 + colIndex)" class="image">
+            <font-awesome-icon
+              v-if="firstDoc.filter((item) => { return item.id === myResult[(rowIndex) * 4 + colIndex].id })[0].type === 0"
+              @click="intoDocumentManage1((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']" style="color: #64d2e8;"
+              class="image" />
+            <font-awesome-icon v-else @click="intoFolder((rowIndex) * 4 + colIndex)" class="image"
+              :icon="['fas', 'folder']" style="color: #53d0ea; font-size: 150px;" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
                 <span>{{ documentName[(rowIndex) * 4 + colIndex] }}</span>
                 <div class="project-actions">
-
-
-                  <el-dialog  v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
+                  <el-dialog v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
                     <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
                     </el-input>
                     <span class="dialog-footer">
-                      <el-button type="primary" @click="addFolder(); closeDialog1()"
-                                 class="confirm-button">确认</el-button>
+                      <el-button type="primary" @click="addFolder(); closeDialog1()" class="confirm-button">确认</el-button>
                       <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
                     </span>
                   </el-dialog>
 
 
-                  <el-dialog  v-model="dialogVisible2" title="新建文档" class="project-dialog">
+                  <el-dialog v-model="dialogVisible2" title="新建文档" class="project-dialog">
                     <el-input v-model="newName" placeholder="文档名称" class="input-field">
                     </el-input>
                     <span class="dialog-footer">
@@ -42,47 +44,44 @@
                   </el-dialog>
                 </div>
               </div>
-  <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
+              <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
             </div>
           </el-card>
         </el-col>
       </el-row>
 
 
-    <el-dialog  v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
-      <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
-      </el-input>
-      <span class="dialog-footer">
-                      <el-button type="primary" @click="addFolder(); closeDialog1()"
-                                 class="confirm-button">确认</el-button>
-                      <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
-                    </span>
-    </el-dialog>
+      <el-dialog v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
+        <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
+        </el-input>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="addFolder(); closeDialog1()" class="confirm-button">确认</el-button>
+          <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
+        </span>
+      </el-dialog>
 
 
-    <el-dialog  v-model="dialogVisible2" title="新建文档" class="project-dialog">
-      <el-input v-model="newName" placeholder="文档名称" class="input-field">
-      </el-input>
-      <span class="dialog-footer">
-                      <el-button type="primary" @click="addDocument(); closeDialog2()"
-                                 class="confirm-button">确认</el-button>
-                      <el-button @click="closeDialog2" class="cancel-button">取消</el-button>
-                    </span>
-    </el-dialog>
+      <el-dialog v-model="dialogVisible2" title="新建文档" class="project-dialog">
+        <el-input v-model="newName" placeholder="文档名称" class="input-field">
+        </el-input>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="addDocument(); closeDialog2()" class="confirm-button">确认</el-button>
+          <el-button @click="closeDialog2" class="cancel-button">取消</el-button>
+        </span>
+      </el-dialog>
     </div>
 
     <div v-else>
       <el-row v-for="(row, rowIndex) in rows1" :key="rowIndex" class="card-row">
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
           <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
-                   shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-            <img @click="intoDocumentManage2((rowIndex) * 4 + colIndex)"
-                 src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+            shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
+            <font-awesome-icon @click="intoDocumentManage2((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']"
+              style="color: #64d2e8;" class="image" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
                 <span>{{ secondDocNames[(rowIndex) * 4 + colIndex] }}</span>
                 <div class="project-actions">
-
                 </div>
               </div>
               <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
@@ -91,26 +90,25 @@
         </el-col>
       </el-row>
 
-      <el-dialog  v-model="dialogVisible3" title="新建文档" class="project-dialog">
+      <el-dialog v-model="dialogVisible3" title="新建文档" class="project-dialog">
         <el-input v-model="newName" placeholder="文档名称" class="input-field">
         </el-input>
         <span class="dialog-footer">
-                      <el-button type="primary" @click="addDocument2(); closeDialog3()"
-                                 class="confirm-button">确认</el-button>
-                      <el-button @click="closeDialog3" class="cancel-button">取消</el-button>
-                    </span>
+          <el-button type="primary" @click="addDocument2(); closeDialog3()" class="confirm-button">确认</el-button>
+          <el-button @click="closeDialog3" class="cancel-button">取消</el-button>
+        </span>
       </el-dialog>
 
     </div>
   </div>
 </template>
 <script setup>
-import {ref, reactive, onMounted, computed, watch} from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRouter } from "vue-router";
 
 import projectAPI from '@/api/proj.js'
-import {CircleCloseFilled, DocumentCopy} from "@element-plus/icons-vue";
-import {getProjId, getTeamId, setDesignId, setProjectName, setProjId} from "@/utils/token";
+import { CircleCloseFilled, DocumentCopy } from "@element-plus/icons-vue";
+import { getProjId, getTeamId, setDesignId, setProjectName, setProjId } from "@/utils/token";
 import originAPI from "@/api/originDesign";
 import documentAPI from '@/api/document'
 
@@ -168,17 +166,17 @@ const tempData = ref([])
 
 const search = ref()
 
-async function addFolder(){
+async function addFolder() {
   console.log('11111111111111111111111111111')
-  const result = await documentAPI.createFolder(newName.value,getProjId())
-  console.log('addFolder',result.data)
+  const result = await documentAPI.createFolder(newName.value, getProjId())
+  console.log('addFolder', result.data)
   await getData()
   showFirstDocs()
 }
 
-async function addDocument(){
-  const result = await documentAPI.createDocument(getProjId(),newName.value,null)
-  console.log('addDocument',result.data)
+async function addDocument() {
+  const result = await documentAPI.createDocument(getProjId(), newName.value, null)
+  console.log('addDocument', result.data)
   await getData()
   showFirstDocs()
 }
@@ -187,21 +185,21 @@ const lastId = ref()
 
 const folder_id = ref()
 
-async function addDocument2(){
-  const result = await documentAPI.createDocument(getProjId(),newName.value,folderId.value)
-  console.log('addDocument2',result.data)
+async function addDocument2() {
+  const result = await documentAPI.createDocument(getProjId(), newName.value, folderId.value)
+  console.log('addDocument2', result.data)
   let temp_document = []
   lastId.value = result.data.id
   // folder_id.value = result.data.folder
-  documentArray.value.push({id:result.data.id,name:result.data.title,folder:result.data.folder})
-  for(let i = 0 ; i < documentArray.value.length ; i++){
-    if(documentArray.value[i].folder === folderId.value){
-      temp_document.push({id:documentArray.value[i].id,name:documentArray.value[i].name})
+  documentArray.value.push({ id: result.data.id, name: result.data.title, folder: result.data.folder })
+  for (let i = 0; i < documentArray.value.length; i++) {
+    if (documentArray.value[i].folder === folderId.value) {
+      temp_document.push({ id: documentArray.value[i].id, name: documentArray.value[i].name })
     }
   }
   secondDoc.value = temp_document
-  console.log('secondDoc.value',secondDoc.value)
-  console.log('documentArray',documentArray.value)
+  console.log('secondDoc.value', secondDoc.value)
+  console.log('documentArray', documentArray.value)
 
   showSecondDocs()
 }
@@ -213,7 +211,7 @@ function openDialog1() {
 function openDialog2() {
   newName.value = ''; // 清空输入框
   dialogVisible2.value = true; // 打开对话框
-  dialogVisible3.value =true
+  dialogVisible3.value = true
 }
 
 
@@ -221,7 +219,7 @@ async function intoDocumentManage1(docPos) {
 
   let docId = myResult.value[docPos].id
 
-  console.log('docId',docId)
+  console.log('docId', docId)
 
   await router.push(`/document/${docId}`)
 }
@@ -230,7 +228,7 @@ async function intoDocumentManage2(docPos) {
   let temp_folder = []
   // await getData()
   console.log('projPos111', docPos)
-  console.log('myResult!!!!!',myResult.value)
+  console.log('myResult!!!!!', myResult.value)
 
   console.log('totalCards1',totalCards1.value)
   console.log('docPos',docPos.value)
@@ -246,33 +244,33 @@ async function intoDocumentManage2(docPos) {
     console.log('1231313131')
     for(let i = 0 ; i < myResult.value.length ; i++){
 
-      console.log('folder_id',folder_id.value)
+      console.log('folder_id', folder_id.value)
 
-      if(myResult.value[i].id === folder_id.value){
+      if (myResult.value[i].id === folder_id.value) {
         temp_folder = myResult.value[i].documents
         break;
       }
     }
-    console.log('myResult.value',myResult.value)
-    console.log('temp_folder',temp_folder)
+    console.log('myResult.value', myResult.value)
+    console.log('temp_folder', temp_folder)
     let docId = temp_folder[docPos].id;
 
-    console.log('docId',docId)
+    console.log('docId', docId)
 
     await router.push(`/document/${docId}`)
 
   }
 }
 
-async function intoFolder(folderPos){
+async function intoFolder(folderPos) {
   folderId.value = myResult.value[folderPos].id
   switchTo2.value = false
 
 
   let temp_document = []
-  for(let i = 0 ; i < documentArray.value.length ; i++){
-    if(documentArray.value[i].folder === folderId.value){
-      temp_document.push({id:documentArray.value[i].id,name:documentArray.value[i].name})
+  for (let i = 0; i < documentArray.value.length; i++) {
+    if (documentArray.value[i].folder === folderId.value) {
+      temp_document.push({ id: documentArray.value[i].id, name: documentArray.value[i].name })
     }
   }
 
@@ -290,27 +288,27 @@ function closeDialog1() {
   dialogVisible1.value = false; // 关闭对话框
 }
 
-function closeDialog2(){
+function closeDialog2() {
   dialogVisible2.value = false
 }
 
-function closeDialog3(){
+function closeDialog3() {
   dialogVisible3.value = false
 }
 
-async function getData(){
+async function getData() {
   const result = await documentAPI.getAllDocuments(getProjId())
-  console.log('getData',result)
+  console.log('getData', result)
   let firstDoc_temp = []
 
   //一级目录
-  for(let i = 0 ; i < result.data.length ; i++){
+  for (let i = 0; i < result.data.length; i++) {
     // firstDoc.value.push({id:result.data[i].id,name:result.data[i].name,type:0})
     // firstDoc_temp.push({id:result.data[i].id,name:result.data[i].name,type:0})
-    if (result.data[i].folder === undefined){
-      firstDoc_temp.push({id:result.data[i].id,name:result.data[i].name,type:1})
+    if (result.data[i].folder === undefined) {
+      firstDoc_temp.push({ id: result.data[i].id, name: result.data[i].name, type: 1 })
     } else {
-      firstDoc_temp.push({id:result.data[i].id,name:result.data[i].title,type:0})
+      firstDoc_temp.push({ id: result.data[i].id, name: result.data[i].title, type: 0 })
     }
   }
   firstDoc.value = firstDoc_temp
@@ -319,17 +317,17 @@ async function getData(){
   let folderArray_temp = []
 
   //获取所有文件和文件夹
-  for(let i = 0 ; i < result.data.length ; i++){
-    if(result.data[i].folder === null){
+  for (let i = 0; i < result.data.length; i++) {
+    if (result.data[i].folder === null) {
       // documentArray.value.push({id:result.data[i].id,name:result.data[i].name})
-      documentArray_temp.push({id:result.data[i].id,name:result.data[i].title,folder:result.data[i].folder})
-    }else if(result.data[i].folder === undefined){
+      documentArray_temp.push({ id: result.data[i].id, name: result.data[i].title, folder: result.data[i].folder })
+    } else if (result.data[i].folder === undefined) {
       // folderArray.value.push({id:result.data[i].id,name:result.data[i].name})
-      folderArray_temp.push({id:result.data[i].id,name:result.data[i].name})
-      for(let j = 0 ; j < result.data[i].documents.length ; j++){
+      folderArray_temp.push({ id: result.data[i].id, name: result.data[i].name })
+      for (let j = 0; j < result.data[i].documents.length; j++) {
         // documentArray.value.push({id:result.data[i].documents[j].id,name:result.data[i].documents[j].name})
-        console.log('result.data[i].documents',result.data[i].documents[j])
-        documentArray_temp.push({id:result.data[i].documents[j].id,name:result.data[i].documents[j].title,folder:result.data[i].documents[j].folder})
+        console.log('result.data[i].documents', result.data[i].documents[j])
+        documentArray_temp.push({ id: result.data[i].documents[j].id, name: result.data[i].documents[j].title, folder: result.data[i].documents[j].folder })
       }
     }
   }
@@ -344,17 +342,17 @@ async function getData(){
   //   }
   // }
 
-  console.log('firstDoc.value',firstDoc.value)
-  console.log('folderArray.value',folderArray.value)
-  console.log('documentArray.value',documentArray.value)
+  console.log('firstDoc.value', firstDoc.value)
+  console.log('folderArray.value', folderArray.value)
+  console.log('documentArray.value', documentArray.value)
 
   myResult.value = result.data
 }
 
-function showFirstDocs(){
+function showFirstDocs() {
   rows.value = []
   let docsNames = []
-  for(const doc of firstDoc.value){
+  for (const doc of firstDoc.value) {
     docsNames.push(doc.name)
   }
   documentName.value = docsNames
@@ -380,15 +378,15 @@ function showFirstDocs(){
 
 const secondDocNames = ref([])
 
-function showSecondDocs(){
+function showSecondDocs() {
   rows1.value = []
   let docsNames = []
-  console.log('secondDoc.value',secondDoc.value)
-  for(const doc of secondDoc.value){
+  console.log('secondDoc.value', secondDoc.value)
+  for (const doc of secondDoc.value) {
     docsNames.push(doc.name)
   }
 
-  console.log('docsNames',docsNames)
+  console.log('docsNames', docsNames)
   secondDocNames.value = docsNames
 
   totalCards1.value = docsNames.length
@@ -424,6 +422,7 @@ onMounted(async () => {
 .layout-container-demo .el-aside {
   background-color: white;
 }
+
 .bottom {
   margin-top: 13px;
   line-height: 12px;
@@ -438,8 +437,11 @@ onMounted(async () => {
 }
 
 .image {
-  width: 100%;
-  height: 98px !important;
+  width: 150px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 25px;
+  height: 150px !important;
   display: block;
   object-fit: cover;
 }
@@ -466,29 +468,22 @@ onMounted(async () => {
 }
 
 .project-info {
-  padding-left: 20px;
-  padding-bottom: 20px;
   position: relative;
-  height: 20px;
   border-radius: 10px;
   font-size: 16px;
-  background-color: white;
   /* padding: 10px; */
   transition: top 0.3s ease;
+  z-index: 99999;
   top: 0;
 }
 
-.project-info.active {
-  top: -40px;
-  /* 负数值根据实际需求调整，控制向上滑动的距离 */
-}
 
 
 .project-name {
-  margin-top: 5px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  background-color: transparent;
 }
 
 .project-actions {
@@ -537,10 +532,35 @@ onMounted(async () => {
   color: white;
   border-color: #909399;
 }
-.project-actions .el-button{
-   padding:0px;
+
+.project-actions .el-button {
+  padding: 0px;
 }
-.project-actions{
+
+.project-actions {
   margin-right: 10px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  margin-right: 20px;
+  /* 将内容放置在右侧 */
+}
+
+.right {
+  margin-left: 50px;
+}
+
+.small-card {
+  width: 200px;
+  height: 200px;
+  border: none;
+  border-radius: 20px;
+}
+
+.small-card:hover {
+  background-color: #ebecef;
 }
 </style>

@@ -91,6 +91,7 @@ import projAPI from '@/api/proj'
 import originAPI from '@/api/originDesign'
 import { useRouter } from "vue-router";
 import documentShow from './documentShow.vue'
+import editor from '../editor/editor.vue'
 
 const router = useRouter()
 
@@ -123,6 +124,7 @@ const ifTemplate = ref('')
 
 function seeDocs(){
   switchMenu.value = false
+
 }
 
 function seeDesign(){
@@ -152,6 +154,14 @@ async function addDesign() {
     }
   }else if(ifTemplate.value === '2'){
     console.log('ifTemplate2',ifTemplate.value)
+
+    // const result = await originAPI.addOrigin(designName.value, getProjId())
+    console.log('designName', designName.value)
+    tableData.value.push({ name: designName.value })
+    dialogFormVisible2.value = false
+    const result2 = await originAPI.getAllDesign(getProjId())
+    tableData.value = result2.data
+
     await router.push('/origin/template')
     dialogFormVisible2.value = false
   }

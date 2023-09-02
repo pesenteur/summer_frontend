@@ -3,33 +3,50 @@
     <div class="background"></div>
     <div class="container">
       <div class="header-title">
-        <h1>图片库</h1>
+        <h1>模板库</h1>
         <hr class="divider">
       </div>
       <div class="gallery">
         <div class="image" v-for="(image, index) in images" :key="index">
-          <a :href="image.src" :data-lightbox="image.group" :data-title="image.title">
-            <img class="inside_image" :src="image.src" :alt="image.alt">
-          </a>
+            <img class="inside_image" :src="image.src" :alt="image.alt" @click="intoTemplate(image.designId)">
         </div>
       </div>
     </div>
   </div>
 </template>
 
-
-
-
-
 <script setup>
 import {ref} from 'vue';
-const images = ref([]); // 在这里声明一个响应式的变量
 import { onMounted } from "vue";
 import originAPI from '@/api/originDesign'
+import {useRouter} from "vue-router";
+import {getProjId, setDesignId} from "@/utils/token";
+
+const router = useRouter()
+
+const images = ref()
+
+async function intoTemplate(designId){
+  // const result = await originAPI.getSingle(null,designId)
+  setDesignId(designId)
+  const result = await originAPI.addOrigin(designName.value, getProjId())
+  await router.push('/drag')
+}
+
+
 onMounted(async () => {
   // const result = await originAPI.attainTemplate()
-  images.value = [{ src: '/image-1.jpg', group: 'cars', title: '汽车图片1', alt: 'image-1' },
-  { src: '/image-2.jpg', group: 'cars', title: '汽车图片2', alt: 'image-2' },] //还要改
+  images.value = [
+      { src: '/android.png', group: 'temps', title: '模板图片1', alt: 'Android', designId: 'ea59a17b5245458fb95dbfa13e1e6d00' },
+      { src: '/pc.png', group: 'temps', title: '模板图片2', alt: 'PC', designId: '6c250ff844204723b6528cba2147490b' },
+      {src: '/screenshot.png', group: 'temps', title: '模板图片3', alt: 'Android', designId: '503de4e9a12a4b42a6303c939714dc7b'},
+      {src: '/screenshot%20(2).png', group: 'temps', title: '模板图片4', alt: 'Android', designId: '1147f7c294df46c086e028a3dcbeda49'},
+      {src: '/screenshot%20(3).png', group: 'temps', title: '模板图片5', alt: 'Android', designId: '5059e01bcbd746019d315d6bbcbd7716'},
+      {src: '/screenshot%20(4).png', group: 'temps', title: '模板图片6', alt: 'Android', designId: 'ce96ff583f94415abeceb2f0d9c31179'},
+      {src: '/screenshot%20(5).png', group: 'temps', title: '模板图片7', alt: 'Android', designId: 'b0b60743c6944a0983ef08a9eb460e0b'},
+      {src: '/screenshot%20(6).png', group: 'temps', title: '模板图片8', alt: 'Android', designId: '59041f1c3acd4368bd2141ae8c71238e'},
+      {src: '/screenshot%20(7).png', group: 'temps', title: '模板图片9', alt: 'Android', designId: '285c4826623246a7b38ccfebe8d9e163'},
+      {src: '/screenshot%20(8).png', group: 'temps', title: '模板图片10', alt: 'Android', designId: '3a561bf45dc04033a2139f838f722015'},] //还要改
   // console.log('template result.data', result.data)
 })
 </script>
@@ -215,7 +232,7 @@ body.lb-disable-scrolling {
   width: 32px;
   height: 32px;
   margin: 0 auto;
-  background: url(../images/loading.gif) no-repeat;
+  //background: url(@/assets/imgs/) no-repeat;
 }
 
 .lb-nav {
@@ -246,7 +263,7 @@ body.lb-disable-scrolling {
   width: 34%;
   left: 0;
   float: left;
-  background: url(../images/prev.png) left 48% no-repeat;
+  //background: url(../images/prev.png) left 48% no-repeat;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
   -webkit-transition: opacity 0.6s;
@@ -264,7 +281,7 @@ body.lb-disable-scrolling {
   width: 64%;
   right: 0;
   float: right;
-  background: url(../images/next.png) right 48% no-repeat;
+  //background: url(../images/next.png) right 48% no-repeat;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
   -webkit-transition: opacity 0.6s;
@@ -328,7 +345,7 @@ body.lb-disable-scrolling {
   float: right;
   width: 30px;
   height: 30px;
-  background: url(../images/close.png) top right no-repeat;
+  //background: url(../images/close.png) top right no-repeat;
   text-align: right;
   outline: none;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);

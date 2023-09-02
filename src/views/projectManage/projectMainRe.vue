@@ -119,7 +119,7 @@ onMounted(async() => {
 
 </script>
 
-<style>
+<style scoped>
 .time {
   font-size: 12px;
   color: #999;

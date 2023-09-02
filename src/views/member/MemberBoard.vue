@@ -102,12 +102,12 @@
                     </form>
                   </template>
                   <template #default="scope">
-                    <el-button size="small" v-if="scope.row.role === '团队管理员'"
+                    <el-button size="small" v-if="scope.row.role === '团队管理员' && isCreate === true"
                       @click="handleRmv(scope.$index, scope.row)">RmvAuth</el-button>
-                    <el-button size="small" v-if="scope.row.role === '普通成员'"
+                    <el-button size="small" v-if="scope.row.role === '普通成员' && isNormal === false"
                       @click="handleEdit(scope.$index, scope.row)">Auth</el-button>
-                    <el-button size="small" v-if="scope.row.role != '团队创建者'" type="danger"
-                      @click="handleDelete(scope.row)">Delete</el-button>
+                    <el-button size="small" v-if="(scope.row.role === '普通成员' && isNormal === false)||(scope.row.role === '团队管理员'&& isCreate === true)"
+                               type="danger" @click="handleDelete(scope.row)">Delete</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -144,6 +144,8 @@ const searchUser = ref('')
 const formLabelWidth = '140px'
 const teamId = ref()
 const isNormal = ref(false)
+const isAdmin = ref(false)
+const isCreate = ref(false)
 
 const cancelEvent = () => {
   console.log('cancel!')
@@ -152,13 +154,19 @@ const cancelEvent = () => {
 function judgeIsNormal(){
 	tableData.value.forEach((item)=>{
 		if(item.role === '团队创建者'&& item.id.toString() === getUserId()){
+			isCreate.value = true
 			isNormal.value = false
+			isAdmin.value =false
 		}
 		if(item.role === '团队管理员' && item.id.toString() === getUserId()){
 			isNormal.value = false
+			isCreate.value = false
+			isAdmin.value =true
 		}
 		if(item.role === '普通成员' && item.id.toString() === getUserId()){
 			isNormal.value = true
+			isAdmin.value = false
+			isCreate.value =false
 		}
 	})
 }
@@ -205,18 +213,15 @@ async function deleteTeam(team_id) {
 }
 async function handleDelete(userInfo) {
 	try {
-		await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
+		if (userInfo.role === "普通成员") {
+			await teamFunction.deleteTeamMember(teamId.value, userInfo.id)
+		} else {
+			ElMessage.error('不能删除管理员')
+		}
 		await refreshTeamMember()
 	}catch (e){
 		console.log(e.message)
 	}
-  
-  // if (userInfo.role === "普通成员") {
-  //
-  // } else {
-  //
-  // }
-  
 }
 async function queryAllUser(search_number) {
   let result = await teamFunction.queryAllUser(search_number)

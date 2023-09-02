@@ -1,635 +1,471 @@
 <template>
-  <div class="common-layout">
-    <el-container>
-      <el-header>
-        <div class="editor__footer">
-          <h1>项目协作</h1>
-          <div :class="`editor__status editor__status--${status}`">
-            <template v-if="status === 'connected'">
-              {{ editor.storage.collaborationCursor.users.length }} user{{
-                editor.storage.collaborationCursor.users.length === 1 ? '' : 's' }} online in {{ room }}
-            </template>
-            <template v-else>
-              offline
-            </template>
-          </div>
-        </div>
-      </el-header>
-      <el-main>
-        <div v-if="editor" class="button-container">
-          <div class="column">
-            <el-popover placement="top-start" title="加粗(Ctrl+B)" :width="100" trigger="hover" content="将文本加粗">
-              <template #reference>
-                <el-button @click="editor.chain().focus().toggleBold().run()"
-                  :disabled="!editor.can().chain().focus().toggleBold().run()"
-                  :class="{ 'is-active': editor.isActive('bold') }">
-                  <font-awesome-icon :icon="['fas', 'bold']" />
-                </el-button>
-              </template>
-            </el-popover>
-            <el-popover placement="top-start" title="高亮" :width="100" trigger="hover" content="将文本高亮">
-              <template #reference>
-                <el-button @click="editor.chain().focus().toggleHighlight().run()"
-                  :class="{ 'is-active': editor.isActive('highlight') }">
-                  <font-awesome-icon :icon="['fas', 'highlighter']" />
-                </el-button>
-              </template>
-            </el-popover>
-            <el-popover placement="top-start" title="倾斜(Ctrl+l)" :width="100" trigger="hover" content="将文字变为斜体">
-              <template #reference>
-                <el-button @click="editor.chain().focus().toggleItalic().run()"
-                  :disabled="!editor.can().chain().focus().toggleItalic().run()"
-                  :class="{ 'is-active': editor.isActive('italic') }">
-                  <font-awesome-icon :icon="['fas', 'italic']" />
-                </el-button>
-              </template>
-            </el-popover>
+  <div>
+    <el-button @click="openDialog1">
+      新建文件夹
+    </el-button>
+    <el-button @click="openDialog2">
+      新建文件
+    </el-button>
+    <!--    <div v-if="switchTo2">-->
+    <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
+      <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
+        <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
+                 shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
+          <img v-if="firstDoc.filter((item)=>{return item.id === myResult[(rowIndex) * 4 + colIndex].id})[0].type === 0" @click="intoDocumentManage((rowIndex) * 4 + colIndex)"
+               src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+          <img v-else src="https://img2.baidu.com/it/u=4238855641,2359345742&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" @click="intoFolder((rowIndex) * 4 + colIndex)" class="image">
+          <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
+            <div class="project-name">
+              <span>{{ documentName[(rowIndex) * 4 + colIndex] }}</span>
+              <div class="project-actions">
 
-            <el-popover placement="top-start" title="删除线" :width="100" trigger="hover" content="在文本中间画一条线">
-              <template #reference>
-                <el-button @click="editor.chain().focus().toggleStrike().run()"
-                  :disabled="!editor.can().chain().focus().toggleStrike().run()"
-                  :class="{ 'is-active': editor.isActive('strike') }">
-                  <font-awesome-icon :icon="['fas', 'strikethrough']" />
-                </el-button>
-              </template>
-            </el-popover>
 
-            <el-popover placement="top-start" title="代码块" :width="100" trigger="hover" content="将文本转换为代码块">
-              <template #reference>
-                <el-button @click="editor.chain().focus().toggleCode().run()"
-                  :disabled="!editor.can().chain().focus().toggleCode().run()"
-                  :class="{ 'is-active': editor.isActive('code') }">
-                  <font-awesome-icon :icon="['fas', 'code']" />
-                </el-button>
-              </template>
-            </el-popover>
+                <el-dialog  v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
+                  <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
+                  </el-input>
+                  <span class="dialog-footer">
+                      <el-button type="primary" @click="addFolder(); closeDialog1()"
+                                 class="confirm-button">确认</el-button>
+                      <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
+                    </span>
+                </el-dialog>
 
-          </div>
 
-          <!--          <el-button @click="editor.chain().focus().toggleBold().run()" :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">-->
-          <!--            bold-->
-          <!--&lt;!&ndash;          </el-button>&ndash;&gt;-->
-          <!--          <el-button @click="editor.chain().focus().toggleItalic().run()" :disabled="!editor.can().chain().focus().toggleItalic().run()" :class="{ 'is-active': editor.isActive('italic') }">-->
-          <!--            italic-->
-          <!--          </el-button>-->
-          <!--          <el-button @click="editor.chain().focus().toggleStrike().run()" :disabled="!editor.can().chain().focus().toggleStrike().run()" :class="{ 'is-active': editor.isActive('strike') }">-->
-          <!--            strike-->
-          <!--          </el-button>-->
-          <div class="column">
-            <el-popover title="段落" content="一段文字">
-              <template #reference>
-                <el-button @click="editor.chain().focus().setParagraph().run()"
-                  :class="{ 'is-active': editor.isActive('paragraph') }" tooltip="段落">
-                  <font-awesome-icon :icon="['fas', 'paragraph']" />
-                </el-button>
-              </template>
-            </el-popover>
-
-            <el-popover placement="top-start" title="Heading 1" :width="100" trigger="hover" content="设置为一级标题">
-              <template #reference>
-                <el-button text @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-                  :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
-                  h1
-                </el-button>
-              </template>
-            </el-popover>
-
-            <!-- 标题按钮 - Heading 2 -->
-            <el-popover placement="top-start" title="Heading 2" :width="100" trigger="hover" content="设置为二级标题">
-              <template #reference>
-                <el-button text @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                  :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
-                  h2
-                </el-button>
-              </template>
-            </el-popover>
-
-            <!-- 标题按钮 - Heading 3 -->
-            <el-popover placement="top-start" title="Heading 3" :width="100" trigger="hover" content="设置为三级标题">
-              <template #reference>
-                <el-button text @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-                  :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
-                  h3
-                </el-button>
-              </template>
-            </el-popover>
-
-            <!-- 标题按钮 - Heading 4 -->
-            <el-popover placement="top-start" title="Heading 4" :width="100" trigger="hover" content="设置为四级标题">
-              <template #reference>
-                <el-button text @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-                  :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }">
-                  h4
-                </el-button>
-              </template>
-            </el-popover>
-
-            <!-- 标题按钮 - Heading 5 -->
-            <el-popover placement="top-start" title="Heading 5" :width="100" trigger="hover" content="设置为五级标题">
-              <template #reference>
-                <el-button text @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-                  :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }">
-                  h5
-                </el-button>
-              </template>
-            </el-popover>
-
-            <!-- 标题按钮 - Heading 6 -->
-            <el-popover placement="top-start" title="Heading 6" :width="100" trigger="hover" content="设置为六级标题">
-              <template #reference>
-                <el-button text @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-                  :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }">
-                  h6
-                </el-button>
-              </template>
-            </el-popover>
-
-          </div>
-
-          <div class="column">
-            <div class="buttonSet">
-              <el-popover title="无序列表" content="将选中文本转换为无序列表" placement="top-start">
-                <template #reference>
-                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBulletList().run()"
-                    :class="{ 'is-active': editor.isActive('bulletList') }">
-                    <font-awesome-icon :icon="['fas', 'bars-staggered']" />
-                  </el-button>
-                </template>
-              </el-popover>
-              <el-popover title="有序列表" content="将选中文本转换为有序列表" placement="top-start">
-                <template #reference>
-                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleOrderedList().run()"
-                    :class="{ 'is-active': editor.isActive('orderedList') }">
-                    <font-awesome-icon :icon="['fas', 'list']" />
-                  </el-button>
-                </template>
-              </el-popover>
-              <el-popover title="引用块" content="将选中文本转换为引用块" placement="top-start">
-                <template #reference>
-                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().toggleBlockquote().run()"
-                    :class="{ 'is-active': editor.isActive('blockquote') }">
-                    <font-awesome-icon :icon="['fas', 'quote-left']" />
-                  </el-button>
-                </template>
-              </el-popover>
-
-              <el-popover title="水平线" content="插入水平分隔线" placement="top-start">
-                <template #reference>
-                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHorizontalRule().run()">
-                    <font-awesome-icon :icon="['fas', 'ruler-horizontal']" />
-                  </el-button>
-                </template>
-              </el-popover>
-
-              <el-popover title="硬换行" content="插入硬换行" placement="top-start">
-                <template #reference>
-                  <el-button style="margin-bottom: 10px;" @click="editor.chain().focus().setHardBreak().run()">
-                    <font-awesome-icon :icon="['fas', 'bacon']" />
-                  </el-button>
-                </template>
-              </el-popover>
+                <el-dialog  v-model="dialogVisible2" title="新建文档" class="project-dialog">
+                  <el-input v-model="newName" placeholder="文档名称" class="input-field">
+                  </el-input>
+                  <span class="dialog-footer">
+                      <el-button type="primary" @click="addDocument(); closeDialog2()"
+                                 class="confirm-button">确认</el-button>
+                      <el-button @click="closeDialog2" class="cancel-button">取消</el-button>
+                    </span>
+                </el-dialog>
+              </div>
             </div>
+            <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
           </div>
-          <div class="column">
-            <el-popover title="撤销" placement="top-start">
-              <template #reference>
-                <el-button @click="editor.chain().focus().undo().run()"
-                  :disabled="!editor.can().chain().focus().undo().run()">
-                  <font-awesome-icon :icon="['fas', 'rotate-left']" />
-                </el-button>
-              </template>
-            </el-popover>
+        </el-card>
+      </el-col>
+    </el-row>
+    <!--    </div>-->
 
-            <el-popover title="重做" placement="top-start">
-              <template #reference>
-                <el-button @click="editor.chain().focus().redo().run()"
-                  :disabled="!editor.can().chain().focus().redo().run()">
-                  <font-awesome-icon :icon="['fas', 'arrow-rotate-right']" />
-                </el-button>
-              </template>
-            </el-popover>
-          </div>
-          <div class="column">
-            <el-popover title="清除所有标记" placement="top-start">
-              <template #reference>
-                <el-button @click="editor.chain().focus().unsetAllMarks().run()">
-                  unsetAllMarks
-                </el-button>
-              </template>
-            </el-popover>
-          </div>
-        </div>
-        <div class="editor" v-if="editor">
-          <editor-content :editor="editor" />
-        </div>
-        <div class="editor__footer">
-          <div class="editor__name">
-            <button @click="setName">
-              {{ currentUser.name }}
-            </button>
-          </div>
-        </div>
-      </el-main>
-    </el-container>
+    <!--    <div v-else>-->
+    <!--      <el-row v-for="(row, rowIndex) in rows" :key="rowIndex+1" class="card-row">-->
+    <!--        <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">-->
+    <!--          <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"-->
+    <!--                   shadow="hover" :body-style="{ padding: '0px' }" class="small-card">-->
+    <!--            <img @click="intoDocumentManage((rowIndex) * 4 + colIndex)"-->
+    <!--                 src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />-->
+    <!--            <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">-->
+    <!--              <div class="project-name">-->
+    <!--                <span>{{ secondDocNames[(rowIndex) * 4 + colIndex] }}</span>-->
+    <!--                <div class="project-actions">-->
+
+    <!--                  <el-dialog  v-model="dialogVisible2" title="新建文档" class="project-dialog">-->
+    <!--                    <el-input v-model="newName" placeholder="文档名称" class="input-field">-->
+    <!--                    </el-input>-->
+    <!--                    <span class="dialog-footer">-->
+    <!--                      <el-button type="primary" @click="addDocument(); closeDialog2()"-->
+    <!--                                 class="confirm-button">确认</el-button>-->
+    <!--                      <el-button @click="closeDialog2" class="cancel-button">取消</el-button>-->
+    <!--                    </span>-->
+    <!--                  </el-dialog>-->
+    <!--                </div>-->
+    <!--              </div>-->
+    <!--              &lt;!&ndash;            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>&ndash;&gt;-->
+    <!--            </div>-->
+    <!--          </el-card>-->
+    <!--        </el-col>-->
+    <!--      </el-row>-->
+    <!--    </div>-->
   </div>
 </template>
+<script setup>
+import {ref, reactive, onMounted, computed, watch} from 'vue'
+import { useRouter } from "vue-router";
 
-<script>
-import { HocuspocusProvider } from '@hocuspocus/provider';
-import CharacterCount from '@tiptap/extension-character-count'
-import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
-import Highlight from '@tiptap/extension-highlight'
-import TaskItem from '@tiptap/extension-task-item'
-import TaskList from '@tiptap/extension-task-list'
-import StarterKit from '@tiptap/starter-kit'
-import Mention from '@tiptap/extension-mention'
-import { Editor, EditorContent } from '@tiptap/vue-3'
-import suggestion from './suggestion.js'
+import projectAPI from '@/api/proj.js'
+import {CircleCloseFilled, DocumentCopy} from "@element-plus/icons-vue";
+import {getProjId, getTeamId, setDesignId, setProjectName, setProjId} from "@/utils/token";
+import originAPI from "@/api/originDesign";
+import documentAPI from '@/api/document'
 
-import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
-import * as Y from 'yjs'
-// import buttonGroup from './buttonGroup.vue'
+const router = useRouter()
+const currentDate = reactive(new Date())
 
+const newName = ref(''); // 存储新项目名称
+const documentName = ref([])
 
-const getRandomElement = list => {
-  return list[Math.floor(Math.random() * list.length)]
+const secondDocument = ref([])
+
+const projectDescription = ref([])
+const totalCards = ref()
+
+const cardsPerRow = 4
+const rows = ref([])
+
+const myResult = ref([])
+
+const numRows = computed(() => {
+  return Math.ceil(totalCards.value / cardsPerRow)
+})
+
+const dialogVisible1 = ref(false)
+const dialogVisible2 = ref(false)
+
+const switchTo2 = ref(true)
+
+const formLabelWidth = '140px'
+
+function handleExtraCardClick() {
+  console.log('成功被调用！')
 }
 
-const getRandomRoom = () => {
-  const roomNumbers = [10, 11, 12]
+const hoveredProjectIndex = ref(-1);
 
-  return getRandomElement(roomNumbers.map(number => `rooms.${number}`))
+const contextMenuVisible = ref(false);
+
+const documentArray = ref([])
+const folderArray = ref([])
+
+const firstDoc = ref([])
+
+const secondDoc = ref([])
+
+const tempData = ref([])
+
+const search = ref()
+
+async function addFolder(){
+  console.log('11111111111111111111111111111')
+  const result = await documentAPI.createFolder(newName.value,getProjId())
+  console.log('addFolder',result.data)
+  await getData()
+  showFirstDocs()
 }
 
-export default {
-  components: {
-    EditorContent,
-  },
+async function addDocument(){
+  const result = await documentAPI.createDocument(getProjId(),newName.value,null)
+  console.log('addDocument',result.data)
+  await getData()
+  showFirstDocs()
+}
 
-  data() {
-    return {
-      currentUser: JSON.parse(localStorage.getItem('currentUser')) || {
-        name: this.getRandomName(),
-        color: this.getRandomColor(),
-      },
-      provider: null,
-      editor: null,
-      status: 'connecting',
-      room: getRandomRoom(),
+function openDialog1() {
+  console.log('&*&&***open')
+  newName.value = ''; // 清空输入框
+  dialogVisible1.value = true; // 打开对话框
+}
+function openDialog2() {
+  console.log()
+  newName.value = ''; // 清空输入框
+  dialogVisible2.value = true; // 打开对话框
+}
+
+async function intoDocumentManage(projPos) {
+  let projId = myResult.value[projPos].id
+
+  console.log('projPos111', projPos)
+
+  const result = await projectAPI.getSingleProject(projId);
+
+  setProjId(projId)
+
+  await router.push('/design')
+}
+
+async function intoFolder(folderPos){
+  let folderId = myResult.value[folderPos].id
+  switchTo2.value = false
+  secondDocument.value = folderId
+
+  let temp_document = []
+  for(let i = 0 ; i < documentArray.value.length ; i++){
+    if(documentArray.value[i].folder === folderId){
+      temp_document.push({id:documentArray.value[i].id,name:documentArray.value[i].title})
     }
-  },
-
-  mounted() {
-    const ydoc = new Y.Doc()
-
-    this.provider = new HocuspocusProvider({
-      url: 'ws://10.193.72.192:1234',
-      document: ydoc,
-    })
-
-    this.provider.on('status', event => {
-      this.status = event.status
-    })
-
-    this.editor = new Editor({
-      extensions: [
-        StarterKit.configure({
-          history: false,
-        }),
-        Highlight,
-        TaskList,
-        TaskItem,
-        Collaboration.configure({
-          document: ydoc,
-        }),
-        CollaborationCursor.configure({
-          provider: this.provider,
-          user: this.currentUser,
-        }),
-        CharacterCount.configure({
-          limit: 10000,
-        }),
-        StarterKit,
-        Mention.configure({
-          HTMLAttributes: {
-            class: 'mention',
-          },
-          suggestion,
-        }),
-      ],
-    })
-
-    localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-  },
-
-  methods: {
-    setName() {
-      const name = (window.prompt('Name') || '')
-        .trim()
-        .substring(0, 32)
-
-      if (name) {
-        return this.updateCurrentUser({
-          name,
-        })
-      }
-    },
-
-    updateCurrentUser(attributes) {
-      this.currentUser = { ...this.currentUser, ...attributes }
-      this.editor.chain().focus().updateUser(this.currentUser).run()
-
-      localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-    },
-
-    getRandomColor() {
-      return getRandomElement([
-        '#958DF1',
-        '#F98181',
-        '#FBBC88',
-        '#FAF594',
-        '#70CFF8',
-        '#94FADB',
-        '#B9F18D',
-      ])
-    },
-
-    getRandomName() {
-      return getRandomElement([
-        'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry', 'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman', 'Lisa Bonet',
-      ])
-    },
-  },
-
-  beforeUnmount() {
-    this.editor.destroy()
-    this.provider.destroy()
-  },
+  }
+  secondDoc.value = temp_document.value
 }
+
+function closeDialog1() {
+  dialogVisible1.value = false; // 关闭对话框
+}
+
+function closeDialog2(){
+  dialogVisible2.value = false
+}
+
+async function getData(){
+  const result = await documentAPI.getAllDocuments(getProjId())
+  let firstDoc_temp = []
+
+  //一级目录
+  for(let i = 0 ; i < result.data.length ; i++){
+    // firstDoc.value.push({id:result.data[i].id,name:result.data[i].name,type:0})
+    // firstDoc_temp.push({id:result.data[i].id,name:result.data[i].name,type:0})
+    if (result.data[i].folder === undefined){
+      firstDoc_temp.push({id:result.data[i].id,name:result.data[i].name,type:1})
+    } else {
+      firstDoc_temp.push({id:result.data[i].id,name:result.data[i].title,type:0})
+    }
+  }
+  firstDoc.value = firstDoc_temp
+
+  let documentArray_temp = []
+  let folderArray_temp = []
+
+  //获取所有文件和文件夹
+  for(let i = 0 ; i < result.data.length ; i++){
+    if(result.data[i].folder === null){
+      // documentArray.value.push({id:result.data[i].id,name:result.data[i].name})
+      documentArray_temp.push({id:result.data[i].id,name:result.data[i].name})
+    }else if(result.data[i].folder === undefined){
+      // folderArray.value.push({id:result.data[i].id,name:result.data[i].name})
+      folderArray_temp.push({id:result.data[i].id,name:result.data[i].name})
+      for(let j = 0 ; i < result.data[i].documents.length ; j++){
+        // documentArray.value.push({id:result.data[i].documents[j].id,name:result.data[i].documents[j].name})
+        documentArray_temp.push({id:result.data[i].documents[j].id,name:result.data[i].documents[j].name})
+      }
+    }
+  }
+  documentArray.value = documentArray_temp
+  folderArray.value = folderArray_temp
+
+  // for(let i = 0 ; i < firstDoc.value.length ; i++){
+  //   for(let j = 0 ; j < folderArray.value.length ; j++){
+  //     if(folderArray.value[j].id === firstDoc.value[i].id){
+  //       firstDoc.value[i].type = 1
+  //     }
+  //   }
+  // }
+
+  console.log('firstDoc.value',firstDoc.value)
+  console.log('folderArray.value',folderArray.value)
+  console.log('documentArray.value',documentArray.value)
+
+  myResult.value = result.data
+}
+
+function showFirstDocs(){
+  rows.value = []
+  let docsNames = []
+  for(const doc of firstDoc.value){
+    docsNames.push(doc.name)
+  }
+  documentName.value = docsNames
+
+  totalCards.value = docsNames.length
+  console.log('numRows', numRows.value)
+
+  for (let i = 0; i < numRows.value; i++) {
+    let row = []
+    for (let j = 0; j < cardsPerRow; j++) {
+      let cardIndex = i * cardsPerRow + j
+      if (cardIndex < totalCards.value) {
+        row.push(cardIndex)
+      }
+    }
+
+    rows.value.push(row)
+    console.log("rows", rows)
+  }
+  console.log(totalCards.value)
+
+}
+
+const secondDocNames = ref([])
+
+function showSecondDocs(){
+  rows.value = []
+  let docsNames = []
+  for(const doc of secondDoc.value){
+    docsNames.push(doc.name)
+  }
+  secondDocNames.value = docsNames
+
+  totalCards.value = docsNames.length
+  console.log('numRows', numRows.value)
+
+  for (let i = 0; i < numRows.value; i++) {
+    let row = []
+    for (let j = 0; j < cardsPerRow; j++) {
+      let cardIndex = i * cardsPerRow + j
+      if (cardIndex < totalCards.value) {
+        row.push(cardIndex)
+      }
+    }
+
+    rows.value.push(row)
+    console.log("rows", rows)
+  }
+  console.log(totalCards.value)
+
+}
+
+// function showProjects1() {
+//   rows.value = []
+//   // console.log('myResult', myResult.value)
+//   let projNames = []
+//   // let projectDescriptions = []
+//   for (const proj of myResult.value) {
+//     projNames.push(proj.name)
+//     // projectDescriptions.push(proj.describe)
+//   }
+//   projectName.value = projNames
+//
+//   totalCards.value = projNames.length
+//   console.log('numRows', numRows.value)
+//   for (let i = 0; i < numRows.value; i++) {
+//     let row = []
+//     for (let j = 0; j < cardsPerRow; j++) {
+//       let cardIndex = i * cardsPerRow + j
+//       if (cardIndex < totalCards.value) {
+//         row.push(cardIndex)
+//       }
+//     }
+//
+//     rows.value.push(row)
+//     console.log("rows", rows)
+//   }
+//   console.log(totalCards.value)
+// }
+
+// defineExpose({
+//   showProjects1,getData
+// })
+
+onMounted(async () => {
+  // getOrdering()
+  await getData()
+  showFirstDocs()
+  console.log('$$$$$$$$$$', totalCards.value)
+})
+
+
 </script>
 
-<style lang="scss" scoped>
-@font-face {
-  font-family: 'element-icons';
-  src: url('path/to/element-icons.woff') format('woff'),
-    url('path/to/element-icons.ttf') format('truetype');
-  /* 其他样式 */
+<style scoped>
+.layout-container-demo .el-aside {
+  background-color: white;
 }
-
-.button-container {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr 1fr;
-  grid-gap: 2px;
-  /* 列之间的间隔 */
-}
-
-.column {
-  padding: 1px;
-}
-
-.mention {
-  border: 1px solid #000;
-  border-radius: 0.4rem;
-  padding: 0.1rem 0.3rem;
-  box-decoration-break: clone;
-}
-
-.editor {
-  min-height: 600px;
-  background-color: #FFF;
-  border: 1px solid #0D0D0D;
-  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.1);
-  color: #0D0D0D;
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
   display: flex;
-  flex-direction: column;
-  padding: 0 1em;
-  // max-height: 26rem;
-
-  &__header {
-    color: #0D0D0D;
-    align-items: center;
-    background: #0d0d0d;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-    display: flex;
-    flex: 0 0 auto;
-    flex-wrap: wrap;
-    padding: 0.25rem;
-  }
-
-  &__content {
-    flex: 1 1 auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 1.25rem 1rem;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  &__footer {
-    align-items: center;
-    color: #0D0D0D;
-    display: flex;
-    flex: 0 0 auto;
-    flex-wrap: wrap;
-    font-size: 12px;
-    font-weight: 600;
-    justify-content: space-between;
-    padding: 0.25rem 0.75rem;
-    white-space: nowrap;
-  }
-
-  /* Some information about the status */
-  &__status {
-    align-items: center;
-    border-radius: 5px;
-    display: flex;
-
-    &::before {
-      background: rgba(#0D0D0D, 0.5);
-      border-radius: 50%;
-      content: ' ';
-      display: inline-block;
-      flex: 0 0 auto;
-      height: 0.5rem;
-      margin-right: 0.5rem;
-      width: 0.5rem;
-    }
-
-    &--connecting::before {
-      background: #616161;
-    }
-
-    &--connected::before {
-      background: #B9F18D;
-    }
-  }
-
-  &__name {
-    button {
-      background: none;
-      border: none;
-      border-radius: 0.4rem;
-      color: #0D0D0D;
-      font: inherit;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 0.25rem 0.5rem;
-
-      &:hover {
-        background-color: #0D0D0D;
-        color: #FFF;
-      }
-    }
-  }
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Give a remote user a caret */
-.collaboration-cursor__caret {
-  border-left: 1px solid #0D0D0D;
-  border-right: 1px solid #0D0D0D;
-  margin-left: -1px;
-  margin-right: -1px;
-  pointer-events: none;
+.button {
+  padding: 0;
+  min-height: auto;
+}
+
+.image {
+  width: 100%;
+  height: 98px !important;
+  display: block;
+  object-fit: cover;
+}
+
+.small-card {
+  width: 10%;
+  height: 100%;
+}
+
+.card-row {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card-col {
+  margin: 30px;
+}
+
+.small-card {
   position: relative;
-  word-break: normal;
+  /* 绝对定位需要 */
+  width: 100%;
+  height: 100%;
 }
 
-/* Render the username above the caret */
-.collaboration-cursor__label {
-  border-radius: 3px 3px 3px 0;
-  color: #0D0D0D;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  left: -1px;
-  line-height: normal;
-  padding: 0.1rem 0.3rem;
-  position: absolute;
-  top: -1.4em;
-  user-select: none;
-  white-space: nowrap;
-}
-
-/* Basic editor styles */
-.tiptap {
-  >*+* {
-    margin-top: 0.75em;
-  }
-
-  ul,
-  ol {
-    padding: 0 1rem;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    line-height: 1.1;
-  }
-
-  code {
-    background-color: rgba(#616161, 0.1);
-    color: #616161;
-  }
-
-  pre {
-    background: #0D0D0D;
-    border-radius: 0.5rem;
-    color: #FFF;
-    font-family: 'JetBrainsMono', monospace;
-    padding: 0.75rem 1rem;
-
-    code {
-      background: none;
-      color: inherit;
-      font-size: 0.8rem;
-      padding: 0;
-    }
-  }
-
-  mark {
-    background-color: #FAF594;
-  }
-
-  img {
-    height: auto;
-    max-width: 100%;
-  }
-
-  hr {
-    margin: 1rem 0;
-  }
-
-  blockquote {
-    border-left: 2px solid rgba(#0D0D0D, 0.1);
-    padding-left: 1rem;
-  }
-
-  hr {
-    border: none;
-    border-top: 2px solid rgba(#0D0D0D, 0.1);
-    margin: 2rem 0;
-  }
-
-  ul[data-type="taskList"] {
-    list-style: none;
-    padding: 0;
-
-    li {
-      align-items: center;
-      display: flex;
-
-      >label {
-        flex: 0 0 auto;
-        margin-right: 0.5rem;
-        user-select: none;
-      }
-
-      >div {
-        flex: 1 1 auto;
-      }
-    }
-  }
-}
-</style>
-
-<style>
-.ProseMirror:focus {
-  outline: none !important;
-}
-
-.collaboration-cursor__caret {
-  border-left: 1px solid #0D0D0D;
-  border-right: 1px solid #0D0D0D;
-  margin-left: -1px;
-  margin-right: -1px;
-  pointer-events: none;
+.project-info {
+  padding-left: 20px;
+  padding-bottom: 20px;
   position: relative;
-  word-break: normal;
+  height: 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  background-color: white;
+  /* padding: 10px; */
+  transition: top 0.3s ease;
+  top: 0;
 }
 
-/* Render the username above the caret */
-.collaboration-cursor__label {
-  border-radius: 3px 3px 3px 0;
-  color: #0D0D0D;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  left: -1px;
-  line-height: normal;
-  padding: 0.1rem 0.3rem;
-  position: absolute;
-  top: -1.4em;
-  user-select: none;
-  white-space: nowrap;
+.project-info.active {
+  top: -40px;
+  /* 负数值根据实际需求调整，控制向上滑动的距离 */
 }
 
-.editor {
-  overflow: auto;
+
+.project-name {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-actions {
+  display: flex;
+  align-items: center;
+  /* 调整按钮之间的间距 */
+}
+
+.project-details {
+  margin-top: 10px;
+  display: block;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.project-info.active .project-details {
+  opacity: 1;
+}
+
+.project-dialog {
+  width: 300px;
+  /* 调整对话框的宽度 */
+}
+
+.input-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.confirm-button {
+  background-color: #67c23a;
+  /* 修改按钮的背景颜色 */
+  color: white;
+  /* 修改按钮的文本颜色 */
+  border-color: #67c23a;
+}
+
+.cancel-button {
+  background-color: #909399;
+  color: white;
+  border-color: #909399;
+}
+.project-actions .el-button{
+  padding:0px;
+}
+.project-actions{
+  margin-right: 10px;
 }
 </style>

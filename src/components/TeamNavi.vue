@@ -46,7 +46,7 @@ function jump() {
   router.push('/switch')
 }
 function jumpToHome(){
-	router.push('/')
+	router.push('/home')
 }
 function logout(){
 	clearToken()

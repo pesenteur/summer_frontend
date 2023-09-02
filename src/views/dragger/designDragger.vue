@@ -6,12 +6,13 @@
           <el-col :span="24">
             <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
               <el-menu-item index="5" @click="goBehind">
+                返回上一级
                 <font-awesome-icon style="margin: auto;" :icon="['fas', 'left-long']" />
                 <!-- <span style="margin:auto">返回上一级</span> -->
               </el-menu-item>
               <el-menu-item index="2" @click="dialogFormVisible2 = true">
                 <!--              <el-icon><icon-menu /></el-icon>-->
-                <font-awesome-icon style="margin:auto" :icon="['fas', 'plus']" />
+                新建画布<font-awesome-icon style="margin:auto" :icon="['fas', 'plus']" />
 
                 <el-dialog draggable=true v-model="dialogFormVisible2" title="新建画布:" center width="30%">
                   <el-form :model="form">

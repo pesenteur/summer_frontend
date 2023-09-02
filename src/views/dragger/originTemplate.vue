@@ -47,6 +47,8 @@ async function intoTemplate(designId){
 
   setDesignId(result.data.id)
 
+  const result2 = await originAPI.useTemplate(result.data.id,designId)
+
 
   await router.push('/drag')
 }

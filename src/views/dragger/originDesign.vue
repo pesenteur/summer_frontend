@@ -13,18 +13,18 @@
         </el-menu-item>
         <el-divider />
 
-        <el-menu-item index="2">
+        <el-menu-item index="2" @click="seeDocs">
           <div class="menu-item-container-2">
             <font-awesome-icon :icon="['fas', 'file-invoice']" style="color: #5587dd;" />
-            <span class="element-title" @click="seeDocs">项目文档</span>
+            <span class="element-title" >项目文档</span>
           </div>
         </el-menu-item>
         <el-divider />
 
-        <el-menu-item index="4">
+        <el-menu-item index="4" @click="seeDesign">
           <div class="menu-item-container">
             <font-awesome-icon :icon="['fas', 'eye']" style="color: #5587dd;" />
-            <span class="element-title" @click="seeDesign">页面视图</span>
+            <span class="element-title" >页面视图</span>
           </div>
         </el-menu-item>
       </el-menu>
@@ -56,10 +56,12 @@
               <el-form-item label="画布名称" :label-width="formLabelWidth">
                 <el-input v-model="designName" autocomplete="off" class="element-form" />
               </el-form-item>
-              <el-radio-group v-model="ifTemplate">
-                <el-radio label="1" size="large">不使用模板</el-radio>
-                <el-radio label="2" size="large">使用模板</el-radio>
-              </el-radio-group>
+              <div class="center-radio-group">
+                <el-radio-group class="chooseBox" v-model="ifTemplate">
+                  <el-radio label="1" size="large">不使用模板</el-radio>
+                  <el-radio label="2" size="large">使用模板</el-radio>
+                </el-radio-group>
+              </div>
             </el-form>
             <template #footer>
               <span class="dialog-footer">
@@ -149,8 +151,8 @@ async function addDesign() {
       const result2 = await originAPI.getAllDesign(getProjId())
       tableData.value = result2.data
     }
-  }else if(ifTemplate.value === '2'){
-    console.log('ifTemplate2',ifTemplate.value)
+  } else if (ifTemplate.value === '2') {
+    console.log('ifTemplate2', ifTemplate.value)
 
     // const result = await originAPI.addOrigin(designName.value, getProjId())
     console.log('designName', designName.value)
@@ -263,4 +265,17 @@ font-awesome-icon {
   font-size: 16px;
   margin-left: 15px;
   font-weight: bold;
-}</style>
+}
+
+.center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 居中对齐水平方向 */
+  justify-content: center; /* 居中对齐垂直方向 */
+  height: 100vh; /* 可以根据需要设置高度 */
+}
+
+.center-radio-group {
+  text-align: center; /* 让el-radio-group内部的文本居中对齐 */
+}
+</style>

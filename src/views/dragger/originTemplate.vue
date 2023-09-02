@@ -8,7 +8,7 @@
       </div>
       <div class="gallery">
         <div class="image" v-for="(image, index) in images" :key="index">
-            <img class="inside_image" :src="image.src" :alt="image.alt" @click="intoTemplate(image.designId)">
+          <img class="inside_image" :src="image.src" :alt="image.alt" @click="intoTemplate(image.designId)">
         </div>
       </div>
     </div>
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import { ref } from 'vue';
 import { onMounted } from "vue";
 import originAPI from '@/api/originDesign'
 import {useRouter,useRoute} from "vue-router";
@@ -33,7 +33,7 @@ async function intoTemplate(designId){
   // const result = await originAPI.getSingle(null,designId)
   // setDesignId(designId)
 
-  console.log('setDesignId',designId)
+  console.log('setDesignId', designId)
 
   // let currentName = ''
 
@@ -59,26 +59,26 @@ async function intoTemplate(designId){
 onMounted(async () => {
   // const result = await originAPI.attainTemplate()
   images.value = [
-      { src: '/android.png', group: 'temps', title: '模板图片1', alt: 'Android', designId: 'ea59a17b5245458fb95dbfa13e1e6d00' },
-      { src: '/pc.png', group: 'temps', title: '模板图片2', alt: 'PC', designId: '6c250ff844204723b6528cba2147490b' },
-      {src: '/screenshot.png', group: 'temps', title: '模板图片3', alt: 'Android', designId: '503de4e9a12a4b42a6303c939714dc7b'},
-      {src: '/screenshot%20(2).png', group: 'temps', title: '模板图片4', alt: 'Android', designId: '1147f7c294df46c086e028a3dcbeda49'},
-      {src: '/screenshot%20(3).png', group: 'temps', title: '模板图片5', alt: 'Android', designId: '5059e01bcbd746019d315d6bbcbd7716'},
-      {src: '/screenshot%20(4).png', group: 'temps', title: '模板图片6', alt: 'Android', designId: 'ce96ff583f94415abeceb2f0d9c31179'},
-      {src: '/screenshot%20(5).png', group: 'temps', title: '模板图片7', alt: 'Android', designId: 'b0b60743c6944a0983ef08a9eb460e0b'},
-      {src: '/screenshot%20(6).png', group: 'temps', title: '模板图片8', alt: 'Android', designId: '59041f1c3acd4368bd2141ae8c71238e'},
-      {src: '/screenshot%20(7).png', group: 'temps', title: '模板图片9', alt: 'Android', designId: '285c4826623246a7b38ccfebe8d9e163'},
-      {src: '/screenshot%20(8).png', group: 'temps', title: '模板图片10', alt: 'Android', designId: '3a561bf45dc04033a2139f838f722015'},] //还要改
+    { src: '/screenshot%20(7).png', group: 'temps', title: '模板图片9', alt: 'Android', designId: '285c4826623246a7b38ccfebe8d9e163' },
+    { src: '/screenshot%20(8).png', group: 'temps', title: '模板图片10', alt: 'Android', designId: '3a561bf45dc04033a2139f838f722015' },
+    { src: '/android.png', group: 'temps', title: '模板图片1', alt: 'Android', designId: 'ea59a17b5245458fb95dbfa13e1e6d00' },
+    { src: '/pc.png', group: 'temps', title: '模板图片2', alt: 'PC', designId: '6c250ff844204723b6528cba2147490b' },
+    { src: '/screenshot.png', group: 'temps', title: '模板图片3', alt: 'Android', designId: '503de4e9a12a4b42a6303c939714dc7b' },
+    { src: '/screenshot%20(2).png', group: 'temps', title: '模板图片4', alt: 'Android', designId: '1147f7c294df46c086e028a3dcbeda49' },
+    { src: '/screenshot%20(3).png', group: 'temps', title: '模板图片5', alt: 'Android', designId: '5059e01bcbd746019d315d6bbcbd7716' },
+    { src: '/screenshot%20(4).png', group: 'temps', title: '模板图片6', alt: 'Android', designId: 'ce96ff583f94415abeceb2f0d9c31179' },
+    { src: '/screenshot%20(5).png', group: 'temps', title: '模板图片7', alt: 'Android', designId: 'b0b60743c6944a0983ef08a9eb460e0b' },
+    { src: '/screenshot%20(6).png', group: 'temps', title: '模板图片8', alt: 'Android', designId: '59041f1c3acd4368bd2141ae8c71238e' },] //还要改
   // console.log('template result.data', result.data)
 })
 </script>
 
 <style scoped>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* .container {
@@ -92,24 +92,22 @@ onMounted(async () => {
     padding: 40px, 6%;
 } */
 .container {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 10%);
-    width: 75%;
-    background-position: center;
-    background-size: cover;
-    border-radius: 20px;
-    overflow: hidden;
-    text-align: center;
-    top: 20px;
-
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 2%);
+  width: 75%;
+  background-position: center;
+  background-size: cover;
+  border-radius: 20px;
+  overflow: hidden;
+  text-align: center;
 }
 
 .header-title h1 {
 
-    color: black;
-    font-size: 30px;
-    cursor: pointer;
+  color: black;
+  font-size: 30px;
+  cursor: pointer;
 }
 
 /* .header-title:hover h1 {
@@ -119,66 +117,70 @@ onMounted(async () => {
 } */
 
 .header-title .divider {
-    background-color: brown;
-    width: 50%;
-    height: 4px;
-    border: none;
-    margin: 5px auto 0;
-    transition: all 0.5s;
+  background-color: brown;
+  width: 50%;
+  height: 4px;
+  border: none;
+  margin: 5px auto 0;
+  transition: all 0.5s;
 }
 
 .header-title:hover .divider {
-    width: 80%;
+  width: 80%;
 }
 
 .gallery {
-    margin-top: 30px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 
 .gallery .image {
-    flex-basis: 50%;
-    padding: 20px;
+  flex-basis: 50%;
+  padding: 20px;
 }
-.gallery .inside_image{
-    border-style: ridge;
-    border-color: #e8e8e8;
+
+.gallery .inside_image {
+  border-style: ridge;
+  border-color: #e8e8e8;
 }
+
 .gallery .image img {
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 }
+
 .gallery .image:hover img {
-    transform: scale(1.1);
-    opacity: 0.1;
-    box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.4);
+  transform: scale(1.1);
+  opacity: 0.1;
+  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.4);
 }
 
 .gallery img {
-    width: 100%;
-    transition: all 0.5s;
+  width: 100%;
+  transition: all 0.5s;
 }
 
 @media(max-width:1000px) {
-    .gallery .image {
-        flex-basis: 50%;
-    }
+  .gallery .image {
+    flex-basis: 50%;
+  }
 
-    .header-title h1 {
-        font-size: 28px;
-    }
+  .header-title h1 {
+    font-size: 28px;
+  }
 }
 
 @media(max-width:500px) {
-    .gallery .image {
-        flex-basis: 100%;
-    }
+  .gallery .image {
+    flex-basis: 100%;
+  }
 
-    .header-title h1 {
-        font-size: 24px;
-    }
+  .header-title h1 {
+    font-size: 24px;
+  }
 }
+
 body.lb-disable-scrolling {
   overflow: hidden;
 }
@@ -266,7 +268,7 @@ body.lb-disable-scrolling {
   z-index: 10;
 }
 
-.lb-container > .nav {
+.lb-container>.nav {
   left: 0;
 }
 
@@ -275,7 +277,8 @@ body.lb-disable-scrolling {
   background-image: url('data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 }
 
-.lb-prev, .lb-next {
+.lb-prev,
+.lb-next {
   height: 100%;
   cursor: pointer;
   display: block;
@@ -384,5 +387,4 @@ body.lb-disable-scrolling {
   opacity: 1;
 }
 
-/* 在这里添加您的CSS样式 */
-</style>
+/* 在这里添加您的CSS样式 */</style>

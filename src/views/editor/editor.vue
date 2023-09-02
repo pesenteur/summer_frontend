@@ -723,59 +723,17 @@ async function restore(dId) {
     if (editor.value.storage.collaborationCursor.users.length === 1) {
       console.log(dId)
       await documentRequest.restore(dId)
-      historyRecord.value.forEach(item => {
-        if (item.id === dId) {
-          console.log(item.id)
-          documentId.value = item.id
-          const ydoc = new Y.Doc();
-          provider.value.destroy();
-          provider.value = new HocuspocusProvider({
-            url: 'ws://39.105.159.199:1108/hocuspocus',
-            name: documentId.value,
-            document: ydoc,
-            forceSyncInterval: 200
-          });
-          provider.value.on('status', event => {
-            status.value = event.status;
-          });
-          editor.value.destroy();
-          editor.value = new Editor({
-            editable: Editable,
-            extensions: [
-              StarterKit.configure({
-                history: false
-              }),
-              Highlight,
-              TaskList,
-              TaskItem,
-              Collaboration.configure({
-                document: ydoc
-              }),
-              CollaborationCursor.configure({
-                provider: provider.value,
-                user: currentUser.value
-              }),
-              CharacterCount.configure({
-                limit: 100000,
-              }),
-              StarterKit,
-              Mention.configure({
-                HTMLAttributes: {
-                  class: 'mention',
-                },
-                suggestion
-              })
-            ]
-          });
-        } else {
-
-        }
-      })
+      Location.reload()
+      documentId.value = dId
       ElMessage({
         message: '回退成功',
         type: 'success'
       })
-
+    } {
+      ElMessage({
+        message: '多人协同编辑不能回退',
+        type: 'error'
+      })
     }
   } catch (error) {
     ElMessage({

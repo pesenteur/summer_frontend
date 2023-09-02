@@ -5,6 +5,9 @@
         <TeamHeader1/>
       </el-aside>
       <el-main class="main">
+<!--        <div class="logo">-->
+<!--          <img src="@/assets/summer.png" alt="Logo">-->
+<!--        </div>-->
         <TeamHeader2/>
       </el-main>
     </el-container>

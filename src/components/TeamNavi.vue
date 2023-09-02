@@ -8,6 +8,7 @@
 		  @select="handleSelect"
 		>
 			<TeamHeader1/>
+      <img src="@/assets/summerTitle.png" class="summerTitle"/>
 			<div class="flex-grow" />
 			<button @click="jumpToHome" class="home-button" />
 			<TeamMessage></TeamMessage>
@@ -55,6 +56,12 @@ function logout(){
 </script>
 
 <style>
+.summerTitle{
+  height:25px;
+  margin:auto;
+  margin-left:60px;
+}
+
 .flex-grow {
   flex-grow: 1;
 }

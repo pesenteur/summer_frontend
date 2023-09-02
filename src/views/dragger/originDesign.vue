@@ -1,33 +1,35 @@
 <template>
   <el-container class="layout-container-demo" style="height: 800px">
-    <el-aside width="300px" class="custom-aside">
-      <div class="logo">
-        <img src="@/assets/logo.webp" alt="Logo">
-      </div>
-      <el-menu default-active="2" class="element-back">
-        <el-menu-item index="1">
+    <el-aside width="200px" class="custom-aside">
+<!--      <div class="logo">-->
+<!--        <img src="@/assets/summer.png" alt="Logo">-->
+<!--      </div>-->
+      <el-menu default-active="3" class="element-back">
+
           <div class="menu-item-container">
-            <font-awesome-icon :icon="['fas', 'signature']" style="color: #5683d2;" />
+            <font-awesome-icon :icon="['fas', 'signature']" style="color: black;" />
             <span class="element-title">项目名称：{{ projName }}</span>
-          </div>
-        </el-menu-item>
-        <el-divider />
+        </div>
+<!--        <el-divider />-->
 
         <el-menu-item index="2" @click="seeDocs">
           <div class="menu-item-container-2">
-            <font-awesome-icon :icon="['fas', 'file-invoice']" style="color: #5587dd;" />
+            <font-awesome-icon :icon="['fas', 'file-invoice']" style="color: black;" />
             <span class="element-title" >项目文档</span>
           </div>
         </el-menu-item>
-        <el-divider />
+<!--        <el-divider />-->
 
-        <el-menu-item index="4" @click="seeDesign">
+        <el-menu-item index="3" @click="seeDesign">
           <div class="menu-item-container">
-            <font-awesome-icon :icon="['fas', 'eye']" style="color: #5587dd;" />
-            <span class="element-title" >页面视图</span>
+            <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />
+            <span class="element-title" >画布视图</span>
           </div>
         </el-menu-item>
       </el-menu>
+<!--      <div class="logo">-->
+<!--        <img src="@/assets/summer.png" alt="Logo">-->
+<!--      </div>-->
     </el-aside>
 
     <el-container>
@@ -43,6 +45,9 @@
               <template #default="scope">
                 <el-button link type="primary" size="small" @click.prevent="intoDesign(scope.row.id)">
                   进入画布
+                </el-button>
+                <el-button link type="primary" size="small" @click.prevent="deleteDesign(scope.row.id)">
+                  删除画布
                 </el-button>
               </template>
             </el-table-column>
@@ -136,6 +141,13 @@ function intoDesign(designId) {
   console.log('designId', designId)
   router.push('/drag')
   console.log('11111111')
+}
+
+async function deleteDesign(designId){
+  await originAPI.deleteDesign(designId)
+  const result = await originAPI.getAllDesign(getProjId())
+  tableData.value = result.data
+  projName.value = getProjectName()
 }
 
 async function addDesign() {
@@ -233,7 +245,7 @@ font-awesome-icon {
 
 .logo {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 100px;
 }
 
 .logo img {
@@ -247,7 +259,7 @@ font-awesome-icon {
   cursor: pointer;
   padding: 10px 0;
   margin-left: 10px;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .menu-item-container-2 {
@@ -256,7 +268,7 @@ font-awesome-icon {
   cursor: pointer;
   padding: 10px 0;
   margin-left: 15px;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .menu-icon {

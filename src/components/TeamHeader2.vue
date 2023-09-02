@@ -1,4 +1,5 @@
 <template>
+<!--  <img src="@/assets/summerTitle.png"/>-->
   <el-dropdown @command="handleCommand">
     <span class="el-dropdown-link">
       Dropdown List<el-icon class="el-icon--right"><arrow-down /></el-icon>

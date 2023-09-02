@@ -28,11 +28,28 @@ const images = ref()
 
 async function intoTemplate(designId){
   // const result = await originAPI.getSingle(null,designId)
-  setDesignId(designId)
-  const result = await originAPI.addOrigin(designName.value, getProjId())
+  // setDesignId(designId)
+
+  console.log('setDesignId',designId)
+
+  let currentName = ''
+
+  for(let i = 0 ; i < images.value.length ; i++){
+    if(images.value[i].designId === designId){
+      currentName = images.value[i].title
+      break
+    }
+  }
+
+  console.log('curentName',currentName)
+
+  const result = await originAPI.addOrigin(currentName, getProjId())
+
+  setDesignId(result.data.id)
+
+
   await router.push('/drag')
 }
-
 
 onMounted(async () => {
   // const result = await originAPI.attainTemplate()

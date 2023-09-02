@@ -2,9 +2,10 @@
   <div class="common-layout">
     <el-container>
       <el-header>
-	      <button @click="backTo">回到上一级</button>
         <div class="editor__header">
           <div>
+            <button class="goback" @click="backTo"><font-awesome-icon :icon="['fas', 'arrow-up-from-bracket']"
+                style="color: #7dd4df;" /></button>
             <span class="title" v-if="!isEditingTitle">{{ currentDocumentName }}</span>
             <input v-else v-model="newTitle" class="edit-title-input" />
             <button class="changeName" @click="toggleEditTitle">
@@ -21,10 +22,18 @@
               offline
             </template>
           </div>
+          <div> <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+              <el-sub-menu index="2">
+                <template #title>模版</template>
+                <el-menu-item v-for="model in Model" @click="setModel(model.content)" :index="model.id">{{ model.name
+                }}</el-menu-item>
+              </el-sub-menu>
+              <el-menu-item @click="exportMarkdown" index="4">导出为Markdown</el-menu-item>
+              <el-menu-item @click="exportWord" index="6">导出为Word</el-menu-item>
+              <el-menu-item @click="exportPDF" index="5">导出为PDF</el-menu-item>
+            </el-menu>
+          </div>
           <div class="optionButton">
-            <button @click="exportMarkdown">导出为Markdown</button>
-            <button @click="exportPDF">导出为PDF</button>
-            <button @click="exportWord">导出为Word</button>
             <button v-if="!share" @click="openDialog">共享</button> <button @click="cancelShare" v-else>取消分享</button>
             <el-diglog v-if="isDialogVisible" class="dialog">
               <h2>生成共享链接</h2>
@@ -52,7 +61,8 @@
                 <el-menu :default-openeds="['1']">
                   <el-sub-menu index="1" :default-openeds="opens">
                     <template #title>
-                      <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ projectName }}</span>
+                      <font-awesome-icon style="color: #53d0ea" :icon="['fas', 'folder']" /><span class="item">{{
+                        projectName }}</span>
                       <button class="transparent-button-1" @click.stop="showAddFolderDialog">
                         <font-awesome-icon :icon="['fas', 'folder-plus']" /></button>
                       <button class="transparent-button-2" @click.stop="showAddDocumentDialog('')"><font-awesome-icon
@@ -64,7 +74,8 @@
                     <div v-for="folder in folders" :key="folder.id">
                       <el-sub-menu :index="folder.id" :default-openeds="folder.id">
                         <template #title>
-                          <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ folder.name }}</span>
+                          <font-awesome-icon style="color: #53d0ea" :icon="['fas', 'folder']" /><span class="item">{{
+                            folder.name }}</span>
                           <button class="transparent-button-2"
                             @click.stop="showAddDocumentDialog(folder.id)"><font-awesome-icon
                               :icon="['fas', 'file-circle-plus']" />
@@ -465,6 +476,7 @@ const isEditingTitle = ref(false);
 const folders = ref([]);
 const rootDocuments = ref([])
 const historyRecord = ref([])
+const Model = ref([])
 const projectName = getProjectName()
 const currentDocumentName = ref('')
 const newTitle = ref(currentDocumentName.value);
@@ -535,10 +547,19 @@ const wordCss = `
   padding: 24px;
 }
 `
-function backTo(){
-	router.push(`/design?back=active`)
+function backTo() {
+  router.push(`/design?back=active`)
+}
+function setModel(content) {
+  editor.value.commands.setContent(content)
 }
 onMounted(async () => {
+  Model.value = [{ id: "1", name: "会议纪要", content: "<h1><strong>架构设计说明书</strong></h1><h2><strong>1. 引言</strong></h2><h3><strong>1.1 目的</strong></h3><p>描述此架构设计说明书的目的和目标受众。</p><h3><strong>1.2 范围</strong></h3><p>定义此设计说明书所涵盖的应用或系统的范围。</p><h3><strong>1.3 参考文档</strong></h3><p>列出编写此文档时参考的其他文档或资料。</p><h2><strong>2. 系统概述</strong></h2><h3><strong>2.1 背景</strong></h3><p>简要描述系统或应用的背景。</p><h3><strong>2.2 目标</strong></h3><p>描述此设计所要实现的主要目标。</p><h2><strong>3. 架构决策</strong></h2><p>描述影响架构设计的关键决策和理由。</p><h2><strong>4. 架构视图</strong></h2><h3><strong>4.1 逻辑视图</strong></h3><p>描述系统的模块、组件和它们之间的关系。</p><h3><strong>4.2 实现视图</strong></h3><p>描述代码结构、目录和源文件组织。</p><h3><strong>4.3 进程视图</strong></h3><p>描述运行时的进程、线程和它们之间的交互。</p><h3><strong>4.4 部署视图</strong></h3><p>描述物理节点、网络和组件部署方式。</p><h3><strong>4.5 数据视图</strong></h3><p>描述数据模型和数据库结构。</p><h2><strong>5. 关键机制</strong></h2><h3><strong>5.1 安全性</strong></h3><p>描述如何确保系统安全。</p><h3><strong>5.2 性能</strong></h3><p>描述系统性能和优化策略。</p><h3><strong>5.3 错误处理</strong></h3><p>描述错误和异常处理机制。</p><h3><strong>5.4 扩展性</strong></h3><p>描述如何确保系统可扩展。</p><h3><strong>5.5 维护性</strong></h3><p>描述如何确保系统可维护和升级。</p><h2><strong>6. 附录</strong></h2><p>包括相关的图表、参考文档、词汇表和其他相关资料。</p>" },
+  { id: "2", name: "工作周报", content: '<h1><strong>工作周报</strong></h1><h2><strong>基本信息</strong></h2><ul><li><p><strong>姓名</strong>：[您的姓名]</p></li><li><p><strong>部门/团队</strong>：[您所在的部门或团队]</p></li><li><p><strong>报告周期</strong>：[起始日期] - [结束日期]</p></li></ul><h2><strong>本周完成工作</strong></h2><ol start="NaN"><li><p><strong>工作任务1</strong></p><ul><li><p>描述：[简短描述这项任务的主要内容]</p></li><li><p>完成情况：[描述任务的完成进度，例如“已完成”或“进行中80%”]</p></li></ul></li><li><p><strong>工作任务2</strong></p><ul><li><p>描述：[简短描述这项任务的主要内容]</p></li><li><p>完成情况：[描述任务的完成进度]</p></li></ul></li></ol><p>(如有更多任务，按照上述格式继续列举)</p><h2><strong>下周计划工作</strong></h2><ol start="NaN"><li><p><strong>计划任务1</strong></p><ul><li><p>描述：[简短描述您计划进行的任务内容]</p></li><li><p>预计目标：[描述预计达到的进度或结果]</p></li></ul></li><li><p><strong>计划任务2</strong></p><ul><li><p>描述：[简短描述您计划进行的任务内容]</p></li><li><p>预计目标：[描述预计达到的进度或结果]</p></li></ul></li></ol><p>(如有更多任务，按照上述格式继续列举)</p><h2><strong>遇到的问题与建议</strong></h2><ol start="NaN"><li><p><strong>问题1</strong></p><ul><li><p>描述：[描述您在工作中遇到的问题或挑战]</p></li><li><p>建议/需求支持：[您对解决该问题的建议或需要的支持]</p></li></ul></li><li><p><strong>问题2</strong></p><ul><li><p>描述：[描述您在工作中遇到的问题或挑战]</p></li><li><p>建议/需求支持：[您对解决该问题的建议或需要的支持]</p></li></ul></li></ol><p>(如有更多问题，按照上述格式继续列举)</p><h2><strong>其他分享</strong></h2><ul><li><p>[这里可以分享您本周在工作中的有趣发现、学到的新知识点或其他想与团队分享的内容]</p></li></ul><hr><p>注：请将上述模板中的占位符（例如[您的姓名]）替换为实际的信息。</p>' },
+  { id: "3", name: "架构设计说明书", content: '<h1><strong>架构设计说明书</strong></h1><h2><strong>1. 引言</strong></h2><h3><strong>1.1 目的</strong></h3><p>描述此架构设计说明书的目的和目标受众。</p><h3><strong>1.2 范围</strong></h3><p>定义此设计说明书所涵盖的应用或系统的范围。</p><h3><strong>1.3 参考文档</strong></h3><p>列出编写此文档时参考的其他文档或资料。</p><h2><strong>2. 系统概述</strong></h2><h3><strong>2.1 背景</strong></h3><p>简要描述系统或应用的背景。</p><h3><strong>2.2 目标</strong></h3><p>描述此设计所要实现的主要目标。</p><h2><strong>3. 架构决策</strong></h2><p>描述影响架构设计的关键决策和理由。</p><h2><strong>4. 架构视图</strong></h2><h3><strong>4.1 逻辑视图</strong></h3><p>描述系统的模块、组件和它们之间的关系。</p><h3><strong>4.2 实现视图</strong></h3><p>描述代码结构、目录和源文件组织。</p><h3><strong>4.3 进程视图</strong></h3><p>描述运行时的进程、线程和它们之间的交互。</p><h3><strong>4.4 部署视图</strong></h3><p>描述物理节点、网络和组件部署方式。</p><h3><strong>4.5 数据视图</strong></h3><p>描述数据模型和数据库结构。</p><h2><strong>5. 关键机制</strong></h2><h3><strong>5.1 安全性</strong></h3><p>描述如何确保系统安全。</p><h3><strong>5.2 性能</strong></h3><p>描述系统性能和优化策略。</p><h3><strong>5.3 错误处理</strong></h3><p>描述错误和异常处理机制。</p><h3><strong>5.4 扩展性</strong></h3><p>描述如何确保系统可扩展。</p><h3><strong>5.5 维护性</strong></h3><p>描述如何确保系统可维护和升级。</p><h2><strong>6. 附录</strong></h2><p>包括相关的图表、参考文档、词汇表和其他相关资料。</p>' },
+  { id: "4", name: "项目计划", content: '<h1><strong>项目计划</strong></h1><h2><strong>项目概述</strong></h2><ul><li><p><strong>项目名称</strong>：[项目名称]</p></li><li><p><strong>项目目标</strong>：[简短描述项目的主要目标]</p></li><li><p><strong>起始日期</strong>：[开始日期]</p></li><li><p><strong>预计结束日期</strong>：[结束日期]</p></li></ul><h2><strong>团队成员</strong></h2><ul><li><p><strong>项目经理</strong>：[项目经理的名字]</p></li><li><p><strong>开发团队</strong>：[开发人员的名字，如果有多个可以列举]</p></li><li><p><strong>测试团队</strong>：[测试人员的名字，如果有多个可以列举]</p></li></ul><h2><strong>项目阶段与时间表</strong></h2><ol start="NaN"><li><p><strong>需求分析</strong>：</p><ul><li><p>起始日期：[日期]</p></li><li><p>结束日期：[日期]</p></li><li><p>负责人：[负责人姓名]</p></li><li><p>任务描述：[简短描述任务内容]</p></li></ul></li><li><p><strong>设计</strong>：</p><ul><li><p>起始日期：[日期]</p></li><li><p>结束日期：[日期]</p></li><li><p>负责人：[负责人姓名]</p></li><li><p>任务描述：[简短描述任务内容]</p></li></ul></li><li><p><strong>开发</strong>：</p><ul><li><p>起始日期：[日期]</p></li><li><p>结束日期：[日期]</p></li><li><p>负责人：[负责人姓名]</p></li><li><p>任务描述：[简短描述任务内容]</p></li></ul></li><li><p><strong>测试</strong>：</p><ul><li><p>起始日期：[日期]</p></li><li><p>结束日期：[日期]</p></li><li><p>负责人：[负责人姓名]</p></li><li><p>任务描述：[简短描述任务内容]</p></li></ul></li><li><p><strong>上线/部署</strong>：</p><ul><li><p>起始日期：[日期]</p></li><li><p>结束日期：[日期]</p></li><li><p>负责人：[负责人姓名]</p></li><li><p>任务描述：[简短描述任务内容]</p></li></ul></li></ol><h2><strong>风险管理</strong></h2><ul><li><p><strong>风险1</strong>：[描述风险及其可能的影响]</p></li><li><p><strong>应对策略</strong>：[描述如何应对此风险]</p></li><li><p><strong>风险2</strong>：[描述风险及其可能的影响]</p></li><li><p><strong>应对策略</strong>：[描述如何应对此风险]</p></li></ul><h2><strong>通讯计划</strong></h2><ul><li><p><strong>每周团队会议</strong>：每周[星期几]，时间：[具体时间]</p></li><li><p><strong>项目状态更新</strong>：每周[星期几]由[负责人姓名]发送</p></li></ul><h2><strong>参考文档</strong></h2><ul><li><p><strong>链接1</strong></p></li><li><p><strong>链接2</strong></p></li></ul><hr><p>以上只是一个基本的模板，你可以根据具体的项目需求进行修改和扩展。</p>' },
+  { id: "5", name: "需求调研报告", content: '<h1><strong>需求调研报告</strong></h1><h2><strong>项目概述</strong></h2><ul><li><p><strong>项目名称</strong>：[项目名称]</p></li><li><p><strong>调研目的</strong>：[简短描述此次需求调研的主要目的]</p></li></ul><h2><strong>背景介绍</strong></h2><p>在此部分简要描述项目的背景，为何需要进行这次需求调研。</p><h2><strong>调研方法</strong></h2><ol start="NaN"><li><p><strong>在线问卷</strong></p><ul><li><p>描述：[描述问卷的内容、形式等]</p></li><li><p>参与人数：[参与调研的人数]</p></li></ul></li><li><p><strong>访谈</strong></p><ul><li><p>描述：[描述访谈的内容、形式等]</p></li><li><p>参与人数：[参与调研的人数]</p></li></ul></li><li><p><strong>其他方法</strong></p><ul><li><p>描述：[描述其他调研方法]</p></li><li><p>参与人数：[参与调研的人数]</p></li></ul></li></ol><h2><strong>主要发现</strong></h2><h3><strong>需求1</strong></h3><ul><li><p><strong>描述</strong>：[详细描述该需求]</p></li><li><p><strong>来源</strong>：[例如“在线问卷”、“访谈”等]</p></li><li><p><strong>相关数据</strong>：[如有相关的数据或统计可以列出]</p></li></ul><h3><strong>需求2</strong></h3><ul><li><p><strong>描述</strong>：[详细描述该需求]</p></li><li><p><strong>来源</strong>：[例如“在线问卷”、“访谈”等]</p></li><li><p><strong>相关数据</strong>：[如有相关的数据或统计可以列出]</p></li></ul><p>(如有更多需求，按照上述格式继续列举)</p><h2><strong>调研结论与建议</strong></h2><ol start="NaN"><li><p><strong>结论1</strong>：[简短描述您从调研结果中得出的结论]</p></li><li><p><strong>结论2</strong>：[简短描述您从调研结果中得出的结论]</p></li><li><p><strong>建议1</strong>：[基于您的调研，给出的建议或建议的方向]</p></li></ol><h2><strong>附录</strong></h2><ul><li><p><strong>问卷样本</strong>：[提供问卷的链接或嵌入问卷内容]</p></li><li><p><strong>访谈记录</strong>：[附上访谈的相关记录或总结]</p></li><li><p><strong>其他资料</strong>：[其他与调研相关的资料]</p></li></ul><hr><p>注：请将上述模板中的占位符（例如[项目名称]）替换为实际的信息。</p>' },
+  { id: "6", name: "需求规格说明书", content: '<h1><strong>需求规格说明书</strong></h1><h2><strong>1. 引言</strong></h2><h3><strong>1.1 背景</strong></h3><p>简要描述项目的背景、目的和重要性。</p><h3><strong>1.2 定义</strong></h3><p>列举文档中使用的专有名词或术语的定义。</p><h3><strong>1.3 参考资料</strong></h3><p>列出编写此文档时参考的其他文档或资料。</p><h2><strong>2. 总体描述</strong></h2><h3><strong>2.1 产品概述</strong></h3><p>描述产品的主要功能和用途。</p><h3><strong>2.2 产品功能</strong></h3><p>简要描述产品的主要功能。</p><h3><strong>2.3 用户特点与需求</strong></h3><p>描述预期的用户群体和他们的特定需求。</p><h3><strong>2.4 操作环境</strong></h3><p>描述产品将在哪些硬件、软件和网络环境下运行。</p><h2><strong>3. 具体需求</strong></h2><h3><strong>3.1 用户需求</strong></h3><h4><strong>3.1.1 用户故事1</strong></h4><ul><li><p><strong>描述</strong>：具体描述用户故事或用例。</p></li><li><p><strong>优先级</strong>：例如“高”、“中”、“低”。</p></li><li><p><strong>备注</strong>：其他需要说明的事项。</p></li></ul><h4><strong>3.1.2 用户故事2</strong></h4><p>(按照上述格式继续列举用户故事或用例)</p><h3><strong>3.2 系统功能</strong></h3><h4><strong>3.2.1 功能1</strong></h4><ul><li><p><strong>描述</strong>：具体描述功能。</p></li><li><p><strong>输入</strong>：此功能所需的输入。</p></li><li><p><strong>处理</strong>：功能的处理过程。</p></li><li><p><strong>输出</strong>：功能的输出结果。</p></li></ul><h4><strong>3.2.2 功能2</strong></h4><p>(按照上述格式继续列举系统功能)</p><h3><strong>3.3 界面需求</strong></h3><p>描述与用户界面相关的需求，可以包括具体的UI/UX设计，用户流程等。</p><h3><strong>3.4 性能需求</strong></h3><p>列出与产品性能相关的需求，例如响应时间、并发用户数等。</p><h3><strong>3.5 数据管理和数据库需求</strong></h3><p>描述与数据管理和数据库相关的需求。</p><h2><strong>4. 附录</strong></h2><p>包括需求跟踪、图表、参考文档等其他相关资料。</p><hr><p>注：请将上述模板中的占位符（例如“功能1”、“用户故事1”等）替换为实际的内容。</p>' },]
   await getAllDocuments();
   opens.value.push('1')
   console.log(opens.value)
@@ -650,9 +671,9 @@ async function generateLink() {
 };
 async function saveDocument() {
   try {
-    // const content = editor.value.getHTML();
-    // console.log(content)
-    // console.log(documentId)
+    const content = editor.value.getHTML();
+    console.log(content)
+    console.log(documentId)
     // await documentRequest.saveDocument(documentId.value, content);
     ElMessage({
       message: '保存成功',
@@ -702,10 +723,60 @@ async function restore(dId) {
     if (editor.value.storage.collaborationCursor.users.length === 1) {
       console.log(dId)
       await documentRequest.restore(dId)
+      historyRecord.value.forEach(item => {
+        if (item.id === dId) {
+          console.log(item.id)
+          documentId.value = item.id
+          const ydoc = new Y.Doc();
+          provider.value.destroy();
+          provider.value = new HocuspocusProvider({
+            url: 'ws://39.105.159.199:1108/hocuspocus',
+            name: documentId.value,
+            document: ydoc,
+            forceSyncInterval: 200
+          });
+          provider.value.on('status', event => {
+            status.value = event.status;
+          });
+          editor.value.destroy();
+          editor.value = new Editor({
+            editable: Editable,
+            extensions: [
+              StarterKit.configure({
+                history: false
+              }),
+              Highlight,
+              TaskList,
+              TaskItem,
+              Collaboration.configure({
+                document: ydoc
+              }),
+              CollaborationCursor.configure({
+                provider: provider.value,
+                user: currentUser.value
+              }),
+              CharacterCount.configure({
+                limit: 100000,
+              }),
+              StarterKit,
+              Mention.configure({
+                HTMLAttributes: {
+                  class: 'mention',
+                },
+                suggestion
+              })
+            ]
+          });
+          rootDocuments.value.push(item)
+        } else {
+
+        }
+      })
       ElMessage({
         message: '回退成功',
         type: 'success'
       })
+
     }
   } catch (error) {
     ElMessage({
@@ -1340,5 +1411,13 @@ function exportWord() {
   font-size: 20px;
   margin: 0px;
   padding: 0px;
+}
+
+.goback {
+  font-size: 20px;
+}
+
+.el-menu--horizontal.el-menu {
+  border-bottom: none !important;
 }
 </style>

@@ -60,7 +60,7 @@
                     </template>
                     <div class="button-container">
                     </div>
-                    <div v-for="folder in folders" :key="folder.id" >
+                    <div v-for="folder in folders" :key="folder.id">
                       <el-sub-menu :index="folder.id" :default-openeds="folder.id">
                         <template #title>
                           <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ folder.name }}</span>
@@ -73,8 +73,8 @@
                           </button>
                         </template>
                         <el-menu-item-group>
-                          <el-menu-item v-for="d in folder.documents" :key="d.id" :index="d.id" :class="{ 'is-active': selectedDocumentId === d.id }"
-                            @click="changeDocument(d.id, d.title)">
+                          <el-menu-item v-for="d in folder.documents" :key="d.id" :index="d.id"
+                            :class="{ 'is-active': selectedDocumentId === d.id }" @click="changeDocument(d.id, d.title)">
                             <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ d.title }}</span>
                             <button class="transparent-button-2"
                               @click.stop="showDeleteDocumentDialog(d.id)"><font-awesome-icon :icon="['fas', 'trash']" />
@@ -83,7 +83,8 @@
                         </el-menu-item-group>
                       </el-sub-menu>
                     </div>
-                    <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id" :class="{ 'is-active': selectedDocumentId === document.id }"
+                    <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id"
+                      :class="{ 'is-active': selectedDocumentId === document.id }"
                       @click="changeDocument(document.id, document.title)">
                       <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ document.title }}</span>
                       <button class="transparent-button-2"
@@ -535,10 +536,10 @@ const wordCss = `
 `
 
 onMounted(async () => {
-  await getAllDocuments(); 
-  opens.value.push('1') 
+  await getAllDocuments();
+  opens.value.push('1')
   console.log(opens.value)
-  selectedDocumentId.value =documentId.value
+  selectedDocumentId.value = documentId.value
   const ydoc = new Y.Doc();
   provider.value = new HocuspocusProvider({
     url: 'ws://127.0.0.1:1234',
@@ -620,6 +621,13 @@ const processDocuments = (data) => {
       rootDocuments.value.push(item)
     } else {
       folders.value.push(item)
+      let tem = item.documents
+      console.log(tem)
+      tem.forEach(tmp => {
+        if (tmp.id === documentId.value) {
+          currentDocumentName.value = tmp.title
+        }
+      })
       opens.value.push(item.id)
     }
     if (item.id === documentId.value) {

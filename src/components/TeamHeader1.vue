@@ -39,8 +39,8 @@ const buttons = reactive([
   { id: "004", type: 'plain', text: '聊天室', icon: 'el-icon-my-custom1' },
 ])
 const buttons2 = reactive([
-	{ id: "005", type: 'plain', text: '切换团队', icon: 'el-icon-my-custom1' },
-	{ id: "006", type: 'plain', text: '退出登录', icon: 'el-icon-my-custom1' },
+	{ id: "005", type: 'plain', text: '切换团队', icon: 'el-icon-my-switch' },
+	{ id: "006", type: 'plain', text: '退出登录', icon: 'el-icon-my-logout' },
 ])
 
 function jump(buttonId) {
@@ -127,7 +127,7 @@ defineExpose({setDrawer})
   /* 设置文本颜色为橙色 */
 }
 
-::v-deep .el-icon-my-help {
+.el-icon-my-help {
   background: url('@/assets/imgs/icons/icon-s-help.svg') no-repeat;
   font-size: 20px;
   background-size: cover;
@@ -135,7 +135,7 @@ defineExpose({setDrawer})
   /* 替换成你自己的图标路径 */
 }
 
-::v-deep .el-icon-my-platform {
+.el-icon-my-platform {
   background: url('@/assets/imgs/icons/icon-s-platform.svg') no-repeat;
   font-size: 20px;
   background-size: cover;
@@ -143,7 +143,7 @@ defineExpose({setDrawer})
   /* 替换成你自己的图标路径 */
 }
 
-::v-deep .el-icon-my-custom {
+.el-icon-my-custom {
   background: url('@/assets/imgs/icons/icon-s-custom.svg') no-repeat;
   font-size: 20px;
   background-size: cover;
@@ -151,46 +151,54 @@ defineExpose({setDrawer})
   /* 替换成你自己的图标路径 */
 }
 
-::v-deep .el-icon-my-custom1 {
+.el-icon-my-custom1 {
   background: url('@/assets/imgs/icons/icon-chat-dot-round.svg') no-repeat;
   font-size: 20px;
   background-size: cover;
 
   /* 替换成你自己的图标路径 */
 }
-
-::v-deep .chat {
+.el-icon-my-logout{
+  background: url('@/assets/imgs/icons/logout.svg') no-repeat;
+  font-size: 20px;
+  background-size: cover;
+}
+.el-icon-my-switch{
+  background: url('@/assets/imgs/icons/switch.svg') no-repeat;
+  font-size: 20px;
+  background-size: cover;
+}
+.chat {
   font-size: 20px;
   background-size: cover;
   background: url('@/assets/imgs/icons/icon-chat-dot-round.svg') no-repeat;
   /* 替换成你自己的图标路径 */
 }
 
-::v-deep .el-icon-my-custom:before {
+.el-icon-my-custom:before {
   content: "替";
   font-size: 20px;
   visibility: hidden;
 }
 
-::v-deep .el-icon-my-custom1:before {
+.el-icon-my-custom1:before {
   content: "替";
   font-size: 20px;
   visibility: hidden;
 }
 
-::v-deep .el-icon-my-platform:before {
+ .el-icon-my-platform:before {
   content: "替";
   font-size: 20px;
   visibility: hidden;
 }
 
-::v-deep .el-icon-my-help:before {
+.el-icon-my-help:before {
   content: "替";
   font-size: 20px;
   visibility: hidden;
 }
-
-::v-deep .chat:before {
+.chat:before {
   content: "替";
   font-size: 20px;
   visibility: hidden;

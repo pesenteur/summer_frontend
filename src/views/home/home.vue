@@ -1,12 +1,8 @@
 <template>
     <div class="header">
-        <a href="" class="logo" id="logo">logo</a>
+        <a href="" class="logo" id="logo">SUMMER</a>
         <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li> <a href="#"> Work</a></li>
-            <li><a href="#">Contact</a></li>
-            <li> <router-link to="/login" class="btn btn-floating"><strong>Get started</strong></router-link></li>
+          <li> <router-link to="/login" class="btn btn-floating"><strong>登录/注册</strong></router-link></li>
         </ul>
     </div>
     <div class="container">
@@ -15,10 +11,10 @@
                 <div class="cnt">
                     <div class="text-container">
                         <div class="text-content">
-                            <h2>欢迎来到寄了网站，在这里你可以</h2>
-                            <p>根据自己的需求创建团队，更加高效快捷办公</p>
+                            <h2>欢迎来到SUMMER，在这里您可以</h2>
+                            <p>肆意地发挥自己的才能，让生产力最大化</p>
                         </div>
-                        <router-link to="/login" class="btn btn-floating"><strong>Get started</strong></router-link>
+                        <router-link to="/login" class="btn btn-floating"><strong>Let's try!</strong></router-link>
                     </div>
 
                 </div>
@@ -29,28 +25,68 @@
                 <div class="cnt">
                     <h2>让团队梦想成真，从这里开始</h2>
                     <p>
-                        jdaskjdas
+                        在这里，您可以方便地管理自己的团队
                     </p>
                     <p>
-                        <button @click="" class="btn"> <strong>TRY</strong></button>
+                      <router-link to="/login" class="btn btn-floating"> <strong>TRY</strong></router-link>
                     </p>
                 </div>
                 <div class="image-box">
-                    <img src="@/assets/imgs/background1.png" alt="Image" />
+                    <img src="@/assets/团队管理.jpg" alt="Image" />
                 </div>
             </div>
         </section>
         <section class="content-two">
+          <div class="text-box-detail">
+            <div class="image-box-2">
+              <img src="@/assets/imgs/聊天室.jpg" alt="Image" />
+            </div>
+            <div class="cnt">
+              <h2>实时聊天，让团队沟通更加高效</h2>
+              <p>
+                在这里，您可以与您的队友实时畅聊，让思想的交汇不再有阻隔
+              </p>
+              <p>
+                <router-link to="/login" class="btn btn-floating"> <strong>TRY</strong></router-link>
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="content-one">
+          <div class="text-box-detail">
+<!--            <div class="image-box-2">-->
+<!--              <img src="@/assets/imgs/background2.png" alt="Image" />-->
+<!--            </div>-->
+            <div class="cnt">
+              <h2>项目管理，井井有条，办公更加专注</h2>
+              <p>
+                在这里，您可以专注于项目，实现高效办公
+              </p>
+              <p>
+                <router-link to="/login" class="btn btn-floating"> <strong>TRY</strong></router-link>
+              </p>
+            </div>
+            <div class="image-box-2">
+              <img src="@/assets/imgs/项目管理.png" alt="Image" />
+            </div>
+
+          </div>
+        </section>
+
+        <section class="content-two">
             <div class="text-box-detail">
                 <div class="image-box-2">
-                    <img src="@/assets/imgs/background2.png" alt="Image" />
+                    <img src="@/assets/imgs/原型设计.png" alt="Image" />
                 </div>
                 <div class="cnt">
                     <h2>创意无限，设计从这里开始</h2>
                     <p>
+                      在这里，您可以发挥您的创造力，打造出独一无二的优质内容
                     </p>
                     <p>
-                        <button @click="" class="btn"> <strong>TRY</strong></button>
+                      <router-link to="/login" class="btn btn-floating"> <strong>TRY</strong></router-link>
                     </p>
                 </div>
 
@@ -59,22 +95,31 @@
         <section class="content-three">
             <div class="text-box-detail">
                 <div class="cnt">
-                    <h2>文档共享，合作更高效</h2>
+                    <h2>文档共享，办公合作更高效</h2>
                     <p>
+                      在这里，您可以实时共享文档编辑，多人协作更加快捷
                     </p>
                     <p>
-                        <button @click="" class="btn"> <strong>TRY</strong></button>
+                      <router-link to="/login" class="btn btn-floating"> <strong>TRY</strong></router-link>
                     </p>
                 </div>
                 <div class="image-box">
-                    <img src="@/assets/imgs/background3.png" alt="Image" />
+                    <img src="@/assets/imgs/共享文档.png" alt="Image" />
                 </div>
             </div>
         </section>
         <section id="img-two" class="img">
-            <h1>免费使用</h1>
+          <h2>2023小学期软工开发小组</h2>
         </section>
-        <section id="footer">FOOTER</section>
+<!--        <section >-->
+<!--          <h1>关于我们</h1>-->
+<!--          <br/>-->
+<!--          <h2>2023小学期软工开发小组</h2>-->
+<!--          <br/>-->
+<!--          <h3>-->
+<!--            小组成员-->
+<!--          </h3>-->
+<!--        </section>-->
     </div>
 </template>
 <script setup>
@@ -194,6 +239,7 @@ section,
 
 #img-two {
     background-image: url(./img/img4.jpg);
+    font-size: 20px;
 }
 
 .content-one {

@@ -767,7 +767,6 @@ async function restore(dId) {
               })
             ]
           });
-          rootDocuments.value.push(item)
         } else {
 
         }

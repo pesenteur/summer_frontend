@@ -5,7 +5,7 @@
 			<br>
 			<span class="subtitle">选择后将自动为您跳转到主页面</span>
 			<br>
-			<button @click="dialogTableVisible = true" class="view-invitations-button">查看你收到的邀请</button>
+			<button @click="clickSearch" class="view-invitations-button">查看你收到的邀请</button>
 			<el-divider />
 			<el-menu v-for="team in teamTeamTable" key="team.id" class="el-menu-vertical-demo">
 				<el-menu-item index="1" @click="jumpToHome(team.id, team.name)">
@@ -75,6 +75,11 @@ const dialogTableVisible = ref(false)
 async function queryALL() {
 	let result = await teamFunction.queryAllTeams();
 	teamTeamTable.value = result.data
+}
+
+async function clickSearch(){
+	dialogTableVisible.value = true
+	await getAllInvitations()
 }
 
 const form = reactive({
@@ -259,7 +264,7 @@ onMounted(() => {
 	/* 圆角 */
 	cursor: pointer;
 	/* 鼠标指针样式 */
-	font-size: 14px;
+	font-size: 18px;
 	/* 字体大小 */
 }
 

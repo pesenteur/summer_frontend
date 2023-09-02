@@ -26,7 +26,25 @@
             <span class="element-title" >画布视图</span>
           </div>
         </el-menu-item>
+
+<!--        <el-menu-item index="4">-->
+<!--          <div class="menu-item-container-another">-->
+<!--            <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />-->
+<!--            <span class="element-title" >项目描述</span>-->
+<!--            <br>-->
+<!--            <span>{{projDescribe}}</span>-->
+<!--          </div>-->
+<!--        </el-menu-item>-->
       </el-menu>
+      <el-divider/>
+      <div class="menu-item-container-another">
+        <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />
+        <span class="element-title" >项目描述</span>
+        <br>
+        <span>{{projDescribe}}</span>
+      </div>
+
+
 <!--      <div class="logo">-->
 <!--        <img src="@/assets/summer.png" alt="Logo">-->
 <!--      </div>-->
@@ -96,6 +114,7 @@ import originAPI from '@/api/originDesign'
 import { useRouter,useRoute } from "vue-router";
 import documentShow from './documentShow.vue'
 import editor from '../editor/editor.vue'
+import {ElMessage} from "element-plus";
 
 const router = useRouter()
 const route = useRoute()
@@ -109,6 +128,8 @@ const switchMenu = ref(true)
 
 const projName = ref('')
 projName.value = getProjectName()
+
+const projDescribe = ref()
 
 const dialogFormVisible = ref(false)
 
@@ -176,6 +197,9 @@ async function addDesign() {
 
     await router.push(`/origin/template/${designName.value}`)
     dialogFormVisible2.value = false
+  }else{
+    dialogFormVisible.value = true
+    ElMessage.error('请选择是否调用模板')
   }
 
   // if (designName.value === '') {
@@ -194,6 +218,8 @@ onMounted(async () => {
   const result = await originAPI.getAllDesign(getProjId())
   tableData.value = result.data
   projName.value = getProjectName()
+  const result1 = await projAPI.getSingleProject(getProjId())
+  projDescribe.value = result1.data.describe
 	if(route.query.back !=null){
 		switchMenu.value = false
 	}
@@ -269,6 +295,10 @@ font-awesome-icon {
   padding: 10px 0;
   margin-left: 15px;
   font-size: 20px;
+}
+
+.menu-item-container-another{
+  margin-left: 25%;
 }
 
 .menu-icon {

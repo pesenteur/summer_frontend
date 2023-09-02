@@ -38,7 +38,7 @@
         <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
         </el-input>
         <span class="dialog-footer">
-          <el-button type="primary" @click="addFolder(); closeDialog1()" class="confirm-button">确认</el-button>
+          <el-button type="primary" @click="addFolder" class="confirm-button">确认</el-button>
           <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
         </span>
       </el-dialog>
@@ -48,7 +48,7 @@
         <el-input v-model="newName" placeholder="文档名称" class="input-field">
         </el-input>
         <span class="dialog-footer">
-          <el-button type="primary" @click="addDocument(); closeDialog2()" class="confirm-button">确认</el-button>
+          <el-button type="primary" @click="addDocument" class="confirm-button">确认</el-button>
           <el-button @click="closeDialog2" class="cancel-button">取消</el-button>
         </span>
       </el-dialog>
@@ -77,7 +77,7 @@
         <el-input v-model="newName" placeholder="文档名称" class="input-field">
         </el-input>
         <span class="dialog-footer">
-          <el-button type="primary" @click="addDocument2(); closeDialog3()" class="confirm-button">确认</el-button>
+          <el-button type="primary" @click="addDocument2" class="confirm-button">确认</el-button>
           <el-button @click="closeDialog3" class="cancel-button">取消</el-button>
         </span>
       </el-dialog>
@@ -94,6 +94,7 @@ import { CircleCloseFilled, DocumentCopy } from "@element-plus/icons-vue";
 import { getProjId, getTeamId, setDesignId, setProjectName, setProjId } from "@/utils/token";
 import originAPI from "@/api/originDesign";
 import documentAPI from '@/api/document'
+import {ElMessage} from "element-plus";
 
 const router = useRouter()
 const currentDate = reactive(new Date())
@@ -151,18 +152,30 @@ const tempData = ref([])
 const search = ref()
 
 async function addFolder() {
-  console.log('11111111111111111111111111111')
-  const result = await documentAPI.createFolder(newName.value, getProjId())
-  console.log('addFolder', result.data)
-  await getData()
-  showFirstDocs()
+  if(newName.value === ''){
+    ElMessage.error('请输入文件夹名称')
+    dialogVisible1.value = true
+  }else {
+    console.log('11111111111111111111111111111')
+    const result = await documentAPI.createFolder(newName.value, getProjId())
+    console.log('addFolder', result.data)
+    await getData()
+    showFirstDocs()
+    dialogVisible1.value = false
+  }
 }
 
 async function addDocument() {
-  const result = await documentAPI.createDocument(getProjId(), newName.value, null)
-  console.log('addDocument', result.data)
-  await getData()
-  showFirstDocs()
+  if(newName.value === ''){
+    ElMessage.error('请输入文件名称')
+    dialogVisible2.value = true
+  }else {
+    const result = await documentAPI.createDocument(getProjId(), newName.value, null)
+    console.log('addDocument', result.data)
+    await getData()
+    showFirstDocs()
+    dialogVisible2.value = false
+  }
 }
 
 const lastId = ref()
@@ -170,22 +183,28 @@ const lastId = ref()
 const folder_id = ref()
 
 async function addDocument2() {
-  const result = await documentAPI.createDocument(getProjId(), newName.value, folderId.value)
-  console.log('addDocument2', result.data)
-  let temp_document = []
-  lastId.value = result.data.id
-  // folder_id.value = result.data.folder
-  documentArray.value.push({ id: result.data.id, name: result.data.title, folder: result.data.folder })
-  for (let i = 0; i < documentArray.value.length; i++) {
-    if (documentArray.value[i].folder === folderId.value) {
-      temp_document.push({ id: documentArray.value[i].id, name: documentArray.value[i].name })
+  if(newName.value === ''){
+    dialogVisible3.value = true;
+    ElMessage.error('请输入文件名称')
+  }else {
+    const result = await documentAPI.createDocument(getProjId(), newName.value, folderId.value)
+    console.log('addDocument2', result.data)
+    let temp_document = []
+    lastId.value = result.data.id
+    // folder_id.value = result.data.folder
+    documentArray.value.push({id: result.data.id, name: result.data.title, folder: result.data.folder})
+    for (let i = 0; i < documentArray.value.length; i++) {
+      if (documentArray.value[i].folder === folderId.value) {
+        temp_document.push({id: documentArray.value[i].id, name: documentArray.value[i].name})
+      }
     }
-  }
-  secondDoc.value = temp_document
-  console.log('secondDoc.value', secondDoc.value)
-  console.log('documentArray', documentArray.value)
+    secondDoc.value = temp_document
+    console.log('secondDoc.value', secondDoc.value)
+    console.log('documentArray', documentArray.value)
 
-  showSecondDocs()
+    showSecondDocs()
+    dialogVisible3.value = false;
+  }
 }
 
 function openDialog1() {

@@ -106,12 +106,12 @@ export default {
             }
         });
     },
-    sendFile(chat_id,type,extension,file) {
+    sendFile(chat_id,type,extension,file,name) {
         return requests({
             url: `/chat/${chat_id}/upload`,
             method: 'POST',
             params:{
-                type,extension
+                type,extension,name
             },
             data:{
                 file

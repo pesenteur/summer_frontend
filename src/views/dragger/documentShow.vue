@@ -1,42 +1,107 @@
 <template>
   <div>
-    <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
-      <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
-        <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
-          shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-          <img @click="intoDesignManage((rowIndex) * 4 + colIndex)"
-            src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
-          <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
-            <div class="project-name">
-              <span>项目：{{ projectName[(rowIndex) * 4 + colIndex] }}</span>
-              <div class="project-actions">
-                <el-button @click="deleteCard((rowIndex) * 4 + colIndex)" text>
-                  <el-icon class="delete">
-                    <CircleCloseFilled />
-                  </el-icon>
-                </el-button>
-                <el-button @click="copyProject((rowIndex) * 4 + colIndex)" text>
-                    <el-icon><DocumentCopy /></el-icon>
-                </el-button>
-                <el-button class="edit" @click="openDialog(rowIndex,colIndex)" text>
-                  <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-                </el-button>
-                <el-dialog  v-model="dialogVisible" title="修改项目名称" class="project-dialog">
-                  <el-input v-model="newName" placeholder="新项目名称" class="input-field">
-                  </el-input>
-                  <span class="dialog-footer">
-                    <el-button type="primary" @click="changeProjectName(); closeDialog()"
-                      class="confirm-button">确认</el-button>
-                    <el-button @click="closeDialog" class="cancel-button">取消</el-button>
-                  </span>
-                </el-dialog>
+    <el-button @click="openDialog1">
+      新建文件夹
+    </el-button>
+    <el-button @click="openDialog2">
+      新建文件
+    </el-button>
+    <div v-if="switchTo2">
+      <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
+        <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
+          <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
+            shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
+            <img v-if="firstDoc.filter((item)=>{return item.id === myResult[(rowIndex) * 4 + colIndex].id})[0].type === 0" @click="intoDocumentManage((rowIndex) * 4 + colIndex)"
+              src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+            <img v-else src="https://img2.baidu.com/it/u=4238855641,2359345742&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" @click="intoFolder((rowIndex) * 4 + colIndex)" class="image">
+            <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
+              <div class="project-name">
+                <span>{{ documentName[(rowIndex) * 4 + colIndex] }}</span>
+                <div class="project-actions">
+
+
+                  <el-dialog  v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
+                    <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
+                    </el-input>
+                    <span class="dialog-footer">
+                      <el-button type="primary" @click="addFolder(); closeDialog1()"
+                                 class="confirm-button">确认</el-button>
+                      <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
+                    </span>
+                  </el-dialog>
+
+
+                  <el-dialog  v-model="dialogVisible2" title="新建文档" class="project-dialog">
+                    <el-input v-model="newName" placeholder="文档名称" class="input-field">
+                    </el-input>
+                    <span class="dialog-footer">
+                      <el-button type="primary" @click="addDocument(); closeDialog2()"
+                        class="confirm-button">确认</el-button>
+                      <el-button @click="closeDialog2" class="cancel-button">取消</el-button>
+                    </span>
+                  </el-dialog>
+                </div>
               </div>
+  <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
             </div>
-            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+          </el-card>
+        </el-col>
+      </el-row>
+
+
+    <el-dialog  v-model="dialogVisible1" title="新建文件夹" class="project-dialog">
+      <el-input v-model="newName" placeholder="文件夹名称" class="input-field">
+      </el-input>
+      <span class="dialog-footer">
+                      <el-button type="primary" @click="addFolder(); closeDialog1()"
+                                 class="confirm-button">确认</el-button>
+                      <el-button @click="closeDialog1" class="cancel-button">取消</el-button>
+                    </span>
+    </el-dialog>
+
+
+    <el-dialog  v-model="dialogVisible2" title="新建文档" class="project-dialog">
+      <el-input v-model="newName" placeholder="文档名称" class="input-field">
+      </el-input>
+      <span class="dialog-footer">
+                      <el-button type="primary" @click="addDocument(); closeDialog2()"
+                                 class="confirm-button">确认</el-button>
+                      <el-button @click="closeDialog2" class="cancel-button">取消</el-button>
+                    </span>
+    </el-dialog>
+    </div>
+
+    <div v-else>
+      <el-row v-for="(row, rowIndex) in rows1" :key="rowIndex" class="card-row">
+        <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
+          <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
+                   shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
+            <img @click="intoDocumentManage((rowIndex) * 4 + colIndex)"
+                 src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
+            <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
+              <div class="project-name">
+                <span>{{ secondDocNames[(rowIndex) * 4 + colIndex] }}</span>
+                <div class="project-actions">
+
+                </div>
+              </div>
+              <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-dialog  v-model="dialogVisible3" title="新建文档" class="project-dialog">
+        <el-input v-model="newName" placeholder="文档名称" class="input-field">
+        </el-input>
+        <span class="dialog-footer">
+                      <el-button type="primary" @click="addDocument2(); closeDialog3()"
+                                 class="confirm-button">确认</el-button>
+                      <el-button @click="closeDialog3" class="cancel-button">取消</el-button>
+                    </span>
+      </el-dialog>
+
+    </div>
   </div>
 </template>
 <script setup>
@@ -45,60 +110,44 @@ import { useRouter } from "vue-router";
 
 import projectAPI from '@/api/proj.js'
 import {CircleCloseFilled, DocumentCopy} from "@element-plus/icons-vue";
-import {getTeamId, setDesignId, setProjectName, setProjId} from "@/utils/token";
+import {getProjId, getTeamId, setDesignId, setProjectName, setProjId} from "@/utils/token";
 import originAPI from "@/api/originDesign";
+import documentAPI from '@/api/document'
 
 const router = useRouter()
 const currentDate = reactive(new Date())
-const dialogVisible = ref(false); // 控制对话框显示与隐藏
+
 const newName = ref(''); // 存储新项目名称
-const projectName = ref([])
+const documentName = ref([])
+
 const projectDescription = ref([])
 const totalCards = ref()
-
-const reRow = ref()
-const reCol = ref()
+const totalCards1 = ref()
 
 const cardsPerRow = 4
 const rows = ref([])
+
+const rows1 = ref([])
+
+const myResult = ref([])
 
 const numRows = computed(() => {
   return Math.ceil(totalCards.value / cardsPerRow)
 })
 
-const dialogFormVisible = ref(false)
+const numRows1 = computed(() => {
+  return Math.ceil(totalCards1.value / cardsPerRow)
+})
+
+const dialogVisible1 = ref(false)
+const dialogVisible2 = ref(false)
+const dialogVisible3 = ref(false)
+
+const folderId = ref()
+
+const switchTo2 = ref(true)
 
 const formLabelWidth = '140px'
-
-const props = defineProps(['teamId','ordering','radio1','radio2'])
-
-// const radio1 = computed(()=>{
-//   return props.radio1
-// })
-//
-// const radio2 = computed(()=>{
-//   return props.radio2
-// })
-
-const radio1 = ref()
-const radio2 = ref()
-
-radio1.value = props.radio1
-radio2.value = props.radio2
-
-
-const team = ref('')
-
-team.value = props.teamId
-
-const ordering = computed(()=>{
-  return props.ordering
-})
-
-const form = reactive({
-  name: '',
-  describe: '',
-})
 
 function handleExtraCardClick() {
   console.log('成功被调用！')
@@ -108,139 +157,180 @@ const hoveredProjectIndex = ref(-1);
 
 const contextMenuVisible = ref(false);
 
-async function copyProject(projPos){
-  let projId = myResult.value[projPos].id
+const documentArray = ref([])
+const folderArray = ref([])
 
-  console.log('projPos111', projPos)
+const firstDoc = ref([])
 
-  const result = await projectAPI.copyProject(getTeamId(),projId)
-
-  await getData()
-  showProjects1()
-}
-
-async function getSingleProj(projPos) {
-  let projId = myResult.value[projPos].id
-
-  console.log('projPos111', projPos)
-
-  const result = await projectAPI.getSingleProject(projId);
-
-  setProjId(projId)
-
-  dialogFormVisible.value = false
-  await router.push('/drag')
-  console.log('getSingleProject成功被调用！')
-}
-function openDialog(rowIndex,colIndex) {
-  console.log('rowIndex,colIndex',rowIndex,colIndex)
-
-  reRow.value = rowIndex
-  reCol.value = colIndex
-
-  newName.value = ''; // 清空输入框
-  dialogVisible.value = true; // 打开对话框
-}
-async function intoDesignManage(projPos) {
-  let projId = myResult.value[projPos].id
-
-  console.log('projPos111', projPos)
-
-  const result = await projectAPI.getSingleProject(projId);
-
-  setProjId(projId)
-
-  await router.push('/design')
-}
-function closeDialog() {
-  dialogVisible.value = false; // 关闭对话框
-}
-async function deleteCard(projPos) {
-  let projId = myResult.value[projPos].id
-  console.log(myResult.value[projPos])
-  console.log('projPos', projPos)
-  console.log('projId', projId)
-  totalCards.value--
-
-  const result = await projectAPI.deleteProject(team.value, projId)
-  await getData()
-  showProjects1()
-
-}
-async function changeProjectName() {
-  let projPos = reRow.value*4+reCol.value
-  let projId = myResult.value[projPos].id;
-  myResult.value[projPos].name = newName.value;
-  console.log('myResult',myResult.value)
-  console.log('row',reRow.value)
-  console.log('col',reCol.value)
-  console.log('projPos##########',projPos)
-  console.log('adsprojName', newName.value)
-  setProjectName(newName.value)
-  console.log('projId',projId)
-  console.log('describe',myResult.value[projPos].describe)
-  const result = await projectAPI.resetProject(newName.value,myResult.value[projPos].describe,projId)
-  showProjects1()
-}
+const secondDoc = ref([])
 
 const tempData = ref([])
 
 const search = ref()
 
-watch(search,()=>{
-  showProjects1()
-})
+async function addFolder(){
+  console.log('11111111111111111111111111111')
+  const result = await documentAPI.createFolder(newName.value,getProjId())
+  console.log('addFolder',result.data)
+  await getData()
+  showFirstDocs()
+}
 
-const myResult = computed(() =>
-    tempData.value.filter(
-        (data) => !search.value || data.name.toLowerCase().includes(search.value.toLowerCase())
-    )
-)
+async function addDocument(){
+  const result = await documentAPI.createDocument(getProjId(),newName.value,null)
+  console.log('addDocument',result.data)
+  await getData()
+  showFirstDocs()
+}
 
-function getOrdering(){
-  if(radio1.value === "1" && radio2.value === "1"){
-    ordering.value = 'name'
-  }else if(radio1.value === "1" && radio2.value === "2"){
-    ordering.value = '-name'
-  }else if(radio1.value === "2" && radio2.value === "1"){
-    ordering.value = 'create_time'
-  }else if(radio1.value === "2" && radio2.value === "2"){
-    ordering.value = '-create_time'
-  }else if(radio1.value === "3" && radio2.value === "1"){
-    ordering.value = 'update_time'
-  }else if(radio1.value === "3" && radio2.value === "2"){
-    ordering.value = '-update_time'
+const lastId = ref()
+
+const folder_id = ref()
+
+async function addDocument2(){
+  const result = await documentAPI.createDocument(getProjId(),newName.value,folderId.value)
+  console.log('addDocument2',result.data)
+  let temp_document = []
+  lastId.value = result.data.id
+  folder_id.value = result.data.folder
+  documentArray.value.push({id:result.data.id,name:result.data.title,folder:result.data.folder})
+  for(let i = 0 ; i < documentArray.value.length ; i++){
+    if(documentArray.value[i].folder === folderId.value){
+      temp_document.push({id:documentArray.value[i].id,name:documentArray.value[i].name})
+    }
+  }
+  secondDoc.value = temp_document
+  console.log('secondDoc.value',secondDoc.value)
+  console.log('documentArray',documentArray.value)
+
+  showSecondDocs()
+}
+
+function openDialog1() {
+  newName.value = ''; // 清空输入框
+  dialogVisible1.value = true; // 打开对话框
+}
+function openDialog2() {
+  newName.value = ''; // 清空输入框
+  dialogVisible2.value = true; // 打开对话框
+  dialogVisible3.value =true
+}
+
+async function intoDocumentManage(docPos) {
+  let temp_folder = []
+  // await getData()
+  console.log('projPos111', docPos)
+  console.log('myResult!!!!!',myResult.value)
+
+  if(totalCards1.value === docPos+1){
+    await router.push(`/document/${lastId.value}`)
   }else{
-    ordering.value='wrong'
+    for(let i = 0 ; i < myResult.value.length ; i++){
+      if(myResult.value[i].id === folder_id.value){
+        temp_folder = myResult.value[i].documents
+        break;
+      }
+    }
+    console.log('myResult.value',myResult.value)
+    console.log('temp_folder',temp_folder)
+    let docId = temp_folder[docPos].id;
+    await router.push(`/document/${docId}`)
+
   }
-  console.log('radio1.value',radio1.value)
-  console.log('radio2.value',radio2.value)
-  console.log('ordering.value',ordering.value)
 }
 
-async function getData() {
-  console.log('ordering',ordering)
-  const result = await projectAPI.getAllProjects(team.value,ordering.value)
-  tempData.value = result.data
+async function intoFolder(folderPos){
+  folderId.value = myResult.value[folderPos].id
+  switchTo2.value = false
+
+
+  let temp_document = []
+  for(let i = 0 ; i < documentArray.value.length ; i++){
+    if(documentArray.value[i].folder === folderId.value){
+      temp_document.push({id:documentArray.value[i].id,name:documentArray.value[i].name})
+    }
+  }
+  secondDoc.value = temp_document
+  switchTo2.value = false
+  showSecondDocs()
 }
 
-function getSearch(searchName) {
-  search.value=searchName
+function closeDialog1() {
+  dialogVisible1.value = false; // 关闭对话框
 }
 
-function showProjects1() {
+function closeDialog2(){
+  dialogVisible2.value = false
+}
+
+function closeDialog3(){
+  dialogVisible3.value = false
+}
+
+async function getData(){
+  const result = await documentAPI.getAllDocuments(getProjId())
+  console.log('getData',result)
+  let firstDoc_temp = []
+
+  //一级目录
+  for(let i = 0 ; i < result.data.length ; i++){
+    // firstDoc.value.push({id:result.data[i].id,name:result.data[i].name,type:0})
+    // firstDoc_temp.push({id:result.data[i].id,name:result.data[i].name,type:0})
+    if (result.data[i].folder === undefined){
+      firstDoc_temp.push({id:result.data[i].id,name:result.data[i].name,type:1})
+    } else {
+      firstDoc_temp.push({id:result.data[i].id,name:result.data[i].title,type:0})
+    }
+  }
+  firstDoc.value = firstDoc_temp
+
+  let documentArray_temp = []
+  let folderArray_temp = []
+
+  //获取所有文件和文件夹
+  for(let i = 0 ; i < result.data.length ; i++){
+    if(result.data[i].folder === null){
+      // documentArray.value.push({id:result.data[i].id,name:result.data[i].name})
+      documentArray_temp.push({id:result.data[i].id,name:result.data[i].title,folder:result.data[i].folder})
+    }else if(result.data[i].folder === undefined){
+      // folderArray.value.push({id:result.data[i].id,name:result.data[i].name})
+      folderArray_temp.push({id:result.data[i].id,name:result.data[i].name})
+      for(let j = 0 ; j < result.data[i].documents.length ; j++){
+        // documentArray.value.push({id:result.data[i].documents[j].id,name:result.data[i].documents[j].name})
+        console.log('result.data[i].documents',result.data[i].documents[j])
+        documentArray_temp.push({id:result.data[i].documents[j].id,name:result.data[i].documents[j].title,folder:result.data[i].documents[j].folder})
+      }
+    }
+  }
+  documentArray.value = documentArray_temp
+  folderArray.value = folderArray_temp
+
+  // for(let i = 0 ; i < firstDoc.value.length ; i++){
+  //   for(let j = 0 ; j < folderArray.value.length ; j++){
+  //     if(folderArray.value[j].id === firstDoc.value[i].id){
+  //       firstDoc.value[i].type = 1
+  //     }
+  //   }
+  // }
+
+  console.log('firstDoc.value',firstDoc.value)
+  console.log('folderArray.value',folderArray.value)
+  console.log('documentArray.value',documentArray.value)
+
+  myResult.value = result.data
+}
+
+function showFirstDocs(){
   rows.value = []
-  console.log('myResult', myResult.value)
-  let projNames = []
-  let projectDescriptions = []
-  for (const proj of myResult.value) {
-    projNames.push(proj.name)
-    projectDescriptions.push(proj.describe)
+  let docsNames = []
+  for(const doc of firstDoc.value){
+    docsNames.push(doc.name)
   }
-  projectName.value = projNames
-  projectDescription.value = projectDescriptions
-  totalCards.value = projNames.length
+  documentName.value = docsNames
+
+  totalCards.value = docsNames.length
   console.log('numRows', numRows.value)
+
   for (let i = 0; i < numRows.value; i++) {
     let row = []
     for (let j = 0; j < cardsPerRow; j++) {
@@ -253,20 +343,46 @@ function showProjects1() {
     rows.value.push(row)
     console.log("rows", rows)
   }
-
   console.log(totalCards.value)
-  console.log('name::::', projectName.value)
-  console.log('name@@@@', projectName.value[0])
+
 }
 
-defineExpose({
-  showProjects1,getSearch,getData,getOrdering
-})
+const secondDocNames = ref([])
+
+function showSecondDocs(){
+  rows1.value = []
+  let docsNames = []
+  console.log('secondDoc.value',secondDoc.value)
+  for(const doc of secondDoc.value){
+    docsNames.push(doc.name)
+  }
+
+  console.log('docsNames',docsNames)
+  secondDocNames.value = docsNames
+
+  totalCards1.value = docsNames.length
+  console.log('numRows1', numRows1.value)
+
+  for (let i = 0; i < numRows1.value; i++) {
+    let row = []
+    for (let j = 0; j < cardsPerRow; j++) {
+      let cardIndex = i * cardsPerRow + j
+      if (cardIndex < totalCards1.value) {
+        row.push(cardIndex)
+      }
+    }
+
+    rows1.value.push(row)
+    console.log("rows1", rows1)
+  }
+  console.log(totalCards1.value)
+
+}
 
 onMounted(async () => {
   // getOrdering()
   await getData()
-  showProjects1()
+  showFirstDocs()
   console.log('$$$$$$$$$$', totalCards.value)
 })
 

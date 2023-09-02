@@ -4,22 +4,32 @@
       <el-row class="tac">
         <el-col :span="24">
           <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
-            <el-sub-menu index="1">
+            <el-menu-item index="1">
               <template #title>
                 <font-awesome-icon class="icon" :icon="['fas', 'diagram-project']" />
                 <span>项目视图</span>
               </template>
-              <el-menu-item-group title="操作">
-                <el-menu-item @click="showStage" index="1-1">
-                  <font-awesome-icon class="icon" :icon="['fas', 'border-all']" />
-                  <span class="all_project">全部项目</span>
-                </el-menu-item>
-                <el-menu-item @click="showTrash" index="1-2">
-                  <font-awesome-icon class="icon" :icon="['fas', 'recycle']" />
-                  <span class="">回收站</span>
-                </el-menu-item>
-              </el-menu-item-group>
-            </el-sub-menu>
+<!--              <el-menu-item-group title="操作">-->
+<!--                <el-menu-item @click="showStage" index="1-1">-->
+<!--                  <font-awesome-icon class="icon" :icon="['fas', 'border-all']" />-->
+<!--                  <span class="all_project">全部项目</span>-->
+<!--                </el-menu-item>-->
+<!--                <el-menu-item @click="showTrash" index="1-2">-->
+<!--                  <font-awesome-icon class="icon" :icon="['fas', 'recycle']" />-->
+<!--                  <span class="">回收站</span>-->
+<!--                </el-menu-item>-->
+<!--              </el-menu-item-group>-->
+            </el-menu-item>
+            <el-menu-item-group title="操作">
+              <el-menu-item @click="showStage" index="1-1">
+                <font-awesome-icon class="icon" :icon="['fas', 'border-all']" />
+                <span class="all_project">全部项目</span>
+              </el-menu-item>
+              <el-menu-item @click="showTrash" index="1-2">
+                <font-awesome-icon class="icon" :icon="['fas', 'recycle']" />
+                <span class="">回收站</span>
+              </el-menu-item>
+            </el-menu-item-group>
           </el-menu>
         </el-col>
       </el-row>

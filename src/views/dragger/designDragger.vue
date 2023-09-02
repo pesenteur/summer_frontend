@@ -6,12 +6,13 @@
           <el-col :span="24">
             <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
               <el-menu-item index="5" @click="goBehind">
-                <font-awesome-icon style="margin: auto;" :icon="['fas', 'left-long']" />
-                <!-- <span style="margin:auto">返回上一级</span> -->
+<!--                <font-awesome-icon style="margin: auto;" :icon="['fas', 'left-long']" />-->
+                 <span style="margin:auto"><strong>返回</strong></span>
               </el-menu-item>
               <el-menu-item index="2" @click="dialogFormVisible2 = true">
                 <!--              <el-icon><icon-menu /></el-icon>-->
-                <font-awesome-icon style="margin:auto" :icon="['fas', 'plus']" />
+<!--                <font-awesome-icon style="margin:auto" :icon="['fas', 'plus']" />-->
+                <span style="margin:auto"><strong>新建画布</strong></span>
 
                 <el-dialog draggable=true v-model="dialogFormVisible2" title="新建画布:" center width="30%">
                   <el-form :model="form">
@@ -35,7 +36,7 @@
               <el-sub-menu index="1">
                 <template #title>
                   <font-awesome-icon class="side_icon" :icon="['fas', 'draw-polygon']" />
-                  <span>画布视图</span>
+                  <span><strong>画布视图</strong></span>
                 </template>
                 <el-menu-item-group title="画布列表">
                   <el-menu-item v-for="design in myResult" @click="openDesign(design.id)">
@@ -45,11 +46,11 @@
               </el-sub-menu>
 
               <el-menu-item index="3" @click="goPreview">
-                <span style="margin:auto">生成预览</span>
+                <span style="margin:auto"><strong>生成预览</strong></span>
               </el-menu-item>
 
               <el-menu-item index="4" @click="closePreview">
-                <span style="margin:auto">删除预览</span>
+                <span style="margin:auto"><strong>删除预览</strong></span>
               </el-menu-item>
 
               <el-dialog v-model="dialogVisible" title="预览地址" width="30%" draggable>

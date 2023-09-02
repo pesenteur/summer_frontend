@@ -18,7 +18,6 @@
 				</el-button>
 					<template #dropdown>
 						<el-dropdown-menu>
-							<el-dropdown-item>个人简介</el-dropdown-item>
 							<el-dropdown-item @click="jump">切换团队</el-dropdown-item>
 							<el-dropdown-item @click="logout">退出登录</el-dropdown-item>
 						</el-dropdown-menu>

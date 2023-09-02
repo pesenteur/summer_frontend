@@ -459,12 +459,7 @@ async function sendMessage(message) {
 }
 
 function openFile(event) {
-	let downloadLink = document.createElement('a');
-	downloadLink.download = event.file.file.name+'.'+ event.file.file.type
-	downloadLink.href = new URL(event.file.file.url)
-	downloadLink.click();
-	// console.log(event.file.file.name)
-	// window.open(event.file.file.url, '_blank')
+	window.open(event.file.file.url, event.file.file.name+'.'+ event.file.file.type)
 }
 async function upMessage(event) {
 	let temp = JSON.parse(event.data)

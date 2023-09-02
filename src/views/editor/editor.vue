@@ -48,8 +48,8 @@
           <el-aside width="100%">
             <el-row class="tac">
               <el-col :span="24">
-                <el-menu>
-                  <el-sub-menu index="1">
+                <el-menu :default-openeds="['1']">
+                  <el-sub-menu index="1" :default-openeds="opens">
                     <template #title>
                       <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ projectName }}</span>
                       <button class="transparent-button-1" @click.stop="showAddFolderDialog">
@@ -60,8 +60,8 @@
                     </template>
                     <div class="button-container">
                     </div>
-                    <div v-for="folder in folders" :key="folder.id">
-                      <el-sub-menu :index="folder.id">
+                    <div v-for="folder in folders" :key="folder.id" >
+                      <el-sub-menu :index="folder.id" :default-openeds="folder.id">
                         <template #title>
                           <font-awesome-icon :icon="['fas', 'folder']" /><span class="item">{{ folder.name }}</span>
                           <button class="transparent-button-2"
@@ -73,7 +73,7 @@
                           </button>
                         </template>
                         <el-menu-item-group>
-                          <el-menu-item v-for="d in folder.documents" :key="d.id" :index="d.id"
+                          <el-menu-item v-for="d in folder.documents" :key="d.id" :index="d.id" :class="{ 'is-active': selectedDocumentId === d.id }"
                             @click="changeDocument(d.id, d.title)">
                             <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ d.title }}</span>
                             <button class="transparent-button-2"
@@ -83,7 +83,7 @@
                         </el-menu-item-group>
                       </el-sub-menu>
                     </div>
-                    <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id"
+                    <el-menu-item v-for="document in rootDocuments" :key="document.id" :index="document.id" :class="{ 'is-active': selectedDocumentId === document.id }"
                       @click="changeDocument(document.id, document.title)">
                       <font-awesome-icon :icon="['fas', 'file']" /><span class="item">{{ document.title }}</span>
                       <button class="transparent-button-2"
@@ -356,8 +356,6 @@
               </div>
             </div>
           </el-scrollbar>
-
-
         </el-main>
         <transition>
           <el-aside :key="showSidebar" v-if="showSidebar" width="300px"> <!-- 右侧侧栏 -->
@@ -427,6 +425,7 @@ function getRandomColor() {
 const isDialogVisible = ref(false);
 const isEditable = ref(false);
 const sharedLink = ref('');
+const opens = ref([])
 const openDialog = () => {
   isDialogVisible.value = true;
 };
@@ -469,6 +468,7 @@ const currentDocumentName = ref('')
 const newTitle = ref(currentDocumentName.value);
 const Editable = ref(true)
 const showSidebar = ref(false)
+const selectedDocumentId = ref(false)
 const showAddFolderDialog = () => {
   addFolderDialogVisible.value = true;
 };
@@ -535,8 +535,10 @@ const wordCss = `
 `
 
 onMounted(async () => {
-  await getAllDocuments();
-
+  await getAllDocuments(); 
+  opens.value.push('1') 
+  console.log(opens.value)
+  selectedDocumentId.value =documentId.value
   const ydoc = new Y.Doc();
   provider.value = new HocuspocusProvider({
     url: 'ws://127.0.0.1:1234',
@@ -618,6 +620,7 @@ const processDocuments = (data) => {
       rootDocuments.value.push(item)
     } else {
       folders.value.push(item)
+      opens.value.push(item.id)
     }
     if (item.id === documentId.value) {
       currentDocumentName.value = item.title;
@@ -739,6 +742,7 @@ async function changeDocument(document, documentName) {
   try {
     router.push(`/document/${document}`)
     documentId.value = document
+    selectedDocumentId.value = document
     currentDocumentName.value = documentName
     const ydoc = new Y.Doc();
     provider.value.destroy();

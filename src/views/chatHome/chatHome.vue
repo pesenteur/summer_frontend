@@ -493,7 +493,7 @@ async function upMessage(event) {
 		messages.value.push(message)
 	}
 	await chatFunction.readAllMessage(operChatId.value)
-	addData()
+	await addData()
 }
 function menuActionHandler({ action, }) {
 	switch (action.name) {

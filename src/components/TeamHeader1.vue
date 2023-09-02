@@ -1,6 +1,6 @@
 <template>
   <img src="@/assets/imgs/icons/menu.svg" @click="drawer = true" class="img-decorate">
-  <el-drawer v-model="drawer" title="SUMMER" :with-header="false" direction="ltr" size="15%">
+  <el-drawer v-model="drawer" title="SUMMER" :with-header="false" direction="ltr" size="18%">
     <div class="drawer-content">
       <div class="summer-heading">
         <span class="summer-text" :v-model="teamName">团队：{{ teamName }}</span>

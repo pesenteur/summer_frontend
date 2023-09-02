@@ -582,7 +582,7 @@ onMounted(() => {
 		target_message.value = route.query.message;
 	})
 	getTeamMember()
-	socket.value = new WebSocket(`ws://azure.bienboy.store/summer/ws/chat/${user_id.value}`)
+	socket.value = new WebSocket(`ws://39.105.159.199:1108/ws/chat/${user_id.value}`)
 	socket.value.addEventListener('message', upMessage)
 
 })

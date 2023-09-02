@@ -29,29 +29,26 @@ requests.interceptors.response.use(response => {
     return response
 }, error => {
     console.log(error)
-    if (error.response && error.response.status === 401) {
-        const accountStore = useAccountStore();
-        accountStore.logout();
-        router.push({
-            path: '/login',
-        }).then(() => { });
-        if (!error.response.data.detail) {
-            ElMessage({
-                message: 'token失效，请重新登录',
-                type: 'error'
-            });
-        } else {
-            ElMessage({
-                message: error.response.data.detail,
-                type: 'error'
-            });
+    if (error.response && error.response.data.detail) {
+        let pattern = /token/i
+        if (pattern.test(error.response.data.detail)) {
+            const accountStore = useAccountStore();
+            accountStore.logout();
+            router.push({
+                path: '/login',
+            }).then(() => { });
+            if (!error.response.data.detail) {
+                ElMessage({
+                    message: 'token失效，请重新登录',
+                    type: 'error'
+                });
+            } else {
+                ElMessage({
+                    message: error.response.data.detail,
+                    type: 'error'
+                });
+            }
         }
-    }
-    else if (error.response && error.response.data.detail) {
-        ElMessage({
-            message: error.response.data.detail,
-            type: 'error'
-        });
     }
     else if (error.response && error.response.status === 403) {
         ElMessage({

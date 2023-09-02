@@ -10,6 +10,7 @@ import {onMounted, onUpdated} from "vue";
 import {getOldArr, getUserId, setIsOld} from "@/utils/token";
 
 const driverObj = driver({
+	showButtons:[],
 	showProgress: true,
 	allowClose: false,
 	steps: [

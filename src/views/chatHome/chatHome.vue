@@ -458,8 +458,8 @@ async function sendMessage(message) {
 	}
 }
 
-function openFile({ file }) {
-	window.open(file.file.url, '_blank')
+function openFile(event) {
+	window.open(event.file.file.url, event.file.file.name+'.'+ event.file.file.type)
 }
 async function upMessage(event) {
 	let temp = JSON.parse(event.data)

@@ -1,65 +1,61 @@
 <template>
-	<button @click="clickButton" class="custom-icon-button"/>
-	<div class="badge-container">
-		<span class="badge_top" v-if="unreadCount > 0"></span>
-	</div>
-	<el-drawer size="17%" style="margin: 16px;border-radius: 10px;" class="custom-drawer" v-model="table"
-	           title="我的消息" direction="rtl">
-		<el-col>
-			<div class="card-container">
-				<div class="button-container">
-					<div class="button-left">
-						<el-popover placement="bottom-start" :width="100" trigger="hover" content="已读所有消息">
-							<template #reference>
-								<button @click="readAllNoti" class="action-button">
-									<font-awesome-icon :icon="['fas', 'check']"/>
-								</button>
-							</template>
-						</el-popover>
-					</div>
-					<div class="button-right">
-						<el-popover placement="bottom-start" :width="100" trigger="hover" content="删除所有已读消息">
-							<template #reference>
-								<button @click="deleteAllRead" class="action-button">
-									<font-awesome-icon
-										:icon="['fas', 'delete-left']"/>
-								</button>
-							</template>
-						</el-popover>
-					</div>
-				</div>
-				<div v-for="msg in messages" :key="msg.notId" class="message-container">
-					<el-divider></el-divider>
-					<div class="details-container">
-						<details @click="readNoti(msg.notId)">
-							<summary class="summary"
-							         :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
-									{{ msg.content }}
-								<span class="badge" v-if="msg.isread === 'unread'"></span>
-							</summary>
-							<div class="content">
-								<router-link :to="msg.link" v-if="msg.link">
-									{{ msg.content }}
-								</router-link>
-								<span v-else>
-									{{ msg.content }}
-								</span>
-								<el-popover placement="bottom-start" :width="10" trigger="hover" content="删除消息"
-								            >
-									<template #reference>
-										<button @click="deleteSingleNoti(msg.notId)" class="inside-action-button">
-											<font-awesome-icon
-												:icon="['fas', 'delete-left']"/>
-										</button>
-									</template>
-								</el-popover>
-							</div>
-						</details>
-					</div>
-				</div>
-			</div>
-		</el-col>
-	</el-drawer>
+  <button @click="clickButton" class="custom-icon-button" />
+  <div class="badge-container">
+    <span class="badge_top" v-if="unreadCount > 0"></span>
+  </div>
+  <el-drawer size="17%" style="margin: 16px;border-radius: 10px;" class="custom-drawer" v-model="table" title="我的消息"
+    direction="rtl">
+    <el-col>
+      <div class="card-container">
+        <div class="button-container">
+          <div class="button-left">
+            <el-popover placement="bottom-start" :width="100" trigger="hover" content="已读所有消息">
+              <template #reference>
+                <button @click="readAllNoti" class="action-button">
+                  <font-awesome-icon :icon="['fas', 'check']" />
+                </button>
+              </template>
+            </el-popover>
+          </div>
+          <div class="button-right">
+            <el-popover placement="bottom-start" :width="100" trigger="hover" content="删除所有已读消息">
+              <template #reference>
+                <button @click="deleteAllRead" class="action-button">
+                  <font-awesome-icon :icon="['fas', 'delete-left']" />
+                </button>
+              </template>
+            </el-popover>
+          </div>
+        </div>
+        <div v-for="msg in messages" :key="msg.notId" class="message-container">
+          <el-divider></el-divider>
+          <div class="details-container">
+            <details @click="readNoti(msg.notId)">
+              <summary class="summary" :class="{ 'read': msg.isread === 'read', 'unread': msg.isread === 'unread' }">
+                {{ msg.content }}
+                <span class="badge" v-if="msg.isread === 'unread'"></span>
+              </summary>
+              <div class="content">
+                <router-link :to="msg.link" v-if="msg.link">
+                  {{ msg.content }}
+                </router-link>
+                <span v-else>
+                  {{ msg.content }}
+                </span>
+                <el-popover placement="bottom-start" :width="10" trigger="hover" content="删除消息">
+                  <template #reference>
+                    <button @click="deleteSingleNoti(msg.notId)" class="inside-action-button">
+                      <font-awesome-icon :icon="['fas', 'delete-left']" />
+                    </button>
+                  </template>
+                </el-popover>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </el-col>
+  </el-drawer>
 </template>
 
 <script lang="js" setup>

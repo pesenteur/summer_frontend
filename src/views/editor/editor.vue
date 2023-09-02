@@ -2,7 +2,6 @@
   <div class="common-layout">
     <el-container>
       <el-header>
-
         <div class="editor__header">
           <div>
             <button class="goback" @click="backTo"><font-awesome-icon :icon="['fas', 'arrow-up-from-bracket']"
@@ -724,10 +723,60 @@ async function restore(dId) {
     if (editor.value.storage.collaborationCursor.users.length === 1) {
       console.log(dId)
       await documentRequest.restore(dId)
+      historyRecord.value.forEach(item => {
+        if (item.id === dId) {
+          console.log(item.id)
+          documentId.value = item.id
+          const ydoc = new Y.Doc();
+          provider.value.destroy();
+          provider.value = new HocuspocusProvider({
+            url: 'ws://39.105.159.199:1108/hocuspocus',
+            name: documentId.value,
+            document: ydoc,
+            forceSyncInterval: 200
+          });
+          provider.value.on('status', event => {
+            status.value = event.status;
+          });
+          editor.value.destroy();
+          editor.value = new Editor({
+            editable: Editable,
+            extensions: [
+              StarterKit.configure({
+                history: false
+              }),
+              Highlight,
+              TaskList,
+              TaskItem,
+              Collaboration.configure({
+                document: ydoc
+              }),
+              CollaborationCursor.configure({
+                provider: provider.value,
+                user: currentUser.value
+              }),
+              CharacterCount.configure({
+                limit: 100000,
+              }),
+              StarterKit,
+              Mention.configure({
+                HTMLAttributes: {
+                  class: 'mention',
+                },
+                suggestion
+              })
+            ]
+          });
+          rootDocuments.value.push(item)
+        } else {
+
+        }
+      })
       ElMessage({
         message: '回退成功',
         type: 'success'
       })
+
     }
   } catch (error) {
     ElMessage({

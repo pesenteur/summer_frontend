@@ -2,6 +2,7 @@
   <div class="common-layout">
     <el-container>
       <el-header>
+	      <button @click="backTo">回到上一级</button>
         <div class="editor__header">
           <div>
             <span class="title" v-if="!isEditingTitle">{{ currentDocumentName }}</span>
@@ -534,7 +535,9 @@ const wordCss = `
   padding: 24px;
 }
 `
-
+function backTo(){
+	router.push(`/design?back=active`)
+}
 onMounted(async () => {
   await getAllDocuments();
   opens.value.push('1')
@@ -542,7 +545,7 @@ onMounted(async () => {
   selectedDocumentId.value = documentId.value
   const ydoc = new Y.Doc();
   provider.value = new HocuspocusProvider({
-    url: 'ws://127.0.0.1:1234',
+    url: 'ws://39.105.159.199:1108/hocuspocus',
     name: documentId.value,
     document: ydoc,
     forceSyncInterval: 200

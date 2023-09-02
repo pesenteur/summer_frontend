@@ -6,6 +6,9 @@
     <el-button @click="openDialog2">
       新建文件
     </el-button>
+    <el-button @click="goBehind">
+      返回上一级
+    </el-button>
     <div v-if="switchTo2">
       <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
@@ -417,6 +420,12 @@ onMounted(async () => {
   console.log('$$$$$$$$$$', totalCards.value)
 })
 
+async function goBehind(){
+  console.log('1111@@@成功')
+  switchTo2.value = true
+  await getData()
+  showFirstDocs()
+}
 
 </script>
 

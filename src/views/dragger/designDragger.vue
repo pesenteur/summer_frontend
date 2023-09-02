@@ -51,6 +51,14 @@
               <span style="margin:auto">删除预览</span>
             </el-menu-item>
 
+            <el-menu-item index="4" @click="closePreview">
+              <span style="margin:auto">删除预览</span>
+            </el-menu-item>
+
+            <el-menu-item index="4" @click="goBehind">
+              <span style="margin:auto">返回上一级</span>
+            </el-menu-item>
+
             <el-dialog v-model="dialogVisible" title="预览地址" width="30%" draggable>
 
               <router-link :to="previewPath">{{previewSrc}}</router-link>
@@ -196,6 +204,9 @@ async function closePreview(){
 
 }
 
+function goBehind(){
+  router.push('/design')
+}
 
 onMounted(async ()=>{
   editableTabs.value = []

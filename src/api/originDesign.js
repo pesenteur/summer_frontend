@@ -40,12 +40,12 @@ export default {
             method:'GET',
         })
     },
-    useTemplate(design_id,template){
+    useTemplate(title,design_id,template){
         return requests({
             url:`/design/${design_id}/use-template`,
             method:'GET',
             params:{
-                template
+                template,title
             }
         })
     }

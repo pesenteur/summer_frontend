@@ -3,7 +3,7 @@
   <div class="badge-container">
     <span class="badge_top" v-if="unreadCount > 0"></span>
   </div>
-  <el-drawer size="17%" style="margin: 16px;border-radius: 10px;" class="custom-drawer" v-model="table" title="我的消息"
+  <el-drawer size="20%" style="margin: 16px;border-radius: 10px;" class="custom-drawer" v-model="table" title="我的消息"
     direction="rtl">
     <el-col>
       <div class="card-container">
@@ -79,7 +79,7 @@ const unreadCount = computed(() => {
 onMounted(() => {
   getAllNoti()
   user_id.value = getUserId()
-  socket.value = new WebSocket(`ws://azure.bienboy.store/summer/ws/message/${user_id.value}`)
+  socket.value = new WebSocket(`ws://39.105.159.199:1108/ws/message/${user_id.value}`)
   socket.value.addEventListener('message', () => {
     getAllNoti()
   })

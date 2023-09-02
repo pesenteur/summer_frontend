@@ -88,11 +88,12 @@ import { reactive } from "vue";
 import { getProjectName, getProjId, setDesignId } from '@/utils/token'
 import projAPI from '@/api/proj'
 import originAPI from '@/api/originDesign'
-import { useRouter } from "vue-router";
+import { useRouter,useRoute } from "vue-router";
 import documentShow from './documentShow.vue'
 import editor from '../editor/editor.vue'
 
 const router = useRouter()
+const route = useRoute()
 
 const form = reactive({
   name: '',
@@ -181,6 +182,9 @@ onMounted(async () => {
   const result = await originAPI.getAllDesign(getProjId())
   tableData.value = result.data
   projName.value = getProjectName()
+	if(route.query.back !=null){
+		switchMenu.value = false
+	}
   console.log('projName', projName.value)
   console.log('result', result)
   console.log('result.data', result.data)

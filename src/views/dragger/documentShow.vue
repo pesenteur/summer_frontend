@@ -13,18 +13,18 @@
     </div>
     <div v-if="switchTo2">
       <el-row v-for="(row, rowIndex) in rows" :key="rowIndex" class="card-row">
-        <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
-          <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
+        <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="2" class="card-col">
+          <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 6 + colIndex" @mouseleave="hoveredProjectIndex = -1"
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
             <font-awesome-icon
-              v-if="firstDoc.filter((item) => { return item.id === myResult[(rowIndex) * 4 + colIndex].id })[0].type === 0"
-              @click="intoDocumentManage1((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']" style="color: #c7dbdf;"
+              v-if="firstDoc.filter((item) => { return item.id === myResult[(rowIndex) * 6+ colIndex].id })[0].type === 0"
+              @click="intoDocumentManage1((rowIndex) * 6 + colIndex)" :icon="['fas', 'file']" style="color: #c7dbdf;"
               class="image" />
-            <font-awesome-icon v-else @click="intoFolder((rowIndex) * 4 + colIndex)" class="image"
+            <font-awesome-icon v-else @click="intoFolder((rowIndex) * 6 + colIndex)" class="image"
               :icon="['fas', 'folder']" style="color: #53d0ea; font-size: 150px;" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
-                <span>{{ documentName[(rowIndex) * 4 + colIndex] }}</span>
+                <span>{{ documentName[(rowIndex) * 6 + colIndex] }}</span>
 
               </div>
               <!--            <p>项目简介: {{ projectDescription[(rowIndex) * 4 + colIndex] }}</p>-->
@@ -56,14 +56,14 @@
 
     <div v-else>
       <el-row v-for="(row, rowIndex) in rows1" :key="rowIndex" class="card-row">
-        <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
-          <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
+        <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="2" class="card-col">
+          <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 6 + colIndex" @mouseleave="hoveredProjectIndex = -1"
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-            <font-awesome-icon @click="intoDocumentManage2((rowIndex) * 4 + colIndex)" :icon="['fas', 'file']"
+            <font-awesome-icon @click="intoDocumentManage2((rowIndex) * 6 + colIndex)" :icon="['fas', 'file']"
               style="color: #c7dbdf;" class="image" />
-            <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
+            <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 6 + colIndex }">
               <div class="project-name">
-                <span>{{ secondDocNames[(rowIndex) * 4 + colIndex] }}</span>
+                <span>{{ secondDocNames[(rowIndex) * 6 + colIndex] }}</span>
                 <div class="project-actions">
                 </div>
               </div>
@@ -105,7 +105,7 @@ const projectDescription = ref([])
 const totalCards = ref()
 const totalCards1 = ref()
 
-const cardsPerRow = 4
+const cardsPerRow = 6
 const rows = ref([])
 
 const rows1 = ref([])
@@ -435,18 +435,13 @@ async function goBehind() {
 }
 
 .image {
-  width: 150px;
+  width: 100px;
   margin-top: 10px;
   margin-bottom: 10px;
   margin-left: 25px;
-  height: 150px !important;
+  height: 100px !important;
   display: block;
   object-fit: cover;
-}
-
-.small-card {
-  width: 10%;
-  height: 100%;
 }
 
 .card-row {
@@ -551,8 +546,8 @@ async function goBehind() {
 }
 
 .small-card {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   border: none;
   border-radius: 20px;
 }

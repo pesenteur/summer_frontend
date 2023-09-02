@@ -120,7 +120,7 @@ const router = useRouter()
 
 const previewSrc = ref('')
 
-const iframeSrc = ref('../../public/dist')
+const iframeSrc = ref('../../public/static/dist')
 
 const myResult = ref([])
 
@@ -220,7 +220,7 @@ onMounted(async ()=>{
   }
   console.log('&&&&!!!title',designTitle)
   // editableTabs.value.push({label:designTitle, id:getDesignId(), name:getDesignId()})
-  iframeSrc.value = `../../public/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
+  iframeSrc.value = `../../public/static/dist/index.html?design=${getDesignId()}&project=${getProjId()}`;
   editableTabsValue.value = getDesignId()
   editableTabs.value.push({label:designTitle, id:getDesignId(), name:getDesignId()})
 })
@@ -229,7 +229,7 @@ onMounted(async ()=>{
 function changeDesign(designId){
   console.log('editableTabs',editableTabs.value)
   console.log('designId',designId)
-  iframeSrc.value = `../../public/dist/index.html?design=${designId}&project=${getProjId()}`;
+  iframeSrc.value = `../../public/static/dist/index.html?design=${designId}&project=${getProjId()}`;
   console.log('designId',designId)
 }
 

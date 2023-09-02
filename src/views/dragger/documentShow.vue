@@ -11,7 +11,7 @@
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
           <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
             shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-            <img v-if="firstDoc.filter((item)=>{return item.id === myResult[(rowIndex) * 4 + colIndex].id})[0].type === 0" @click="intoDocumentManage((rowIndex) * 4 + colIndex)"
+            <img v-if="firstDoc.filter((item)=>{return item.id === myResult[(rowIndex) * 4 + colIndex].id})[0].type === 0" @click="intoDocumentManage1((rowIndex) * 4 + colIndex)"
               src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
             <img v-else src="https://img2.baidu.com/it/u=4238855641,2359345742&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" @click="intoFolder((rowIndex) * 4 + colIndex)" class="image">
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
@@ -76,7 +76,7 @@
         <el-col v-for="(o, colIndex) in row" :key="colIndex" :span="4" class="card-col">
           <el-card @mouseover="hoveredProjectIndex = (rowIndex) * 4 + colIndex" @mouseleave="hoveredProjectIndex = -1"
                    shadow="hover" :body-style="{ padding: '0px' }" class="small-card">
-            <img @click="intoDocumentManage((rowIndex) * 4 + colIndex)"
+            <img @click="intoDocumentManage2((rowIndex) * 4 + colIndex)"
                  src="https://pic1.zhimg.com/v2-65354520edd978c49d00a7a710feb9c5_r.jpg?source=1940ef5c" class="image" />
             <div class="project-info" :class="{ active: hoveredProjectIndex === (rowIndex) * 4 + colIndex }">
               <div class="project-name">
@@ -192,7 +192,7 @@ async function addDocument2(){
   console.log('addDocument2',result.data)
   let temp_document = []
   lastId.value = result.data.id
-  folder_id.value = result.data.folder
+  // folder_id.value = result.data.folder
   documentArray.value.push({id:result.data.id,name:result.data.title,folder:result.data.folder})
   for(let i = 0 ; i < documentArray.value.length ; i++){
     if(documentArray.value[i].folder === folderId.value){
@@ -216,7 +216,17 @@ function openDialog2() {
   dialogVisible3.value =true
 }
 
-async function intoDocumentManage(docPos) {
+
+async function intoDocumentManage1(docPos) {
+
+  let docId = myResult.value[docPos].id
+
+  console.log('docId',docId)
+
+  await router.push(`/document/${docId}`)
+}
+
+async function intoDocumentManage2(docPos) {
   let temp_folder = []
   // await getData()
   console.log('projPos111', docPos)
@@ -226,6 +236,9 @@ async function intoDocumentManage(docPos) {
     await router.push(`/document/${lastId.value}`)
   }else{
     for(let i = 0 ; i < myResult.value.length ; i++){
+
+      console.log('folder_id',folder_id.value)
+
       if(myResult.value[i].id === folder_id.value){
         temp_folder = myResult.value[i].documents
         break;
@@ -234,6 +247,9 @@ async function intoDocumentManage(docPos) {
     console.log('myResult.value',myResult.value)
     console.log('temp_folder',temp_folder)
     let docId = temp_folder[docPos].id;
+
+    console.log('docId',docId)
+
     await router.push(`/document/${docId}`)
 
   }
@@ -250,6 +266,9 @@ async function intoFolder(folderPos){
       temp_document.push({id:documentArray.value[i].id,name:documentArray.value[i].name})
     }
   }
+
+  folder_id.value = folderId.value
+
   secondDoc.value = temp_document
   switchTo2.value = false
   showSecondDocs()

@@ -415,7 +415,7 @@ async function addHistoryMessage({ room, options = {} }) {
 				usersTag: '',
 				files: [
 					{
-						name: '我的文件',
+						name: temp.name,
 						url: temp.content,
 						type: temp.content.split('.')[temp.content.split('.').length - 1],
 					}
@@ -439,7 +439,11 @@ async function sendMessage(message) {
 	if (message.files !== null) {
 		for (const file of message.files) {
 			reader.readAsDataURL(file.blob)
-			await chatFunction.sendFile(operChatId.value, file.type, file.extension, file.blob);
+			if(file.name === ''){
+				ElMessage.error('暂不支持无后缀文件发送')
+			}else {
+				await chatFunction.sendFile(operChatId.value, file.type, file.extension, file.blob, file.name);
+			}
 		}
 	}
 	if (message.content !== "") {
@@ -484,7 +488,7 @@ async function upMessage(event) {
 				avatar: '/doe.png',
 				files: [
 					{
-						name: '基本项',
+						name: temp.name,
 						url: temp.content,
 						type: temp.content.split('.')[temp.content.split('.').length - 1],
 					}

@@ -14,7 +14,7 @@
 			</div>
 		</template>
 	</vue-advanced-chat>
-	<el-drawer v-model="drawerInterVis" direction="rtl" size="18%">
+	<el-drawer v-model="drawerInterVis" direction="rtl" size="22%">
 		<span class="team_list">成员列表</span>
 		<el-dropdown v-if="!isMain">
 			<el-button text>
@@ -415,10 +415,9 @@ async function addHistoryMessage({ room, options = {} }) {
 				usersTag: '',
 				files: [
 					{
-						name: '我的文件',
+						name: temp.name,
 						url: temp.content,
 						type: temp.content.split('.')[temp.content.split('.').length - 1],
-
 					}
 				],
 			}
@@ -440,7 +439,11 @@ async function sendMessage(message) {
 	if (message.files !== null) {
 		for (const file of message.files) {
 			reader.readAsDataURL(file.blob)
-			await chatFunction.sendFile(operChatId.value, file.type, file.extension, file.blob);
+			if(file.name === ''){
+				ElMessage.error('暂不支持无后缀文件发送')
+			}else {
+				await chatFunction.sendFile(operChatId.value, file.type, file.extension, file.blob, file.name);
+			}
 		}
 	}
 	if (message.content !== "") {
@@ -474,23 +477,25 @@ async function upMessage(event) {
 			messages.value.push(message)
 		}
 	} else {
-		let message = {
-			_id: temp.id,
-			content: '',
-			senderId: temp.sender.toString(),
-			username: temp.sender_name,
-			date: temp.created_time,
-			timestamp: temp.created_time,
-			avatar: '/doe.png',
-			files: [
-				{
-					name: '基本项',
-					url: temp.content,
-					type: temp.content.split('.')[temp.content.split('.').length - 1],
-				}
-			],
+		if (temp.chat === operChatId.value) {
+			let message = {
+				_id: temp.id,
+				content: '',
+				senderId: temp.sender.toString(),
+				username: temp.sender_name,
+				date: temp.created_time,
+				timestamp: temp.created_time,
+				avatar: '/doe.png',
+				files: [
+					{
+						name: temp.name,
+						url: temp.content,
+						type: temp.content.split('.')[temp.content.split('.').length - 1],
+					}
+				],
+			}
+			messages.value.push(message)
 		}
-		messages.value.push(message)
 	}
 	await chatFunction.readAllMessage(operChatId.value)
 	await addData()
